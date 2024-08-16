@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        table tr > * {
+            border: 1px solid black;
+        }
+        td > input {
+            border: 0;
+        }
+        input[type="number"].short {
+            width: 3em;
+        }
+        input:not([type]).short, input[type="text"].short, input[type="number"].long {
+            width: 5em;
+        }
+        dialog > input[type="number"] {
+            width: 5em;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script src="./template.js"></script>
+    <script src="./export.js"></script>
+</head>
+<body>
+    <div style="width: 1000px; height: 800px; overflow: scroll;" id="mainContainer">
+        <canvas id="main" width="2000" height="2000"></canvas>
+    </div>
+    <div>
+        <strong>Fake table_seating</strong>
+        <br>
+        <br>
+        <button id="tableSeatingAdd">Add Row</button>
+        <br>
+        <button id="tableSeatingAdd10">Add 10 Rows</button>
+        <br>
+        <button id="tableSeatingAddTogo">Add 20 Togo Rows</button>
+        <br>
+        <button id="tableSeatingRemove">Remove Last Row</button>
+        <br>
+        <button id="tableSeatingRemove10">Remove Last 10 Rows</button>
+        <br>
+        <br>
+        <div style="max-height: 640px; overflow-y: scroll;">
+            <table id="tableSeating">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Togo</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div>
+        <strong>Set width/height</strong>
+        <dl id="setDimensions">
+            <dt>Tables</dt>
+            <dd>
+                <label>Width: <input id="setTableWidth" type="number" class="long" value="100" data-type="table" data-dimension="width"></label>
+            </dd>
+            <dd>
+                <label>Height: <input id="setTableHeight" type="number" class="long" value="60" data-type="table" data-dimension="height"></label>
+            </dd>
+            <dt>Counter</dt>
+            <dd>
+                <label>Width: <input id="setCounterWidth" type="number" class="long" value="90" data-type="counter" data-dimension="width"></label>
+            </dd>
+            <dd>
+                <label>Height: <input id="setCounterHeight" type="number" class="long" value="50" data-type="counter" data-dimension="height"></label>
+            </dd>
+            <dt>Bar</dt>
+            <dd>
+                <label>Width: <input id="setBarWidth" type="number" class="long" value="90" data-type="bar" data-dimension="width"></label>
+            </dd>
+            <dd>
+                <label>Height: <input id="setBarHeight" type="number" class="long" value="53" data-type="bar" data-dimension="height"></label>
+            </dd>
+            <dt>To go</dt>
+            <dd>
+                <label>Width: <input id="setTogoWidth" type="number" class="long" value="90" data-type="togo" data-dimension="width"></label>
+            </dd>
+            <dd>
+                <label>Height: <input id="setTogoHeight" type="number" class="long" value="50" data-type="togo" data-dimension="height"></label>
+            </dd>
+        </dl>
+        <hr>
+        <p><strong>Download/Export</strong></p>
+        <label>Store Code: <input id="storeCode" value="test" class="short"></label>
+        <br>
+        <button id="readyDownloads" onclick="readyDownloads()">Generate Files</button>
+        <br>
+        <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
+        <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
+        <p><a id="downloadConflictSQL">table_seating_conflict.sql</a></p>
+    </div>
+    <div style="max-width: 20%;">
+        <strong>Usage</strong>
+        <p>Click and drag on an element to move it around. Hold <kbd>Shift</kbd> to disable collision.</p>
+        <p>While clicking on an element, press <kbd>WASD</kbd> to move one pixel in the given direction.</p>
+        <dl>
+            <dt>Double click on an empty area of the grid to create a new element.</dt>
+            <dd>A Panel is a line of tables.</dd>
+            <dd>A Lane is a rectangle with text.</dd>
+            <dd>A Group is a set of Panels put together.</dd>
+            <dd>Togo is for the togo tables.</dd>
+            <br>
+            <dt>Double click on an element to edit parts of it.</dt>
+            <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.</dd>
+            <br>
+            <dt>Use the table to the left to emulate <strong>table_seating</strong>.</dt>
+            <dd>Change which names/IDs are used in a Panel or Group by double-clicking on them.</dd>
+        </dl>
+    </div>
+
+    <dialog id="tableProperties">
+        <strong>Select table_seating ID range</strong>
+        <br>
+        <br>
+        <label for="tableSeatStart">Start:</label>
+        <input type="number" id="tableSeatStart" class="short" min="1" step="1">
+        <span> ~ </span>
+        <label for="tableSeatEnd">End:</label>
+        <input type="number" id="tableSeatEnd" class="short" min="1" step="1">
+        <p>New table names:</p>
+        <ul id="tableNames"></ul>
+        <br>
+        <button id="tableConfirm">OK</button>
+        <button id="tableCancel">Cancel</button>
+        <button id="tableDelete">Delete</button>
+    </dialog>
+
+    <dialog id="laneProperties">
+        <label for="laneText">Change text content: </label>
+        <input id="laneText">
+        <br>
+        <label for="laneWidth">Change the lane width: </label>
+        <input id="laneWidth" type="number" min="10" class="long">
+        <br>
+        <div id="laneWidthMatching"></div>
+        <br>
+        <label for="laneHeight">Change the lane height: </label>
+        <input id="laneHeight" type="number" min="10" class="long">
+        <br>
+        <div id="laneHeightMatching"></div>
+        <br>
+        <button id="laneConfirm">OK</button>
+        <button id="laneCancel">Cancel</button>
+        <button id="laneDelete">Delete</button>
+    </dialog>
+
+    <dialog id="groupProperties">
+        <label for="groupText">Change title: </label>
+        <input id="groupText">
+        <br>
+        <label for="groupHeight">Change the height: </label>
+        <input id="groupHeight" type="number" min="100">
+        <br>
+        <label for="groupIndenting">Select which side to indent: </label>
+        <select id="groupIndenting">
+            <option value="right">Right</option>
+            <option value="left">Left</option>
+        </select>
+        <br>
+        <p>Set table_seating IDs</p>
+        <label for="groupSeatStart">Start:</label>
+        <input type="number" id="groupSeatStart" class="short" min="1" step="1">
+        <span> ~ </span>
+        <label for="groupSeatEnd">End:</label>
+        <input type="number" id="groupSeatEnd" class="short" min="1" step="1">
+        <p>New table names:</p>
+        <ul id="groupNames"></ul>
+        <button id="groupConfirm">OK</button>
+        <button id="groupCancel">Cancel</button>
+        <button id="groupDelete">Delete</button>
+    </dialog>
+
+    <dialog id="togoProperties">
+        <label for="togoNumPerRow"># of tables per row: </label>
+        <input type="number" id="togoNumPerRow" class="short" min="1">
+        <br>
+        <button id="togoConfirm">OK</button>
+        <button id="togoCancel">Cancel</button>
+        <button id="togoDelete">Delete</button>
+    </dialog>
+
+    <dialog id="createRectangle">
+        <label for="createType">Select what to add: </label>
+        <select id="createType">
+            <option value="panel">Panel</option>
+            <option value="lane">Lane</option>
+            <option value="group">Group</option>
+            <option value="togo">Togo</option>
+        </select>
+        <br>
+        <br>
+
+        <div id="createPanel">
+            <label for="createPanelType">Seat Type: </label>
+            <select id="createPanelType">
+                <option value="table" selected>Table</option>
+                <option value="counter">Counter</option>
+                <option value="bar">Bar</option>
+                <option value="togo">Togo</option>
+            </select>
+            <br>
+            <label for="createPanelCount"># Seats: </label>
+            <input id="createPanelCount" type="number" min="1" value="4" max="10">
+            <br>
+            <label for="createPanelOrient">Orientation: </label>
+            <select id="createPanelOrient">
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+            </select>
+            <br>
+            <strong>Set margins:</strong>
+            <br>
+            <label for="createPanelMarginTop">Top: </label>
+            <input id="createPanelMarginTop" class="short" type="number" min="0" value="3">
+            <br>
+            <label for="createPanelMarginBottom">Bottom: </label>
+            <input id="createPanelMarginBottom" class="short" type="number" min="0" value="3">
+            <br>
+            <label for="createPanelMarginLeft">Left: </label>
+            <input id="createPanelMarginLeft" class="short" type="number" min="0" value="3">
+            <br>
+            <label for="createPanelMarginRight">Right: </label>
+            <input id="createPanelMarginRight" class="short" type="number" min="0" value="3">
+            <br>
+        </div>
+
+        <div id="createLane">
+            <label for="createLaneText">Lane Text: </label>
+            <input id="createLaneText" value="SUSHI LANE">
+            <br>
+            <label for="createLaneOrient">Orientation: </label>
+            <select id="createLaneOrient">
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+            </select>
+            <br>
+            <label for="createLaneWidth">Lane width: </label>
+            <input id="createLaneWidth" type="number" min="10" value="20" class="long">
+            <br>
+            <label for="createLaneHeight">Lane height: </label>
+            <input id="createLaneHeight" type="number" min="10" value="100" class="long">
+        </div>
+
+        <div id="createGroup">
+            <label for="createGroupText">Group Text: </label>
+            <input id="createGroupText" value="Sushi bar">
+            <br>
+            <label for="createGroupType">Seat Type: </label>
+            <select id="createGroupType">
+                <option value="table">Table</option>
+                <option value="counter" selected>Counter</option>
+                <option value="bar">Bar</option>
+                <option value="togo">Togo</option>
+            </select>
+            <br>
+            <label for="createGroupPanelNum">Number of panels: </label>
+            <input id="createGroupPanelNum" type="number" class="short" min="1" value="2">
+            <br>
+            <form id="createGroupPanels">
+                <label>Panel 1 Table Count: <input id="createGroupPanel1" type="number" class="short" min="1" value="4"><br></label>
+                <label>Panel 2 Table Count: <input id="createGroupPanel2" type="number" class="short" min="1" value="4"><br></label>
+            </form>
+        </div>
+
+        <div id="createTogo">
+            <label for="createTogoPerRow">Seats per row: </label>
+            <input id="createTogoPerRow" type="number" class="short" min="1" value="5">
+            <br>
+            <label for="createTogoType">Seat Type: </label>
+            <select id="createTogoType" disabled>
+                <option value="table">Table</option>
+                <option value="counter">Counter</option>
+                <option value="bar">Bar</option>
+                <option value="togo" selected>Togo</option>
+            </select>
+        </div>
+        <br>
+        <button id="createConfirm">OK</button>
+        <button id="createCancel">Cancel</button>
+    </dialog>
+
+    <script src="./rectangle.js"></script>
+    <script src="./draw.js"></script>
+    <script src="./drag.js"></script>
+    <script src="./table.js"></script>
+    <script src="./dialog.js"></script>
+</body>
+</html>
