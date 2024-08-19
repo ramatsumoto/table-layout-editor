@@ -40,12 +40,20 @@ function showDialog(type) {
 function preparePanelDialog() {
     const panel = getCurrentRectangle();
     Util.unhide('dSeating');
+    Util.unhide('dOrientation');
 
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
+    const orientation = document.getElementById('dOrientation');
+    
+    const initial = {}
+    initial.isVertical = panel.isVertical;
+    orientation.value = (panel.isVertical) ? 'vertical' : 'horizontal';
+
     manageEvents([
         [start, 'input', () => seatingNameList()],
-        [end, 'input', () => seatingNameList()]
+        [end, 'input', () => seatingNameList()],
+        [orientation, 'input', () => panel.isVertical = orientation.value == 'vertical']
     ]);
     [start.value, end.value] = panel.tableIDs;
     end.setAttribute('min', panel.tableIDs[1] - panel.tableIDs[0] + 1);
@@ -55,19 +63,24 @@ function preparePanelDialog() {
         panel.tableIDs = [+start.value, +end.value];
         dialog.close();
     }
+    const cancel = () => {
+        panel.isVertical = initial.isVertical;
+        dialog.close();
+    }
 
-    return { confirm };
+    return { confirm, cancel };
 }
 
 function prepareLaneDialog() {
     const lane = getCurrentRectangle();
 
-    const ids = ['dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
+    const ids = ['dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
     ids.forEach(Util.unhide);
     
-    const [text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
+    const [orientation, text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
     Util.deleteChildren(widthMatch);
     Util.deleteChildren(heightMatch);
+    orientation.value = lane.isVertical ? 'vertical' : 'horizontal'; 
 
     text.value = lane.text;
     width.value = lane.w;
@@ -75,7 +88,8 @@ function prepareLaneDialog() {
     const initial = {
         text: lane.text,
         w: lane.w,
-        h: lane.h
+        h: lane.h,
+        isVertical: lane.isVertical
     };
 
     const others = drawn.filter(r => r != lane);
@@ -94,16 +108,24 @@ function prepareLaneDialog() {
         }
     }
 
+    const laneTranspose = () => {
+        lane.isVertical = orientation.value == 'vertical';
+        [lane.w, lane.h] = [lane.h, lane.w];
+        [width.value, height.value] = [height.value, width.value];
+    }
+
     manageEvents([
         [text, 'input', () => lane.text = text.value],
         [width, 'input', () => lane.w = +width.value],
-        [height, 'input', () => lane.h = +height.value]
+        [height, 'input', () => lane.h = +height.value],
+        [orientation, 'input', laneTranspose]
     ]);
 
     const cancel = () => {
         lane.text = initial.text;
         lane.w = initial.w;
         lane.h = initial.h;
+        lane.isVertical = initial.isVertical;
         dialog.close();
     };
 
