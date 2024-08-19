@@ -69,16 +69,20 @@ main.addEventListener('dblclick', e => {
     const adjustedPosition = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
     const clicked = drawn.find(r => r.hitTest(...adjustedPosition));
     
+    dialog.dataset.id = clicked?.id ?? -1;
+
     if(clicked instanceof Panel) {
-        showTableDialog(clicked);
+        showDialog('panel');
     } else if(clicked instanceof Lane) {
-        showLaneDialog(clicked);
+        showDialog('lane');
     } else if(clicked instanceof Group) {
-        showGroupDialog(clicked);
+        showDialog('group');
     } else if(clicked instanceof Togo) {
-        showTogoDialog(clicked);
+        showDialog('togo');
     } else if(clicked === undefined) {
-        showCreationDialog(adjustedPosition);
+        dialog.dataset.x = adjustedPosition[0];
+        dialog.dataset.y = adjustedPosition[1];
+        showDialog('create');
     }
 });
 

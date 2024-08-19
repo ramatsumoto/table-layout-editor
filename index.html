@@ -28,6 +28,12 @@
         .hidden {
             display: none;
         }
+        .grid {
+            display: flex;
+            flex-direction: column;
+            max-width: fit-content; 
+            align-items: end;
+        }
     </style>
     <script src="./template.js"></script>
     <script src="./export.js"></script>
@@ -125,175 +131,76 @@
         </dl>
     </div>
 
-    <dialog id="tableProperties">
-        <strong>Select table_seating ID range</strong>
-        <br>
-        <br>
-        <label for="tableSeatStart">Start:</label>
-        <input type="number" id="tableSeatStart" class="short" min="1" step="1">
-        <span> ~ </span>
-        <label for="tableSeatEnd">End:</label>
-        <input type="number" id="tableSeatEnd" class="short" min="1" step="1">
-        <p>New table names:</p>
-        <ul id="tableNames"></ul>
-        <br>
-        <button id="tableConfirm">OK</button>
-        <button id="tableCancel">Cancel</button>
-        <button id="tableDelete">Delete</button>
-    </dialog>
-
-    <dialog id="laneProperties">
-        <label for="laneText">Change text content: </label>
-        <input id="laneText">
-        <br>
-        <label for="laneWidth">Change the lane width: </label>
-        <input id="laneWidth" type="number" min="10" class="long">
-        <br>
-        <div id="laneWidthMatching"></div>
-        <br>
-        <label for="laneHeight">Change the lane height: </label>
-        <input id="laneHeight" type="number" min="10" class="long">
-        <br>
-        <div id="laneHeightMatching"></div>
-        <br>
-        <button id="laneConfirm">OK</button>
-        <button id="laneCancel">Cancel</button>
-        <button id="laneDelete">Delete</button>
-    </dialog>
-
-    <dialog id="groupProperties">
-        <label for="groupText">Change title: </label>
-        <input id="groupText">
-        <br>
-        <label for="groupHeight">Change the height: </label>
-        <input id="groupHeight" type="number" min="100">
-        <br>
-        <label for="groupIndenting">Select which side to indent: </label>
-        <select id="groupIndenting">
-            <option value="right">Right</option>
-            <option value="left">Left</option>
-        </select>
-        <br>
-        <p>Set table_seating IDs</p>
-        <label for="groupSeatStart">Start:</label>
-        <input type="number" id="groupSeatStart" class="short" min="1" step="1">
-        <span> ~ </span>
-        <label for="groupSeatEnd">End:</label>
-        <input type="number" id="groupSeatEnd" class="short" min="1" step="1">
-        <p>New table names:</p>
-        <ul id="groupNames"></ul>
-        <button id="groupConfirm">OK</button>
-        <button id="groupCancel">Cancel</button>
-        <button id="groupDelete">Delete</button>
-    </dialog>
-
-    <dialog id="togoProperties">
-        <label for="togoNumPerRow"># of tables per row: </label>
-        <input type="number" id="togoNumPerRow" class="short" min="1">
-        <br>
-        <button id="togoConfirm">OK</button>
-        <button id="togoCancel">Cancel</button>
-        <button id="togoDelete">Delete</button>
-    </dialog>
-
-    <dialog id="createRectangle">
-        <label for="createType">Select what to add: </label>
-        <select id="createType">
+    <dialog id="dialog" data-id="-1" data-x="0" data-y="0">
+        <label>Select what to add: <select id="dCreateType">
             <option value="panel">Panel</option>
             <option value="lane">Lane</option>
             <option value="group">Group</option>
             <option value="togo">Togo</option>
-        </select>
-        <br>
-        <br>
+        </select><br></label>
 
-        <div id="createPanel">
-            <label for="createPanelType">Seat Type: </label>
-            <select id="createPanelType">
-                <option value="table" selected>Table</option>
-                <option value="counter">Counter</option>
-                <option value="bar">Bar</option>
-                <option value="togo">Togo</option>
-            </select>
+        <label>Seat type: <select id="dSeatType">
+            <option value="table">Table</option>
+            <option value="counter">Counter</option>
+            <option value="bar">Bar</option>
+            <option value="togo">Togo</option>
+        </select><br></label>
+
+        <label>Enter text: <input id="dText"><br></label>
+
+        <label>Orientation: <select id="dOrientation">
+            <option value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
+        </select><br></label>
+
+        <label># Seats: <input id="dSeatNum" type="number" class="short" min="1" value="4"><br></label>
+
+        <label>Tables per row: <input id="dTogoRow" type="number" class="short" min="1" value="5"><br></label>
+
+        <label>Indentation: <select id="dIndent">
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+        </select><br></label>
+
+        <label>Set width: <input id="dWidth" type="number" class="long" min="10"><br></label>
+        <div id="dWidthMatch"></div>
+        <label>Set height:<input id="dHeight" type="number" class="long" min="10"><br></label>
+        <div id="dHeightMatch"></div>
+
+        <div id="dMargins">
+            <span>Set margins</span>
             <br>
-            <label for="createPanelCount"># Seats: </label>
-            <input id="createPanelCount" type="number" min="1" value="4" max="10">
-            <br>
-            <label for="createPanelOrient">Orientation: </label>
-            <select id="createPanelOrient">
-                <option value="vertical">Vertical</option>
-                <option value="horizontal">Horizontal</option>
-            </select>
-            <br>
-            <strong>Set margins:</strong>
-            <br>
-            <label for="createPanelMarginTop">Top: </label>
-            <input id="createPanelMarginTop" class="short" type="number" min="0" value="3">
-            <br>
-            <label for="createPanelMarginBottom">Bottom: </label>
-            <input id="createPanelMarginBottom" class="short" type="number" min="0" value="3">
-            <br>
-            <label for="createPanelMarginLeft">Left: </label>
-            <input id="createPanelMarginLeft" class="short" type="number" min="0" value="3">
-            <br>
-            <label for="createPanelMarginRight">Right: </label>
-            <input id="createPanelMarginRight" class="short" type="number" min="0" value="3">
-            <br>
+            <div class="grid">
+                <label>Top: <input id="dMarginTop" type="number" class="short" min="0" value="3"><br></label>
+                <label>Bottom: <input id="dMarginBottom" type="number" class="short" min="0" value="3"><br></label>
+                <label>Left: <input id="dMarginLeft" type="number" class="short" min="0" value="3"><br></label>
+                <label>Right: <input id="dMarginRight" type="number" class="short" min="0" value="3"><br></label>
+            </div>
         </div>
 
-        <div id="createLane">
-            <label for="createLaneText">Lane Text: </label>
-            <input id="createLaneText" value="SUSHI LANE">
+        <div id="dSeating">
+            <span>Set table_seating IDs</span>
             <br>
-            <label for="createLaneOrient">Orientation: </label>
-            <select id="createLaneOrient">
-                <option value="vertical">Vertical</option>
-                <option value="horizontal">Horizontal</option>
-            </select>
+            <label>Start: <input id="dSeatingStart" type="number" class="short" min="1"></label>
+            <label>End: <input id="dSeatingEnd" type="number" class="short" min="1"></label>
             <br>
-            <label for="createLaneWidth">Lane width: </label>
-            <input id="createLaneWidth" type="number" min="10" value="20" class="long">
-            <br>
-            <label for="createLaneHeight">Lane height: </label>
-            <input id="createLaneHeight" type="number" min="10" value="100" class="long">
+            <span>New table names:</span>
+            <ul id="dSeatingList"></ul>
         </div>
 
-        <div id="createGroup">
-            <label for="createGroupText">Group Text: </label>
-            <input id="createGroupText" value="Sushi bar">
+        <div id="dGroup">
+            <label>Number of panels/columns: <select id="dGroupPanels">
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+            </select></label>
             <br>
-            <label for="createGroupType">Seat Type: </label>
-            <select id="createGroupType">
-                <option value="table">Table</option>
-                <option value="counter" selected>Counter</option>
-                <option value="bar">Bar</option>
-                <option value="togo">Togo</option>
-            </select>
-            <br>
-            <label for="createGroupPanelNum">Number of panels: </label>
-            <input id="createGroupPanelNum" type="number" class="short" min="1" value="2">
-            <br>
-            <form id="createGroupPanels">
-                <label>Panel 1 Table Count: <input id="createGroupPanel1" type="number" class="short" min="1" value="4"><br></label>
-                <label>Panel 2 Table Count: <input id="createGroupPanel2" type="number" class="short" min="1" value="4"><br></label>
-            </form>
+            <label>Panel 1 Seat Count: <input id="dGroupPanel1" type="number" class="short" min="1" value="4"><br></label>
+            <label>Panel 2 Seat Count: <input id="dGroupPanel2" type="number" class="short" min="1" value="4"><br></label>
         </div>
 
-        <div id="createTogo">
-            <label for="createTogoPerRow">Seats per row: </label>
-            <input id="createTogoPerRow" type="number" class="short" min="1" value="5">
-            <br>
-            <label for="createTogoType">Seat Type: </label>
-            <select id="createTogoType" disabled>
-                <option value="table">Table</option>
-                <option value="counter">Counter</option>
-                <option value="bar">Bar</option>
-                <option value="togo" selected>Togo</option>
-            </select>
-        </div>
-        <br>
-        <button id="createConfirm">OK</button>
-        <button id="createCancel">Cancel</button>
+        <button id="dialogConfirm">Confirm</button>
+        <button id="dialogCancel">Cancel</button>
+        <button id="dialogDelete">Delete</button>
     </dialog>
 
     <script src="./rectangle.js"></script>

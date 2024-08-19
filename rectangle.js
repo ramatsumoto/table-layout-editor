@@ -325,7 +325,8 @@ class Lane extends Rectangle {
 
 class Group extends Rectangle {
     static MARGIN = 3;
-    static TEXT_HEIGHT = 12 * 4/3;
+    static TEXT_HEIGHT = 12 * 4/3; // 12pt font is this many pixels tall
+    static EXTRA_HEIGHT = Group.MARGIN * 2 + Group.TEXT_HEIGHT;
 
     constructor(x, y, text, tableType, panelCounts, defaultHeight, indentLeft) {
         super(x, y, 0, 0);
@@ -355,14 +356,13 @@ class Group extends Rectangle {
     setHeight(height) {
         this.defaultHeight = height;
         this.h = Math.max(this.minHeight, this.defaultHeight);
-        this.h += Group.MARGIN * 2;
-        this.h += Group.TEXT_HEIGHT;
+        this.h += Group.EXTRA_HEIGHT;
     }
 
     draw(context, style = {}) {
         super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
         
-        const canIndent = this.h - (Group.MARGIN * 2 + Group.TEXT_HEIGHT)== this.defaultHeight;
+        const canIndent = this.h - Group.EXTRA_HEIGHT == this.defaultHeight;
         const tableIDs = this.splitTableIDs(this.tableIDs);
         for(const [i, count] of Object.entries(this.panelCounts)) {
             const panel = new Panel(this.x + Options[this.tableType].width * i, this.y, count, this.tableType, true, {marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0});
@@ -372,7 +372,7 @@ class Group extends Rectangle {
 
             const shouldIndent = (this.indent == 'left' && i == 0) || (this.indent == 'right' && i == this.panelCounts.length - 1);
             if(canIndent && shouldIndent) {
-                const indentDist = this.h - (panel.h + Group.MARGIN * 2 + Group.TEXT_HEIGHT);
+                const indentDist = this.h - (panel.h + Group.EXTRA_HEIGHT);
                 panel.y += indentDist;
             }
             panel.draw(context);
@@ -417,6 +417,7 @@ class Togo extends Rectangle {
         const otherTables = Options.table.count + Options.bar.count + Options.counter.count;
         const count = Table.length() - otherTables;
         const names = Table.getRange(otherTables + 1, otherTables + Math.max(Togo.EXPECTED_COUNT, count));
+        console.log(names);
 
         const { width, height } = Options[this.tableType];
         
@@ -432,7 +433,7 @@ class Togo extends Rectangle {
             context.textBaseline = 'middle';
             context.font = '12pt Arial';
             context.fillStyle = 'black';
-            context.fillText(names[i], x + width / 2, y + height / 2);
+            context.fillText(names[i], ...rect.center);
         }
     }
 }
@@ -454,23 +455,17 @@ const Util = {
         (y) => [staticCoord, y] : (x) => [x, staticCoord],
     deleteChildren: (element) => {
         while(element.hasChildNodes()) element.lastChild.remove();    
-    }
-}
-
-function exportJava2(rectangle) {
-    if(rectangle instanceof Panel) {
-        const definition = [
-            `APPanel ${name} = getTableRowPanel(`,
-            'parent',
-            `, tables.sublist(${rectangle.tableIDs[0]}, ${rectangle.tableIDs[1]}), `,
-            rectangle.isVertical ? 'SWT.VERTICAL' : 'SWT.HORIZONTAL',
-            `, TABLE_BUTTON_WIDTH, TABLE_BUTTON_HEIGHT, `,
-            `${rectangle.margin.top}, ${rectangle.margin.bottom}, ${rectangle.margin.left}, ${rectangle.margin.right}`,
-            `, tableSectionBackground);`
-        ].join('');
-
-        return {
-            definition: `APPanel ${name} = getTableRowPanel(parent, tables.sublist())`
-        };
-    }
+    },
+    get: (id) => {
+        const e = document.getElementById(id);
+        if(e.parentElement.tagName.toUpperCase() == 'LABEL') {
+            return e.parentElement;
+        } else {
+            return e;
+        }
+    },
+    hide: (id) => Util.get(id).classList.add('hidden'),
+    unhide: (id) => Util.get(id).classList.remove('hidden'),
+    value: (id) => document.getElementById(id).value,
+    fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input'))
 }

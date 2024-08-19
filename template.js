@@ -50,23 +50,8 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 
 	public final static int TABLE_BUTTON_WIDTH = [table width];
 	public final static int TABLE_BUTTON_HEIGHT = [table height];
-	public final static int TABLE_BUTTON_WIDTH_4 = 110;
-	public final static int TABLE_BUTTON_WIDTH_6 = 160;
 	public final static int TOGO_BUTTON_WIDTH = [togo width];
 	public final static int TOGO_BUTTON_HEIGHT = [togo height];
-
-	private final static int TABLE_BUTTON_SPACE = 30;
-	private final static int TABLE_AISLE_WIDTH = 30;
-
-	public final static int TABLE_BUTTON_WIDTH_S = 60;
-	public final static int TABLE_BUTTON_HEIGHT_S = 50;
-	public final static int TABLE_BUTTON_SPACE_S = 10;
-
-	final static int BUTTONWIDTH = 90;
-	final static int BUTTONHEIGHT = 50;
-	final static int COMPOSITE_WIDTH = 530;
-	final static int GRID_COL = 9;
-
 
 	/**
 	 * This method initializes
@@ -109,6 +94,7 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 		Color tableSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB(255, 153, 73));
 		Color counterSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 		Color barSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
+		Color togoSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 		
 {}
 

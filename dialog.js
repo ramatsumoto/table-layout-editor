@@ -1,379 +1,375 @@
 let dialogController = new AbortController();
+const dialog = document.getElementById('dialog');
 
-function showTableDialog(panel) {
-    const dialog = document.getElementById('tableProperties');
+function showDialog(type) {
     dialogController = new AbortController();
-    const length = panel.numTables;
-    const diff = length - 1;
 
-    const idRangeStart = document.getElementById('tableSeatStart');
-    const idRangeEnd = document.getElementById('tableSeatEnd');
-    idRangeEnd.setAttribute('min', length);
+    const [x, y] = [+dialog.dataset.x, +dialog.dataset.y];
 
-    idRangeStart.value = panel.tableIDs[0];
-    idRangeEnd.value = panel.tableIDs[1];
+    for(const elem of dialog.children) {
+        elem.classList.add('hidden');
+    }
+    Util.unhide('dialogConfirm');
+    Util.unhide('dialogCancel');
+    Util.unhide('dialogDelete');
 
-    const linkInputs = {
-        start: e => idRangeEnd.value = +idRangeStart.value + diff,
-        end: e => idRangeStart.value = +idRangeEnd.value - diff
-    };
-    const confirmInputs = () => {
-        panel.tableIDs = [+idRangeStart.value, +idRangeEnd.value];
-        dialog.close();
-    };
-    const updateNameList = () => {
-        const nameList = document.getElementById('tableNames');
-        Util.deleteChildren(nameList);
-        for(const name of Table.getRange(+idRangeStart.value, +idRangeEnd.value)) {
-            const li = document.createElement('li');
-            li.innerText = name;
-            nameList.append(li);
-        }
-    };
-    const cancel = () => dialog.close();
-    const deletePanel = () => {
-        Options[panel.tableType].count -= panel.numTables;
-        deleteFromDrawn(panel.id);
-        dialog.close();
+    let buttonEvents = {};
+    if(type == 'panel') {
+        buttonEvents = preparePanelDialog();
+    } else if(type == 'lane') {
+        buttonEvents = prepareLaneDialog();
+    } else if(type == 'group') {
+        buttonEvents = prepareGroupDialog();
+    } else if(type == 'togo') {
+        buttonEvents = prepareTogoDialog();
+    } else if(type == 'create') {
+        Util.hide('dialogDelete');
+        buttonEvents = prepareCreateDialog(x, y);
     }
 
-    updateNameList();
-
+    const close = () => dialog.close();
     manageEvents([
-        [idRangeStart, 'input', linkInputs.start],
-        [idRangeStart, 'input', updateNameList],
-        [idRangeEnd, 'input', linkInputs.end],
-        [idRangeEnd, 'input', updateNameList],
-        [document.getElementById('tableConfirm'), 'click', confirmInputs],
-        [document.getElementById('tableCancel'), 'click', cancel],
-        [document.getElementById('tableDelete'), 'click', deletePanel],
-        [dialog, 'close', e => dialogController.abort()]
+        ['dialogConfirm', 'click', buttonEvents.confirm ?? close],
+        ['dialogCancel', 'click', buttonEvents.cancel ?? close],
+        [dialog, 'close', () => dialogController.abort()]
     ]);
 
     dialog.showModal();
 }
 
-function showLaneDialog(lane) {
-    const dialog = document.getElementById('laneProperties');
-    dialogController = new AbortController();
-    const initial = {};
+function preparePanelDialog() {
+    const panel = getCurrentRectangle();
+    Util.unhide('dSeating');
+
+    const start = document.getElementById('dSeatingStart');
+    const end = document.getElementById('dSeatingEnd');
+    manageEvents([
+        [start, 'input', () => seatingNameList()],
+        [end, 'input', () => seatingNameList()]
+    ]);
+    [start.value, end.value] = panel.tableIDs;
+    end.setAttribute('min', panel.tableIDs[1] - panel.tableIDs[0] + 1);
+    Util.fireInputEvent(start.id);
+
+    const confirm = () => {
+        panel.tableIDs = [+start.value, +end.value];
+        dialog.close();
+    }
+
+    return { confirm };
+}
+
+function prepareLaneDialog() {
+    const lane = getCurrentRectangle();
+
+    const ids = ['dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
+    ids.forEach(Util.unhide);
     
-    const nameInput = document.getElementById('laneText');
-    initial.text = lane.text;
-    nameInput.value = lane.text;
+    const [text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
+    Util.deleteChildren(widthMatch);
+    Util.deleteChildren(heightMatch);
 
-    const width = document.getElementById('laneWidth');
-    const height = document.getElementById('laneHeight');
-    initial.width = lane.w;
-    initial.height = lane.h;
+    text.value = lane.text;
     width.value = lane.w;
-    height.value = lane.h
+    height.value = lane.h;
+    const initial = {
+        text: lane.text,
+        w: lane.w,
+        h: lane.h
+    };
 
-    const setWidth = w => lane.w = w;
-    const setHeight = h => lane.h = h;
-
-    const changeWidth = () => setWidth(+width.value);
-    const changeHeight = () => setHeight(+height.value);
-
-    const matchWidth = document.getElementById('laneWidthMatching');
-    const matchHeight = document.getElementById('laneHeightMatching');
-    Util.deleteChildren(matchWidth);
-    Util.deleteChildren(matchHeight);
-    const nearest = lane.getNearest(drawn.filter(r => r != lane));
-    for(const [edge, rectangle] of Object.entries(nearest)) {
-        if(rectangle == Rectangle.MAX) continue;
-
-        if(lane[edge] != rectangle[Util.oppositeEdges[edge]]) continue;
+    const others = drawn.filter(r => r != lane);
+    for(const [edge, nearest] of Object.entries(lane.getNearest(others))) {
+        const opposite = Util.oppositeEdges[edge];
+        if(lane[edge] - nearest[opposite] != 0) continue;
 
         const button = document.createElement('button');
         button.innerText = `Match with ${edge}`;
         if(edge == 'top' || edge == 'bottom') {
-            button.addEventListener('click', e => {
-                setWidth(rectangle.w);
-                width.value = rectangle.w;
-            });
-            matchWidth.append(button);
+            button.addEventListener('click', e => width.value = lane.w = nearest.w);
+            widthMatch.append(button);
         } else if(edge == 'left' || edge == 'right') {
-            button.addEventListener('click', e => {
-                setHeight(rectangle.h);
-                height.value = rectangle.h;
-            });
-            matchHeight.append(button);
+            button.addEventListener('click', e => height.value = lane.h = nearest.h);
+            heightMatch.append(button);
         }
-    
     }
 
-    const confirmName = () => {
-        lane.text = nameInput.value;
-        dialog.close();
-    }
+    manageEvents([
+        [text, 'input', () => lane.text = text.value],
+        [width, 'input', () => lane.w = +width.value],
+        [height, 'input', () => lane.h = +height.value]
+    ]);
+
     const cancel = () => {
         lane.text = initial.text;
-        lane.w = initial.width;
-        lane.h = initial.height;
+        lane.w = initial.w;
+        lane.h = initial.h;
         dialog.close();
-    }
-    const deleteLane = () => {
-        deleteFromDrawn(lane.id);
-        dialog.close();
+    };
+
+    return { cancel };
+}
+
+function prepareGroupDialog() {
+    const group = getCurrentRectangle();
+
+    const ids = ['dText', 'dIndent', 'dHeight', 'dHeightMatch', 'dSeating'];
+    ids.forEach(Util.unhide);
+    const [text, indent, height, heightMatch, ] = ids.map(id => document.getElementById(id));
+
+    const initial = {
+        text: group.text,
+        indent: group.indent,
+        height: Math.max(group.defaultHeight, group.minHeight)
+    };
+    text.value = initial.text;
+    indent.value = initial.indent;
+    height.value = initial.height;
+    Util.deleteChildren(heightMatch);
+
+    const start = document.getElementById('dSeatingStart');
+    const end = document.getElementById('dSeatingEnd');
+    [start.value, end.value] = group.tableIDs;
+    end.setAttribute('min', group.tableIDs[1] - group.tableIDs[0] + 1);
+
+    const others = drawn.filter(r => r != group);
+    for(const [edge, nearest] of Object.entries(group.getNearest(others))) {
+        if(edge != 'left' && edge != 'right') continue;
+
+        const opposite = Util.oppositeEdges[edge];
+        if(group[edge] - nearest[opposite] != 0) continue;
+
+        const button = document.createElement('button');
+        button.innerText = `Match with ${edge}`;
+        button.addEventListener('click', e => {
+            const adjustedH = nearest.h - Group.EXTRA_HEIGHT;
+            group.setHeight(adjustedH);
+            height.value = adjustedH;
+        });
+        heightMatch.append(button);
     }
 
     manageEvents([
-        [document.getElementById('laneConfirm'), 'click', confirmName],
-        [document.getElementById('laneCancel'), 'click', cancel],
-        [document.getElementById('laneDelete'), 'click', deleteLane],
-        [width, 'input', changeWidth],
-        [height, 'input', changeHeight],
-        [dialog, 'close', e => dialogController.abort()]
+        [start, 'input', () => seatingNameList([...group.panelCounts])],
+        [end, 'input', () => seatingNameList([...group.panelCounts])],
+        [text, 'input', () => group.text = text.value],
+        [indent, 'input', () => group.indent = indent.value],
+        [height, 'input', () => group.setHeight(+height.value)]
     ]);
-
-    dialog.showModal();
-}
-
-function showGroupDialog(group) {
-    const dialog = document.getElementById('groupProperties');
-    dialogController = new AbortController();
-    const initial = {};
-
-    const titleInput = document.getElementById('groupText');
-    titleInput.value = group.text;
-    initial.text = group.text;
-
-    const changeText = () => group.text = titleInput.value;
-
-    const groupHeight = document.getElementById('groupHeight');
-    initial.height = Math.max(group.minHeight, group.defaultHeight);
-    groupHeight.setAttribute('min', group.minHeight);
-    groupHeight.value = initial.height;
-
-    const changeHeight = () => group.setHeight(+groupHeight.value);
-
-    const indentation = document.getElementById('groupIndenting');
-    indentation.value = group.indent;
-    initial.indent = group.indent;
-
-    const changeIndent = () => group.indent = indentation.value;
-
-    const length = Util.sum(group.panelCounts);
-    const diff = length - 1;
-    const idRangeStart = document.getElementById('groupSeatStart');
-    const idRangeEnd = document.getElementById('groupSeatEnd');
-    idRangeEnd.setAttribute('min', length);
-
-    idRangeStart.value = group.tableIDs[0];
-    idRangeEnd.value = group.tableIDs[1];
-
-    const linkInputs = {
-        start: e => idRangeEnd.value = +idRangeStart.value + diff,
-        end: e => idRangeStart.value = +idRangeEnd.value - diff
-    };
-    const updateNameList = () => {
-        const nameList = document.getElementById('groupNames');
-        const panelEnds = group.panelCounts.map((_, i) => Util.sum(group.panelCounts.slice(0, i + 1)));
-        Util.deleteChildren(nameList);
-        for(const name of Table.getRange(+idRangeStart.value, +idRangeEnd.value)) {
-            const li = document.createElement('li');
-            li.innerText = name;
-            nameList.append(li);
-
-            if(panelEnds[0] == nameList.querySelectorAll('li').length) {
-                nameList.append(document.createElement('br'));
-                panelEnds.shift();
-            }
-        }
-    };
-    updateNameList();
+    Util.fireInputEvent(start.id);
 
     const confirm = () => {
-        group.tableIDs = [+idRangeStart.value, +idRangeEnd.value];
+        group.tableIDs = [+start.value, +end.value];
         dialog.close();
-    }
+    };
     const cancel = () => {
-        group.setHeight(initial.height);
         group.text = initial.text;
         group.indent = initial.indent;
-        dialog.close();
-    }
-    const deleteGroup = () => {
-        Options[group.tableType].count -= Util.sum(group.panelCounts);
-        deleteFromDrawn(group.id);
+        group.setHeight(initial.height);
         dialog.close();
     }
 
-    manageEvents([
-        [document.getElementById('groupConfirm'), 'click', confirm],
-        [document.getElementById('groupCancel'), 'click', cancel],
-        [document.getElementById('groupDelete'), 'click', deleteGroup],
-        [groupHeight, 'input', changeHeight],
-        [indentation, 'change', changeIndent],
-        [titleInput, 'input', changeText],
-        [idRangeStart, 'input', linkInputs.start],
-        [idRangeEnd, 'input', linkInputs.end],
-        [idRangeStart, 'input', updateNameList],
-        [idRangeEnd, 'input', updateNameList],
-        [dialog, 'close', e => dialogController.abort()]
-    ]);
-
-    dialog.showModal();
+    return { confirm, cancel };
 }
 
-function showTogoDialog(togo) {
-    const dialog = document.getElementById("togoProperties");
-    dialogController = new AbortController();
+function prepareTogoDialog() {
+    const togo = getCurrentRectangle();
+    const perRow = document.getElementById('dTogoRow');
+    Util.unhide('dTogoRow');
 
-    const numPerRow = document.getElementById("togoNumPerRow");
-    numPerRow.value = togo.numPerRow;
+    const initalNum = +perRow.value;
 
-    const confirm = () => {
-        togo.numPerRow = +numPerRow.value;
-        dialog.close();
-    }
+    manageEvents([
+        [perRow, 'input', () => togo.numPerRow = +perRow.value]
+    ]);
+
     const cancel = () => {
-        dialog.close();
-    }
-    const deleteTogo = () => {
-        deleteFromDrawn(togo.id);
+        togo.perRow = initalNum;
         dialog.close();
     }
 
-    manageEvents([
-        [document.getElementById('togoConfirm'), 'click', confirm],
-        [document.getElementById('togoCancel'), 'click', cancel],
-        [document.getElementById('togoDelete'), 'click', deleteTogo],
-        [dialog, 'close', e => dialogController.abort()]
-    ]);
-
-    dialog.showModal();
+    return { cancel };
 }
 
-function showCreationDialog([x, y]) {
-    const dialog = document.getElementById('createRectangle');
-    dialogController = new AbortController();
-    
-    const toggleSection = () => {
-        const type = document.getElementById('createType');
-        dialog.querySelectorAll('div').forEach(div => div.classList.add('hidden'));
-        
-        if(type.value == 'panel') dialog.querySelector('#createPanel').classList.remove('hidden');
-        else if(type.value == 'lane') dialog.querySelector('#createLane').classList.remove('hidden');
-        else if(type.value == 'group') dialog.querySelector('#createGroup').classList.remove('hidden');
-        else if(type.value == 'togo') dialog.querySelector('#createTogo').classList.remove('hidden');
-    }
-
-    const laneTranspose = () => {
-        const laneW = document.getElementById('createLaneWidth');
-        const laneH = document.getElementById('createLaneHeight');
-        
-        [laneW.value, laneH.value] = [laneH.value, laneW.value];
-    }
-
-    const groupPanelInputs = () => {
-        const panelCount = +document.getElementById('createGroupPanelNum').value;
-        const form = document.getElementById('createGroupPanels');
-        const currentCount = document.querySelectorAll('#createGroupPanels label').length;
-
-        if(currentCount < panelCount) {
-            for(let i = currentCount + 1; i <= panelCount; i++) {
-                const label = document.createElement('label');
-                label.innerText = `Panel ${i} Table Count: `;
-
-                const input = document.createElement('input');
-                input.setAttribute('id', 'createGroupPanel' + i);
-                input.setAttribute('type', 'number');
-                input.setAttribute('min', '1');
-                input.setAttribute('value', '4');
-                input.classList.add('short');
-
-                const br = document.createElement('br');
-                label.append(input, br);
-
-                form.append(label);
-            }
-        } else if(currentCount > panelCount) {
-            for(let i = 0; i < currentCount - panelCount; i++) {
-                form.lastElementChild.remove();
-            }
-        }
-    }
-
-    toggleSection();
+function prepareCreateDialog(x, y) {
+    Util.unhide('dCreateType');
+    Util.fireInputEvent('dCreateType');
 
     const confirm = () => {
-        createFromDialog([x, y]);
+        createFromDialog(x, y);
         dialog.close();
-    }
+    };
     const cancel = () => dialog.close();
 
-    manageEvents([
-        [document.getElementById('createType'), 'change', toggleSection],
-        [document.getElementById('createConfirm'), 'click', confirm],
-        [document.getElementById('createCancel'), 'click', cancel],
-        [document.getElementById('createLaneOrient'), 'change', laneTranspose],
-        [document.getElementById('createGroupPanelNum'), 'input', groupPanelInputs],
-        [dialog, 'close', e => dialogController.abort()]
-    ]);
-
-    dialog.showModal();
+    return { confirm, cancel };
 }
 
-function createFromDialog([x, y]) {
-    const value = id => document.getElementById(id).value;
-    const type = value('createType');
+function createFromDialog(x, y) {
+    const type = Util.value('dCreateType');
 
     if(type == 'panel') {
-        const count = +value('createPanelCount');
-        const type = value('createPanelType');
+        Options[Util.value('dSeatType')].count += +Util.value('dSeatNum');
         drawn.push(new Panel(
             x,
             y,
-            +value('createPanelCount'),
-            value('createPanelType'),
-            value('createPanelOrient') == 'vertical',
+            +Util.value('dSeatNum'),
+            Util.value('dSeatType'),
+            Util.value('dOrientation') == 'vertical',
             {
-                marginTop: +value('createPanelMarginTop'),
-                marginBottom: +value('createPanelMarginBottom'),
-                marginLeft: +value('createPanelMarginLeft'),
-                marginRight: +value('createPanelMarginRight')
+                marginTop: +Util.value('dMarginTop'),
+                marginBottom: +Util.value('dMarginBottom'),
+                marginRight: +Util.value('dMarginRight'),
+                marginLeft: +Util.value('dMarginLeft'),
             }
         ));
-        Options[type].count += count;
-        console.log('Created a Panel');
     } else if(type == 'lane') {
         drawn.push(new Lane(
             x,
             y,
-            +value('createLaneWidth'),
-            +value('createLaneHeight'),
-            value('createLaneOrient') == 'vertical',
-            value('createLaneText')
+            +Util.value('dWidth'),
+            +Util.value('dHeight'),
+            Util.value('dOrientation') == 'vertical',
+            Util.value('dText')
         ));
-        console.log('Created a Lane');
     } else if(type == 'group') {
-        const panelCounts = [...document.getElementById('createGroupPanels').querySelectorAll('input')].map(elem => +elem.value);
-        const type = value('createGroupType');
+        const panelCounts = [+Util.value('dGroupPanel1'), +Util.value('dGroupPanel2')];
+        if(Util.value('dGroupPanels') == '1') panelCounts.pop();
+
+        Options[Util.value('dSeatType')].count += Util.sum(panelCounts);
         drawn.push(new Group(
             x,
             y,
-            value('createGroupText'),
-            type,
+            Util.value('dText'),
+            Util.value('dSeatType'),
             panelCounts,
             100,
-            true
+            Util.value('dIndent') == 'left'
         ));
-        Options[type].count += Util.sum(panelCounts);
-        console.log('Created a Group');
     } else if(type == 'togo') {
         drawn.push(new Togo(
             x,
             y,
-            +value('createTogoPerRow')
+            +Util.value('dTogoRow'),
+            Util.value('dSeatType')
         ));
-        console.log('Create a Togo set');
     }
 }
 
+
+function createTypeSelection(e) {
+    const type = e.target.value;
+
+    const ids = {
+        panel: ['dSeatType', 'dOrientation', 'dSeatNum', 'dMargins'],
+        lane: ['dText', 'dOrientation', 'dWidth', 'dHeight'],
+        group: ['dSeatType', 'dText', 'dGroup'],
+        togo: ['dSeatType', 'dTogoRow'],
+    };
+
+    const toUnhide = new Set(ids[type]);
+    const toHide = new Set(Object.values(ids).flat()).difference(toUnhide);
+    toHide.forEach(Util.hide);
+    toUnhide.forEach(Util.unhide);
+
+    const seatType = document.getElementById('dSeatType');
+    if(type == 'panel') {
+        seatType.value = 'table';
+        seatType.toggleAttribute('disabled', false);
+    }
+    if(type == 'lane') {
+        const width = document.getElementById('dWidth');
+        const height = document.getElementById('dHeight');
+        document.getElementById('dText').value = 'SUSHI LANE';
+        width.value = 20;
+        height.value = 100;
+        manageEvents([
+            ['dOrientation', 'change', () => [width.value, height.value] = [height.value, width.value]]
+        ]);
+    } 
+    if(type == 'group') {
+        document.getElementById('dText').value = 'Sushi bar';
+        seatType.value = 'counter';
+        seatType.toggleAttribute('disabled', false);
+    }
+    if(type == 'togo') {
+        seatType.value = 'togo';
+        seatType.toggleAttribute('disabled', true);
+    }
+}
+
+function createGroupPanels(e) {
+    const panels = e.target.value;
+
+    const panel1 = document.getElementById('dGroupPanel1');
+    const panel2 = document.getElementById('dGroupPanel2');
+
+    if(panels == '1') {
+        panel1.toggleAttribute('disabled', false);
+        panel2.toggleAttribute('disabled', true);
+    } else {
+        panel1.toggleAttribute('disabled', false);
+        panel2.toggleAttribute('disabled', false);
+    }
+}
+
+function seatingNameList(panelCounts = [-1]) {
+    const list = document.getElementById('dSeatingList');
+    Util.deleteChildren(list);
+
+    for(const name of Table.getRange(+Util.value('dSeatingStart'), +Util.value('dSeatingEnd'))) {
+        const li = document.createElement('li');
+        li.innerText = name;
+        list.append(li);
+
+        if(panelCounts[0] == list.querySelectorAll('li').length) {
+            list.append(document.createElement('br'));
+            panelCounts.shift();
+        }
+    }
+}
+
+function seatingLinks(e) {
+    const rect = getCurrentRectangle();
+    if(!rect || !(rect instanceof Panel || rect instanceof Group)) {
+        return;
+    }
+    const diff = rect.tableIDs[1] - rect.tableIDs[0];
+    
+    const start = document.getElementById('dSeatingStart');
+    const end = document.getElementById('dSeatingEnd');
+    
+    if(e.target == start) {
+        end.value = +start.value + diff;
+    } else {
+        start.value = +end.value - diff
+    }
+}
+
+function getCurrentRectangle() {
+    return drawn.find(r => r.id == dialog.dataset.id);
+}
+
+document.getElementById('dialogDelete').addEventListener('click', e => {
+    const rect = getCurrentRectangle();
+    if(rect instanceof Panel) {
+        Options[rect.tableType].count -= rect.numTables;
+    } else if(rect instanceof Group) {
+        Options[rect.tableType].count -= Util.sum(rect.panelCounts);
+    }
+    deleteFromDrawn(rect.id);
+    dialog.close();
+});
+document.getElementById('dCreateType').addEventListener('input', createTypeSelection);
+document.getElementById('dGroupPanels').addEventListener('input', createGroupPanels);
+document.getElementById('dSeatingStart').addEventListener('input', seatingLinks);
+document.getElementById('dSeatingEnd').addEventListener('input', seatingLinks);
+
 function manageEvents(eventTriples) {
     for(const [elem, event, func] of eventTriples) {
-        elem.addEventListener(event, func, { signal: dialogController.signal });
+        if(elem instanceof HTMLElement) {
+            elem.addEventListener(event, func, { signal: dialogController.signal });
+        } else {
+            document.getElementById(elem).addEventListener(event, func, { signal: dialogController.signal });
+        }
     }
 }
