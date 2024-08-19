@@ -91,10 +91,10 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 		playout.marginTop = 0;
 		parent.setLayout(playout);
 
-		Color tableSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB(255, 153, 73));
-		Color counterSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
-		Color barSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
-		Color togoSectionBackground = this.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+		Color tableSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([table color]));
+		Color counterSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([counter color]));
+		Color barSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([bar color]));
+		Color togoSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([togo color]));
 		
 {}
 

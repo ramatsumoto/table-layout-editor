@@ -73,28 +73,28 @@
     <div>
         <strong>Set width/height</strong>
         <dl id="setDimensions">
-            <dt>Tables</dt>
+            <dt>Tables <input type="color" value="#ffa500" id="setTableColor" data-type="table" data-dimension="color"></dt>
             <dd>
                 <label>Width: <input id="setTableWidth" type="number" class="long" value="100" data-type="table" data-dimension="width"></label>
             </dd>
             <dd>
                 <label>Height: <input id="setTableHeight" type="number" class="long" value="60" data-type="table" data-dimension="height"></label>
             </dd>
-            <dt>Counter</dt>
+            <dt>Counter <input type="color" value="#ffff00" id="setCounterColor" data-type="counter" data-dimension="color"></dt>
             <dd>
                 <label>Width: <input id="setCounterWidth" type="number" class="long" value="90" data-type="counter" data-dimension="width"></label>
             </dd>
             <dd>
                 <label>Height: <input id="setCounterHeight" type="number" class="long" value="50" data-type="counter" data-dimension="height"></label>
             </dd>
-            <dt>Bar</dt>
+            <dt>Bar <input type="color" value="#008000" id="setBarColor" data-type="bar" data-dimension="color"></dt>
             <dd>
                 <label>Width: <input id="setBarWidth" type="number" class="long" value="90" data-type="bar" data-dimension="width"></label>
             </dd>
             <dd>
                 <label>Height: <input id="setBarHeight" type="number" class="long" value="53" data-type="bar" data-dimension="height"></label>
             </dd>
-            <dt>To go</dt>
+            <dt>To go <input type="color" value="#808080" id="setTogoColor" data-type="togo" data-dimension="color"></dt>
             <dd>
                 <label>Width: <input id="setTogoWidth" type="number" class="long" value="90" data-type="togo" data-dimension="width"></label>
             </dd>
@@ -142,7 +142,7 @@
             <option value="togo">Togo</option>
         </select><br></label>
 
-        <label title="This dictates the size and color of the element.">Seat size: <select id="dSeatType">
+        <label>Seat size/color: <select id="dSeatType">
             <option value="table">Table</option>
             <option value="counter">Counter</option>
             <option value="bar">Bar</option>

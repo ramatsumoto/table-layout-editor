@@ -7,7 +7,7 @@ const Options = {
         height: 60,
         wConstant: 'TABLE_BUTTON_WIDTH',
         hConstant: 'TABLE_BUTTON_HEIGHT',
-        color: 'orange',
+        color: '#ffa500',
         count: 0
     },
     counter: {
@@ -15,7 +15,7 @@ const Options = {
         height: 50,
         wConstant: 'COUNTER_BUTTON_WIDTH',
         hConstant: 'COUNTER_BUTTON_HEIGHT',
-        color: 'yellow',
+        color: '#ffff00',
         count: 0
     },
     bar: {
@@ -23,7 +23,7 @@ const Options = {
         height: 53,
         wConstant: 'BAR_BUTTON_WIDTH',
         hConstant: 'BAR_BUTTON_HEIGHT',
-        color: 'green',
+        color: '#008000',
         count: 0
     },
     togo: {
@@ -31,7 +31,7 @@ const Options = {
         height: 50,
         wConstant: 'TOGO_BUTTON_WIDTH',
         hConstant: 'TOGO_BUTTON_HEIGHT',
-        color: 'grey',
+        color: '#808080',
         count: 0
     }
 }
@@ -43,14 +43,18 @@ function deleteFromDrawn(id) {
     }
 }
 
-function updateSizes() {
+function updateOptions(e) {
     const list = document.getElementById('setDimensions');
     for(const input of list.querySelectorAll('input')) {
         const tableType = input.dataset.type;
         const dimension = input.dataset.dimension;
 
         if(tableType && dimension) {
-            Options[tableType][dimension] = +input.value;
+            if(dimension == 'color') {
+                Options[tableType][dimension] = input.value;
+            } else {
+                Options[tableType][dimension] = +input.value;
+            }
         }
     }
 
@@ -67,7 +71,7 @@ function updateSizes() {
     }
 }
 
-document.getElementById('setDimensions').addEventListener('input', updateSizes);
+document.getElementById('setDimensions').addEventListener('input', updateOptions);
 
 function drawGrid() {
     const step = 10;
@@ -116,7 +120,7 @@ function frame() {
     ctx.clearRect(0, 0, main.width, main.height);
     drawGrid();
 
-    updateSizes();
+    updateOptions();
 
     let processClick = -1;
     for(const x of drawn) {

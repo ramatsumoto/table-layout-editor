@@ -1,3 +1,8 @@
+function getRGB(colorHex) {
+    const split = colorHex.trim().replace('#', '');
+    return Array.from({ length: split.length / 2 }, (x, i) => split[2 * i] + split[2 * i + 1 ]).map(n => parseInt(n, 16));
+}
+
 function exportPanel(panel) {
     const definition = `APPanel ${panel.name} = getTableRowPanel(parent, tables.subList(${panel.tableIDs[0] - 1}, ${panel.tableIDs[1]}), ${panel.isVertical ? 'SWT.VERTICAL' : 'SWT.HORIZONTAL'}, ${Options[panel.tableType].wConstant}, ${Options[panel.tableType].hConstant}, ${panel.margin.top}, ${panel.margin.bottom}, ${panel.margin.left}, ${panel.margin.right}, ${panel.tableType}SectionBackground);`;
     const attachment = `setFormData(${panel.name}, new FormAttachment(0, ${panel.top}), null, new FormAttachment(0, ${panel.left}), null);`
@@ -82,7 +87,11 @@ function exportJava(name, drawn) {
         .replace('[togo height]', Options.togo.height)
         .replace('[table count]', Options.table.count)
         .replace('[counter count]', Options.counter.count)
-        .replace('[bar count]', Options.bar.count);
+        .replace('[bar count]', Options.bar.count)
+        .replace('[table color]', getRGB(Options.table.color).join(', '))
+        .replace('[counter color]', getRGB(Options.counter.color).join(', '))
+        .replace('[bar color]', getRGB(Options.bar.color).join(', '))
+        .replace('[togo color]', getRGB(Options.togo.color).join(', '));
     
     return text;
 }
