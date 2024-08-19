@@ -230,6 +230,10 @@ class Rectangle {
             }
         }
     }
+
+    isOutOfBounds(maxWidth = main.width, maxHeight = main.height) {
+        return this.left < 0 || this.top < 0 || this.right > maxWidth || this.bottom > maxHeight;
+    }
 }
 
 class Panel extends Rectangle {

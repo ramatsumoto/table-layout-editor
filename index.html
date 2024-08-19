@@ -114,14 +114,17 @@
     </div>
     <div style="max-width: 20%;">
         <strong>Usage</strong>
-        <p>Click and drag on an element to move it around. Hold <kbd>Shift</kbd> to disable collision.</p>
         <p>While clicking on an element, press <kbd>WASD</kbd> to move one pixel in the given direction.</p>
         <dl>
+            <dt>Click and drag on an element, to move it around.</dt>
+            <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
+            <dd>In this case, hold <kbd>Shift</kbd> to disable collision.</dd>
+            <br>
             <dt>Double click on an empty area of the grid to create a new element.</dt>
             <dd>A Panel is a line of tables.</dd>
             <dd>A Lane is a rectangle with text.</dd>
-            <dd>A Group is a set of Panels put together.</dd>
-            <dd>Togo is for the togo tables.</dd>
+            <dd>A Group is a set of Panels put together with a title.</dd>
+            <dd>Togo creates a grid of exclusively to-go tables.</dd>
             <br>
             <dt>Double click on an element to edit parts of it.</dt>
             <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.</dd>
@@ -139,7 +142,7 @@
             <option value="togo">Togo</option>
         </select><br></label>
 
-        <label>Seat type: <select id="dSeatType">
+        <label title="This dictates the size and color of the element.">Seat size: <select id="dSeatType">
             <option value="table">Table</option>
             <option value="counter">Counter</option>
             <option value="bar">Bar</option>

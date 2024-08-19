@@ -38,8 +38,7 @@ main.addEventListener('mousemove', e => {
     const [dx, dy] = [e.movementX, e.movementY];
     const [x, y] = [target.x + dx, target.y + dy];
 
-    const outOfBounds = x < 0 || y < 0 || x + target.w > main.width || y + target.h > main.height;
-    if(outOfBounds) return;
+    if(target.isOutOfBounds()) return;
 
     target.x = x;
     target.y = y;
@@ -55,7 +54,7 @@ main.addEventListener('mousemove', e => {
         }
     }
     
-    if(checkForOverlaps(target)) {
+    if(checkForOverlaps(target) || target.isOutOfBounds()) {
         target.x -= dx;
         target.y -= dy;
     }

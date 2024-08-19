@@ -120,7 +120,11 @@ function frame() {
 
     let processClick = -1;
     for(const x of drawn) {
-        x.draw(ctx, x.selected ? { strokeStyle: 'black' } : {});
+        let style = {};
+        if(x.selected) style = { strokeStyle: 'black' };
+        if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red' };
+
+        x.draw(ctx, style);
         if(x.clicked) {
             processClick = x.id;
         }
