@@ -349,7 +349,7 @@ function getCurrentRectangle() {
     return drawn.find(r => r.id == dialog.dataset.id);
 }
 
-document.getElementById('dialogDelete').addEventListener('click', e => {
+document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {
     const rect = getCurrentRectangle();
     if(rect instanceof Panel) {
         Options[rect.tableType].count -= rect.numTables;
