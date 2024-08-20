@@ -302,8 +302,13 @@ function createTypeSelection(e) {
         const width = document.getElementById('dWidth');
         const height = document.getElementById('dHeight');
         document.getElementById('dText').value = 'SUSHI LANE';
-        width.value = 20;
-        height.value = 100;
+        if(document.getElementById('dOrientation').value == 'vertical') {
+            width.value = 20;
+            height.value = 100;
+        } else {
+            width.value = 100;
+            height.value = 20;
+        }
         manageEvents([
             ['dOrientation', 'change', () => [width.value, height.value] = [height.value, width.value]]
         ]);
