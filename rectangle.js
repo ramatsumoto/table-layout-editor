@@ -308,7 +308,7 @@ class Lane extends Rectangle {
     }
 
     draw(context, style = {}) {
-        super.draw(context, { fillStyle: 'cadetblue', ...style });
+        super.draw(context, { fillStyle: '#5C8A8A', ...style });
         context.save();
         context.textBaseline = 'top';
         context.textAlign = 'left';

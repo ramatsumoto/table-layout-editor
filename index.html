@@ -7,6 +7,8 @@
             flex-wrap: wrap;
             justify-content: space-around;
             padding: 0 10px;
+            font-family: Calibri, Helvetica, sans-serif;
+
         }
         table {
             border-collapse: collapse;
@@ -111,7 +113,7 @@
         <br>
         <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
         <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
-        <p><a id="downloadConflictSQL">table_seating_conflict.sql</a></p>
+        <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a></p>
     </div>
     <div style="width: 20%;">
         <strong>Usage</strong>
@@ -130,8 +132,18 @@
             <dt>Double click on an element to edit parts of it.</dt>
             <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.</dd>
             <br>
-            <dt>Use the table to the left to emulate <strong>table_seating</strong>.</dt>
+            <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
             <dd>Change which names/IDs are used in a Panel or Group by double-clicking on them.</dd>
+            <br>
+            <dt>On <b>table_seating</b> names, the prefixes of the name should match the seat type.</dt>
+            <dd>Names for tables should be in the format "T_" (e.g. T1, T10, etc.).</dd>
+            <dd>Names for counter seats should be "C_".</dd>
+            <dd>Names for bar seats should be "B_".</dd>
+            <dd>Names for togo tables should be "TOGO_".</dd>
+            <br>
+            <dt>Use the <button>Add 20 Togo Rows</button> button last.</dt>
+            <dd>The Togo element will automatically fill itself with whatever rows/names were not used for other seats.</dd>
+            <dd>Therefore, add the togo rows after you've created all the rows needed for the other elements.</dd>
         </dl>
     </div>
 
