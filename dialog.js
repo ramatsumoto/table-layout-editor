@@ -29,10 +29,17 @@ function showDialog(type) {
         buttonEvents = prepareCreateDialog(x, y);
     }
 
-    const close = () => dialog.close();
+    const confirm = () => {
+        buttonEvents.confirm?.();
+        dialog.close();
+    }
+    const cancel = () => {
+        buttonEvents.cancel?.();
+        dialog.close();
+    }
     manageEvents([
-        ['dialogConfirm', 'click', buttonEvents.confirm ?? close],
-        ['dialogCancel', 'click', buttonEvents.cancel ?? close],
+        ['dialogConfirm', 'click', confirm],
+        ['dialogCancel', 'click', cancel],
         [dialog, 'close', () => dialogController.abort()]
     ]);
 
@@ -66,12 +73,10 @@ function preparePanelDialog() {
 
     const confirm = () => {
         panel.name = document.getElementById('dName').value;
-        dialog.close();
     }
     const cancel = () => {
         panel.tableIDs = initial.tableIDs;
         panel.isVertical = initial.isVertical;
-        dialog.close();
     }
 
     return { confirm, cancel };
@@ -130,7 +135,6 @@ function prepareLaneDialog() {
 
     const confirm = () => {
         lane.name = name.value;
-        dialog.close();
     }
 
     const cancel = () => {
@@ -138,7 +142,6 @@ function prepareLaneDialog() {
         lane.w = initial.w;
         lane.h = initial.h;
         lane.isVertical = initial.isVertical;
-        dialog.close();
     };
 
     return { confirm, cancel };
@@ -196,14 +199,12 @@ function prepareGroupDialog() {
 
     const confirm = () => {
         group.name = name.value;
-        dialog.close();
     };
     const cancel = () => {
         group.text = initial.text;
         group.indent = initial.indent;
         group.setHeight(initial.height);
         group.tableIDs = initial.tableIDs;
-        dialog.close();
     }
 
     return { confirm, cancel };
@@ -222,10 +223,12 @@ function prepareTogoDialog() {
         [perRow, 'input', () => togo.numPerRow = +perRow.value]
     ]);
 
-    const cancel = () => {
+    const confirm = () => {
         togo.name = document.getElementById('dName').value;
+    }
+
+    const cancel = () => {
         togo.perRow = initalNum;
-        dialog.close();
     }
 
     return { cancel };
@@ -237,11 +240,9 @@ function prepareCreateDialog(x, y) {
 
     const confirm = () => {
         createFromDialog(x, y);
-        dialog.close();
     };
-    const cancel = () => dialog.close();
 
-    return { confirm, cancel };
+    return { confirm };
 }
 
 function createFromDialog(x, y) {
