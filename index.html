@@ -4,7 +4,8 @@
     <style>
         body {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            justify-content: space-around;
             padding: 0 10px;
         }
         table {
@@ -39,7 +40,7 @@
     <script src="./export.js"></script>
 </head>
 <body>
-    <div style="width: 1000px; height: 800px; overflow: scroll;" id="mainContainer">
+    <div style="width: 1000px; height: 800px; overflow: scroll; resize: both;" id="mainContainer">
         <canvas id="main" width="2000" height="2000"></canvas>
     </div>
     <div>
@@ -112,7 +113,7 @@
         <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
         <p><a id="downloadConflictSQL">table_seating_conflict.sql</a></p>
     </div>
-    <div style="max-width: 20%;">
+    <div style="width: 20%;">
         <strong>Usage</strong>
         <p>While clicking on an element, press <kbd>WASD</kbd> to move one pixel in the given direction.</p>
         <dl>
