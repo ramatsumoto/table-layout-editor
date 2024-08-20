@@ -98,6 +98,12 @@ class Rectangle {
         const rectangle = [this.x, this.y, this.w, this.h].map(n => n * Rectangle.SCALE);
         context.fillRect(...rectangle);
         context.strokeRect(...rectangle);
+
+        context.textAlign = 'center';
+        context.textBaseline = 'bottom';
+        context.fillStyle = this.clicked ? 'black' : 'rgba(0, 0, 0, 0.5)';
+        context.font = '16px monospace';
+        context.fillText(this.name ?? '', this.center[0], this.top);
         context.restore();
     }
 

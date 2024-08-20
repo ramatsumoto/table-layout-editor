@@ -12,6 +12,7 @@ function showDialog(type) {
     Util.unhide('dialogConfirm');
     Util.unhide('dialogCancel');
     Util.unhide('dialogDelete');
+    Util.unhide('dName');
 
     let buttonEvents = {};
     if(type == 'panel') {
@@ -24,6 +25,7 @@ function showDialog(type) {
         buttonEvents = prepareTogoDialog();
     } else if(type == 'create') {
         Util.hide('dialogDelete');
+        Util.hide('dName');
         buttonEvents = prepareCreateDialog(x, y);
     }
 
@@ -46,9 +48,12 @@ function preparePanelDialog() {
     const end = document.getElementById('dSeatingEnd');
     const orientation = document.getElementById('dOrientation');
     
-    const initial = {}
-    initial.isVertical = panel.isVertical;
+    const initial = {
+        isVertical: panel.isVertical,
+        tableIDs: [...panel.tableIDs]
+    }
     orientation.value = (panel.isVertical) ? 'vertical' : 'horizontal';
+    document.getElementById('dName').value = panel.name;
 
     manageEvents([
         [start, 'input', () => seatingNameList()],
@@ -60,10 +65,11 @@ function preparePanelDialog() {
     Util.fireInputEvent(start.id);
 
     const confirm = () => {
-        panel.tableIDs = [+start.value, +end.value];
+        panel.name = document.getElementById('dName').value;
         dialog.close();
     }
     const cancel = () => {
+        panel.tableIDs = initial.tableIDs;
         panel.isVertical = initial.isVertical;
         dialog.close();
     }
@@ -74,14 +80,15 @@ function preparePanelDialog() {
 function prepareLaneDialog() {
     const lane = getCurrentRectangle();
 
-    const ids = ['dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
+    const ids = ['dName', 'dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
     ids.forEach(Util.unhide);
     
-    const [orientation, text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
+    const [name, orientation, text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
     Util.deleteChildren(widthMatch);
     Util.deleteChildren(heightMatch);
     orientation.value = lane.isVertical ? 'vertical' : 'horizontal'; 
 
+    name.value = lane.name;
     text.value = lane.text;
     width.value = lane.w;
     height.value = lane.h;
@@ -121,6 +128,11 @@ function prepareLaneDialog() {
         [orientation, 'input', laneTranspose]
     ]);
 
+    const confirm = () => {
+        lane.name = name.value;
+        dialog.close();
+    }
+
     const cancel = () => {
         lane.text = initial.text;
         lane.w = initial.w;
@@ -129,21 +141,23 @@ function prepareLaneDialog() {
         dialog.close();
     };
 
-    return { cancel };
+    return { confirm, cancel };
 }
 
 function prepareGroupDialog() {
     const group = getCurrentRectangle();
 
-    const ids = ['dText', 'dIndent', 'dHeight', 'dHeightMatch', 'dSeating'];
+    const ids = ['dName', 'dText', 'dIndent', 'dHeight', 'dHeightMatch', 'dSeating'];
     ids.forEach(Util.unhide);
-    const [text, indent, height, heightMatch, ] = ids.map(id => document.getElementById(id));
+    const [name, text, indent, height, heightMatch, ] = ids.map(id => document.getElementById(id));
 
     const initial = {
         text: group.text,
         indent: group.indent,
-        height: Math.max(group.defaultHeight, group.minHeight)
+        height: Math.max(group.defaultHeight, group.minHeight),
+        tableIDs: [...group.tableIDs]
     };
+    name.value = group.name;
     text.value = initial.text;
     indent.value = initial.indent;
     height.value = initial.height;
@@ -181,13 +195,14 @@ function prepareGroupDialog() {
     Util.fireInputEvent(start.id);
 
     const confirm = () => {
-        group.tableIDs = [+start.value, +end.value];
+        group.name = name.value;
         dialog.close();
     };
     const cancel = () => {
         group.text = initial.text;
         group.indent = initial.indent;
         group.setHeight(initial.height);
+        group.tableIDs = initial.tableIDs;
         dialog.close();
     }
 
@@ -198,14 +213,17 @@ function prepareTogoDialog() {
     const togo = getCurrentRectangle();
     const perRow = document.getElementById('dTogoRow');
     Util.unhide('dTogoRow');
+    Util.unhide('dName');
 
     const initalNum = +perRow.value;
+    document.getElementById('dName').value = togo.name;
 
     manageEvents([
         [perRow, 'input', () => togo.numPerRow = +perRow.value]
     ]);
 
     const cancel = () => {
+        togo.name = document.getElementById('dName').value;
         togo.perRow = initalNum;
         dialog.close();
     }
@@ -370,10 +388,53 @@ function seatingLinks(e) {
     } else {
         start.value = +end.value - diff
     }
+    rect.tableIDs = [+start.value, +end.value];
 }
 
 function getCurrentRectangle() {
     return drawn.find(r => r.id == dialog.dataset.id);
+}
+
+function suggestedName() {
+    const rect = getCurrentRectangle();
+    if(!rect) return false;
+    
+    const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+    let name = '';
+    let duplicateCount = 0;
+    let includeOne = false;
+
+    if(rect instanceof Panel) {
+        const tableNames = Table.getRange(...rect.tableIDs);
+        if(tableNames.includes('[N/A]')) {
+            name = 'panel' + (rect.isVertical ? 'V' : 'H');
+            includeOne = true;
+        } else {
+            name = `panel${tableNames[0]}to${tableNames.at(-1)}`;
+        }
+    } else if(rect instanceof Lane) {
+        name = 'lane' + (rect.isVertical ? 'V' : 'H');
+        includeOne = true;
+    } else if(rect instanceof Group) {
+        const type = rect.tableType;
+        name = type + 'Area';
+    } else if(rect instanceof Togo) {
+        name = 'togoPanel';
+    }
+
+    for(const other of drawn.filter(r => r != rect)) {
+        if(other.name.startsWith(name)) {
+            duplicateCount++;
+        }
+    }
+
+    if(duplicateCount == 0 && includeOne) {
+        name += 'One';
+    } else if(duplicateCount > 0) {
+        name += words.at(duplicateCount) ?? duplicateCount;
+    }
+
+    return name;
 }
 
 document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {
@@ -390,6 +451,7 @@ document.getElementById('dCreateType').addEventListener('input', createTypeSelec
 document.getElementById('dGroupPanels').addEventListener('input', createGroupPanels);
 document.getElementById('dSeatingStart').addEventListener('input', seatingLinks);
 document.getElementById('dSeatingEnd').addEventListener('input', seatingLinks);
+document.getElementById('dNameFill').addEventListener('click', e => document.getElementById('dName').value = suggestedName());
 
 function manageEvents(eventTriples) {
     for(const [elem, event, func] of eventTriples) {

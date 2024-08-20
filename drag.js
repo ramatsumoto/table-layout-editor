@@ -79,8 +79,8 @@ main.addEventListener('dblclick', e => {
     } else if(clicked instanceof Togo) {
         showDialog('togo');
     } else if(clicked === undefined) {
-        dialog.dataset.x = adjustedPosition[0];
-        dialog.dataset.y = adjustedPosition[1];
+        dialog.dataset.x = Math.round(adjustedPosition[0]);
+        dialog.dataset.y = Math.round(adjustedPosition[1]);
         showDialog('create');
     }
 });
