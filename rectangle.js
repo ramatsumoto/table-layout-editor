@@ -403,6 +403,7 @@ class Group extends Rectangle {
 class Togo extends Rectangle {
     static H_SPACING = 5;
     static V_SPACING = 5;
+    static MARGIN = 10;
     static EXPECTED_COUNT = 20;
 
     constructor(x, y, numPerRow, tableType = 'togo') {
@@ -416,10 +417,10 @@ class Togo extends Rectangle {
 
     calculateSize() {
         const { width, height } = Options[this.tableType];
-        const w = this.numPerRow * width + (this.numPerRow - 1) * Togo.H_SPACING;
+        const w = this.numPerRow * width + (this.numPerRow - 1) * Togo.H_SPACING + Togo.MARGIN * 2;
         const unusedTableIDs = Table.length() - Options.table.count + Options.bar.count + Options.counter.count;
         const rows = Math.ceil(Math.max(Togo.EXPECTED_COUNT, unusedTableIDs) / this.numPerRow);
-        const h = rows * height + (rows - 1) * Togo.V_SPACING;
+        const h = rows * height + (rows - 1) * Togo.V_SPACING + Togo.MARGIN * 2;
 
         this.w = w;
         this.h = h;
@@ -436,8 +437,8 @@ class Togo extends Rectangle {
         super.draw(context, { fillStyle: 'lightgrey', ...style });
 
         for(let i = 0; i < Math.max(Togo.EXPECTED_COUNT, count); i++) {
-            const x = this.x + (i % this.numPerRow) * (width + Togo.H_SPACING);
-            const y = this.y + Math.floor(i / this.numPerRow) * (height + Togo.V_SPACING);
+            const x = this.x + (i % this.numPerRow) * (width + Togo.H_SPACING) + Togo.MARGIN;
+            const y = this.y + Math.floor(i / this.numPerRow) * (height + Togo.V_SPACING) + Togo.MARGIN;
             const rect = new Rectangle(x, y, width, height, true);
 
             rect.draw(context, {fillStyle: 'white'});

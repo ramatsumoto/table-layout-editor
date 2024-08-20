@@ -38,7 +38,7 @@ main.addEventListener('mousemove', e => {
     const [dx, dy] = [e.movementX, e.movementY];
     const [x, y] = [target.x + dx, target.y + dy];
 
-    if(target.isOutOfBounds()) return;
+    if(target.isOutOfBounds() && !e.shiftKey) return;
 
     target.x = x;
     target.y = y;

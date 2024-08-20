@@ -126,7 +126,7 @@ function frame() {
     for(const x of drawn) {
         let style = {};
         if(x.selected) style = { strokeStyle: 'black' };
-        if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red' };
+        if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red', lineWidth: 2 };
 
         x.draw(ctx, style);
         if(x.clicked) {
