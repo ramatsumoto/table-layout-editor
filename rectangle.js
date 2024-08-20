@@ -90,7 +90,7 @@ class Rectangle {
     }
 
     draw(context, style = {}) {
-        style = { strokeStyle: 'rgba(0,0,0,0)', fillStyle: this.clicked ? 'darkGrey' : 'lightGrey', shadowOffsetX: 1, shadowOffsetY: 1, shadowColor: 'grey', ...style };
+        style = { strokeStyle: 'rgba(0,0,0,0)', fillStyle: this.clicked ? 'darkGrey' : 'lightGrey', shadowOffsetX: 1, shadowOffsetY: 1, shadowColor: 'grey', showName: true, ...style };
         context.save();
         for(const prop in style) {
             context[prop] = style[prop];
@@ -99,11 +99,13 @@ class Rectangle {
         context.fillRect(...rectangle);
         context.strokeRect(...rectangle);
 
-        context.textAlign = 'center';
-        context.textBaseline = 'bottom';
-        context.fillStyle = this.clicked ? 'black' : 'rgba(0, 0, 0, 0.5)';
-        context.font = '16px monospace';
-        context.fillText(this.name ?? '', this.center[0], this.top);
+        if(style.showName) {
+            context.textAlign = 'center';
+            context.textBaseline = 'bottom';
+            context.fillStyle = this.clicked ? 'black' : 'rgba(0, 0, 0, 0.5)';
+            context.font = '16px monospace';
+            context.fillText(this.name ?? '', this.center[0], this.top);
+        }
         context.restore();
     }
 
@@ -348,6 +350,7 @@ class Group extends Rectangle {
         this.defaultHeight = defaultHeight;
         this.setHeight(this.defaultHeight);
         this.tableIDs = [1, Util.sum(panelCounts)];
+        this.panels = this.panelCounts.map(n => new Panel(0, 0, n, tableType, true, { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }));
     }
 
     // the necessary height to fit the largest Panel
@@ -374,10 +377,9 @@ class Group extends Rectangle {
         
         const canIndent = this.h - Group.EXTRA_HEIGHT == this.defaultHeight;
         const tableIDs = this.splitTableIDs(this.tableIDs);
-        for(const [i, count] of Object.entries(this.panelCounts)) {
-            const panel = new Panel(this.x + Options[this.tableType].width * i, this.y, count, this.tableType, true, {marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0});
-            panel.x += Group.MARGIN;
-            panel.y += Group.TEXT_HEIGHT + Group.MARGIN;
+        for(const [i, panel] of Object.entries(this.panels)) {
+            panel.x = this.x + Options[this.tableType].width * i + Group.MARGIN;
+            panel.y = this.y + Group.TEXT_HEIGHT + Group.MARGIN;
             panel.tableIDs = tableIDs[i];
 
             const shouldIndent = (this.indent == 'left' && i == 0) || (this.indent == 'right' && i == this.panelCounts.length - 1);
@@ -385,7 +387,7 @@ class Group extends Rectangle {
                 const indentDist = this.h - (panel.h + Group.EXTRA_HEIGHT);
                 panel.y += indentDist;
             }
-            panel.draw(context);
+            panel.draw(context, { showName: false });
         }
 
         context.textBaseline = 'top';
