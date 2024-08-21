@@ -50,14 +50,22 @@ function preparePanelDialog() {
     const panel = getCurrentRectangle();
     Util.unhide('dSeating');
     Util.unhide('dOrientation');
+    Util.unhide('dMargins');
 
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
     const orientation = document.getElementById('dOrientation');
+    const [mTop, mBottom, mLeft, mRight] = ['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight'].map(id => document.getElementById(id));
+    
+    mTop.value = panel.margin.top;
+    mBottom.value = panel.margin.bottom;
+    mLeft.value = panel.margin.left;
+    mRight.value = panel.margin.right;
     
     const initial = {
         isVertical: panel.isVertical,
-        tableIDs: [...panel.tableIDs]
+        tableIDs: [...panel.tableIDs],
+        margins: {...panel.margin},
     }
     orientation.value = (panel.isVertical) ? 'vertical' : 'horizontal';
     document.getElementById('dName').value = panel.name;
@@ -65,7 +73,11 @@ function preparePanelDialog() {
     manageEvents([
         [start, 'input', () => seatingNameList()],
         [end, 'input', () => seatingNameList()],
-        [orientation, 'input', () => panel.isVertical = orientation.value == 'vertical']
+        [orientation, 'input', () => panel.isVertical = orientation.value == 'vertical'],
+        [mTop, 'input', () => panel.margin.top = +mTop.value],
+        [mBottom, 'input', () => panel.margin.bottom = +mBottom.value],
+        [mLeft, 'input', () => panel.margin.left = +mLeft.value],
+        [mRight, 'input', () => panel.margin.right = +mRight.value],
     ]);
     [start.value, end.value] = panel.tableIDs;
     end.setAttribute('min', panel.tableIDs[1] - panel.tableIDs[0] + 1);
@@ -77,6 +89,7 @@ function preparePanelDialog() {
     const cancel = () => {
         panel.tableIDs = initial.tableIDs;
         panel.isVertical = initial.isVertical;
+        panel.margin = initial.margins;
     }
 
     return { confirm, cancel };
