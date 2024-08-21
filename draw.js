@@ -98,6 +98,17 @@ function drawGrid() {
         }
         ctx.stroke();
     }
+
+    drawPOSBounds();
+}
+
+function drawPOSBounds() {
+    const dimensions = [942, 624];
+    ctx.save();
+    ctx.strokeStyle = 'black';
+    ctx.setLineDash([4, 3]);
+    ctx.strokeRect(0, 0, ...dimensions);
+    ctx.restore();
 }
 
 function drawCursor(x, y) {
