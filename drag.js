@@ -43,6 +43,8 @@ main.addEventListener('mousemove', e => {
     target.x = x;
     target.y = y;
 
+    canvasHasChanged();
+
     if(e.shiftKey) return;
 
     for(const edge of Util.edges) {
@@ -88,6 +90,7 @@ main.addEventListener('dblclick', e => {
 document.body.addEventListener('keydown', e => {
     if(clickedRectangle >= 0) {
         const target = drawn.find(r => r.id == clickedRectangle);
+        if('wasd'.includes(w.key)) canvasHasChanged();
         switch(e.key) {
             case 'w':
                 target.y -= 1;

@@ -149,4 +149,18 @@ function readyDownloads() {
     readyJavaFile(name, drawn);
     readySQLFile(name, Table.getData());
     readyConflictSQLFile(name, Table.getData());
+
+    main.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        document.getElementById('previousCanvas').setAttribute('href', url);
+    });
+    Util.hide('downloadCompare');
+    document.getElementById('downloadJavaOld').innerText = '';
+    document.getElementById('downloadSQLOld').innerText = '';
+    document.getElementById('downloadSQLConflictOld').innerText = '';
+}
+
+function canvasHasChanged() {
+    document.getElementById('downloadJavaOld').innerText = ' (old)';
+    Util.unhide('downloadCompare');
 }

@@ -110,10 +110,14 @@
         <label>Store Code: <input id="storeCode" value="test" class="short"></label>
         <br>
         <button id="readyDownloads" onclick="readyDownloads()">Generate Files</button>
+        <div id="downloadCompare" class="hidden">
+            <span>Layout has been changed.<br>Generate files to keep these changes.<br></span>
+            <a id="previousCanvas" target="_blank">View previous state.</a>
+        </div>
         <br>
-        <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
-        <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
-        <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a></p>
+        <p><a id="downloadJava">TablePanelImplKulaTEST.java</a><span id="downloadJavaOld"></span></p>
+        <p><a id="downloadSQL">table_seating_TEST.sql</a><span id="downloadSQLOld"></span></p>
+        <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a><span id="downloadSQLConflictOld"></span></p>
     </div>
     <div style="width: 20%;">
         <strong>Usage</strong>

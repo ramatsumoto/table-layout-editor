@@ -69,6 +69,8 @@ function updateOptions(e) {
             rect.calculateSize();
         }
     }
+
+    canvasHasChanged();
 }
 
 document.getElementById('setDimensions').addEventListener('input', updateOptions);
@@ -131,7 +133,7 @@ function frame() {
     ctx.clearRect(0, 0, main.width, main.height);
     drawGrid();
 
-    updateOptions();
+    // updateOptions();
 
     let processClick = -1;
     for(const x of drawn) {

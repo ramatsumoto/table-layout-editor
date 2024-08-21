@@ -31,6 +31,7 @@ function showDialog(type) {
 
     const confirm = () => {
         buttonEvents.confirm?.();
+        canvasHasChanged();
         dialog.close();
     }
     const cancel = () => {
