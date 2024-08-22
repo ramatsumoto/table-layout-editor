@@ -244,6 +244,45 @@ class Rectangle {
     }
 }
 
+class SeatButton extends Rectangle {
+    constructor(x, y, w, h) {
+        super(x, y, w, h, true);
+        this.text = '';
+    }
+
+    draw(context) {
+        context.save();
+        context.miterLimit = 0;
+        context.beginPath();
+
+        context.rect(this.x, this.y, this.w, this.h);
+        context.clip();
+
+        context.fillStyle = 'white';
+        context.fill();
+        
+        context.shadowColor = 'darkgray';
+        context.shadowOffsetX = 1;
+        context.shadowOffsetY = 1;
+
+        context.strokeStyle = '#F0F0F0';
+        // context.strokeStyle = 'black';
+        context.strokeWidth = 2;
+        context.stroke();
+
+        context.closePath();
+
+        context.shadowColor = 'rgba(0, 0, 0, 0)';
+        context.fillStyle = 'black';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.font = '20px Arial';
+        context.fillText(this.text, ...this.center);
+
+        context.restore();
+    }
+}
+
 class Panel extends Rectangle {
     static TABLE_SPACING = 10;
     static DEFAULT_MARGIN = 3
@@ -287,18 +326,15 @@ class Panel extends Rectangle {
         super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
 
         const { width, height } = Options[this.tableType]
-        const table = new Rectangle(this.x, this.y, width, height, true);
+        const table = new SeatButton(this.x, this.y, width, height);
         table.x += this.margin.left;
         table.y += this.margin.top;
 
         const text = Table.getRange(...this.tableIDs, true);
         for(let i = 0; i < this.numTables; i++) {
-            table.draw(context, { fillStyle: 'white' });
-            context.fillStyle = 'black';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.font = '20px Arial';
-            context.fillText(text[i], ...table.center);
+            table.text = text[i];
+            table.draw(context);
+
             if(this.isVertical) {
                 table.y += Panel.TABLE_SPACING + height;
             } else {

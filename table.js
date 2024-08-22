@@ -21,7 +21,7 @@ const Table = {
         if(start < 1) return false;
         const length = end - start + 1;
         const validRange = Table.getData().map(d => includeID ? `${d.name}\n(${d.id})` : d.name).slice(start - 1, end);
-        while(validRange.length < length) validRange.push('[N/A]');
+        while(validRange.length < length) validRange.push(`[N/A] (${start + validRange.length})`);
         return validRange;
     },
     setRow: (id, text, togo) => {
