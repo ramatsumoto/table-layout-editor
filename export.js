@@ -169,13 +169,17 @@ function createPreview(drawn) {
 
     context.fillStyle = '#F5FAF5';
     context.fillRect(0, 0, width, height);
-    if(width > 942 && height > 624) {
-        context.strokeStyle = 'grey';
-        context.setLineDash([4, 3]);
-        context.strokeRect(0, 0, width, height);
-    }
+
+    SeatButton.emulateFont = true;
     for(const r of drawn) {
-        r.draw(context, {showName: false});
+        r.draw(context, { showName: false, shadowColor: 'rgba(0,0,0,0)' });
+    }
+    SeatButton.emulateFont = false;
+
+    if(width > 942 || height > 624) {
+        context.strokeStyle = 'darkgrey';
+        context.setLineDash([4, 3]);
+        context.strokeRect(0, 0, 942, 624);
     }
 
     canvas.convertToBlob().then(blob => window.open(URL.createObjectURL(blob)));

@@ -238,6 +238,8 @@ class Rectangle {
 }
 
 class SeatButton extends Rectangle {
+    static emulateFont = false;
+
     constructor(x, y, w, h) {
         super(x, y, w, h, true);
         this.text = '';
@@ -267,10 +269,17 @@ class SeatButton extends Rectangle {
 
         context.shadowColor = 'rgba(0, 0, 0, 0)';
         context.fillStyle = 'black';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.font = '16px Arial';
-        context.fillText(this.text, ...this.center);
+        if(SeatButton.emulateFont) {
+            context.textAlign = 'left';
+            context.textBaseline = 'top';
+            context.font = 'bold 10pt Arial';
+            context.fillText(this.text.replace(/ \(\d+\)/, ''), this.left + 10, this.top + 5);
+        } else {
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.font = '16px Arial';
+            context.fillText(this.text, ...this.center);
+        }
 
         context.restore();
     }
@@ -421,7 +430,7 @@ class Group extends Rectangle {
                 const indentDist = this.h - (panel.h + Group.EXTRA_HEIGHT);
                 panel.y += indentDist;
             }
-            panel.draw(context, { showName: false });
+            panel.draw(context, { showName: false, shadowColor: 'rgba(0, 0, 0, 0)' });
         }
 
         context.textBaseline = 'top';
