@@ -68,7 +68,7 @@ main.addEventListener('mouseleave', unselectRectangle);
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
     const adjustedPosition = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
-    const clicked = drawn.find(r => r.hitTest(...adjustedPosition));
+    const clicked = drawn.toReversed().find(r => r.hitTest(...adjustedPosition));
     
     dialog.dataset.id = clicked?.id ?? -1;
 
@@ -90,7 +90,8 @@ main.addEventListener('dblclick', e => {
 document.body.addEventListener('keydown', e => {
     if(clickedRectangle >= 0) {
         const target = drawn.find(r => r.id == clickedRectangle);
-        if('wasd'.includes(w.key)) canvasHasChanged();
+        if('wasd'.includes(e.key)) canvasHasChanged();
+
         switch(e.key) {
             case 'w':
                 target.y -= 1;
