@@ -120,6 +120,8 @@ function prepareLaneDialog() {
 
     const others = drawn.filter(r => r != lane);
     for(const [edge, nearest] of Object.entries(lane.getNearest(others))) {
+        if(nearest == Rectangle.MAX) continue;
+
         const opposite = Util.oppositeEdges[edge];
         if(lane[edge] - nearest[opposite] != 0) continue;
 
