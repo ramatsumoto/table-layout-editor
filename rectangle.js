@@ -318,18 +318,23 @@ class Lane extends Rectangle {
     draw(context, style = {}) {
         super.draw(context, { fillStyle: '#5C8A8A', ...style });
         context.save();
-        context.textBaseline = 'top';
         context.textAlign = 'left';
         context.font = 'bold 12pt Arial';
         context.fillStyle = 'white';
         context.textRendering = 'geometricPrecision';
 
+        context.beginPath();
+        context.rect(this.x, this.y, this.w, this.h);
+        context.clip();
+
         if(this.isVertical) {
-            context.translate(this.x + this.w * 0.9, this.y + 60);
+            context.textBaseline = 'alphabetic';
+            context.translate(this.x + 8, this.y + 56);
             context.rotate(Math.PI * 0.5);
             context.fillText(this.text, 0, 0);
         } else {
-            context.fillText(this.text, this.x + 60, this.y + 0.1 * this.h);
+            context.textBaseline = 'top';
+            context.fillText(this.text, this.x + 56, this.y + 6);
         }
         context.restore();
     }
