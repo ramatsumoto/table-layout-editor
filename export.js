@@ -159,3 +159,8 @@ function readyDownloads() {
 function canvasHasChanged() {
     document.getElementById('downloadJava').removeAttribute('href');
 }
+
+function tableSeatingHasChanged() {
+    document.getElementById('downloadSQL').removeAttribute('href');
+    document.getElementById('downloadConflictSQL').removeAttribute('href');
+}

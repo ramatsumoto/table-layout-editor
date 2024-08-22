@@ -3,8 +3,15 @@ const Table = {
         const body = document.querySelector('#tableSeating tbody');
         const n = body.children.length + 1; // Table IDs start at 1 not 0
         body.append(createRow(n));
+        tableSeatingHasChanged();
     },
-    removeLastRow: () => document.querySelector('#tableSeating tbody tr:last-child')?.remove?.(),
+    removeLastRow: () => {
+        const last = document.querySelector('#tableSeating tbody tr:last-child');
+        if(last) {
+            last.remove();
+            tableSeatingHasChanged();
+        }
+    },
     getData: () => [...document.querySelectorAll('#tableSeating tbody tr')].map(tr => ({
         id: +tr.children[0].innerText,
         name: tr.querySelector('input').value,
@@ -24,6 +31,7 @@ const Table = {
         const [_, name, checkbox] = [...row.children].map(td => td.querySelector('input'));
         name.value = text;
         checkbox.checked = togo;
+        tableSeatingHasChanged();
     },
     length: () => document.querySelectorAll('#tableSeating tbody tr').length
 }
@@ -61,3 +69,7 @@ document.getElementById('tableSeatingAddTogo').addEventListener('click', () => {
 })
 document.getElementById('tableSeatingRemove').addEventListener('click', Table.removeLastRow);
 document.getElementById('tableSeatingRemove10').addEventListener('click', () => Array(10).fill().forEach(Table.removeLastRow));
+
+document.getElementById('tableSeating').addEventListener('change', e => {
+    tableSeatingHasChanged();
+})
