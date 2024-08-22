@@ -90,7 +90,7 @@ main.addEventListener('dblclick', e => {
 document.body.addEventListener('keydown', e => {
     if(clickedRectangle >= 0) {
         const target = drawn.find(r => r.id == clickedRectangle);
-        if('wasd'.includes(e.key)) canvasHasChanged();
+        if('wasdWASD'.includes(e.key)) canvasHasChanged();
 
         switch(e.key) {
             case 'w':
@@ -105,6 +105,20 @@ document.body.addEventListener('keydown', e => {
             case 'd':
                 target.x += 1;
                 break;
+            case 'W':
+                target.setEdge('top', 10 * Math.floor((target.top - 1) / 10));
+                break;
+            case 'A':
+                target.setEdge('left', 10 * Math.floor((target.left - 1) / 10));
+                break;
+            case 'S':
+                target.setEdge('bottom', 10 * Math.ceil((target.bottom + 1) / 10));
+                break;
+            case 'D':
+                target.setEdge('right', 10 * Math.ceil((target.right + 1) / 10));
+                break;
         }
+        target.y = Math.min(Math.max(0, target.y), main.height);
+        target.x = Math.min(Math.max(0, target.x), main.width);
     }
 });
