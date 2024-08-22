@@ -149,11 +149,6 @@ function readyDownloads() {
     readyJavaFile(name, drawn);
     readySQLFile(name, Table.getData());
     readyConflictSQLFile(name, Table.getData());
-
-    main.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        document.getElementById('previousCanvas').setAttribute('href', url);
-    });
 }
 
 function canvasHasChanged() {
@@ -163,4 +158,25 @@ function canvasHasChanged() {
 function tableSeatingHasChanged() {
     document.getElementById('downloadSQL').removeAttribute('href');
     document.getElementById('downloadConflictSQL').removeAttribute('href');
+}
+
+function createPreview(drawn) {
+    const width = Math.max(942, ...drawn.map(r => r.right));
+    const height = Math.max(624, ...drawn.map(r => r.bottom));
+    
+    const canvas = new OffscreenCanvas(width, height);
+    const context = canvas.getContext('2d');
+
+    context.fillStyle = '#F5FAF5';
+    context.fillRect(0, 0, width, height);
+    if(width > 942 && height > 624) {
+        context.strokeStyle = 'grey';
+        context.setLineDash([4, 3]);
+        context.strokeRect(0, 0, width, height);
+    }
+    for(const r of drawn) {
+        r.draw(context, {showName: false});
+    }
+
+    canvas.convertToBlob().then(blob => window.open(URL.createObjectURL(blob)));
 }
