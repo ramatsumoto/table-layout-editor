@@ -269,7 +269,7 @@ class SeatButton extends Rectangle {
         context.fillStyle = 'black';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
-        context.font = '20px Arial';
+        context.font = '16px Arial';
         context.fillText(this.text, ...this.center);
 
         context.restore();
@@ -464,23 +464,18 @@ class Togo extends Rectangle {
         const otherTables = Options.table.count + Options.bar.count + Options.counter.count;
         const count = Table.length() - otherTables;
         const names = Table.getRange(otherTables + 1, otherTables + Math.max(Togo.EXPECTED_COUNT, count));
-        console.log(names);
 
         const { width, height } = Options[this.tableType];
         
-        super.draw(context, { fillStyle: 'lightgrey', ...style });
+        super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
 
         for(let i = 0; i < Math.max(Togo.EXPECTED_COUNT, count); i++) {
             const x = this.x + (i % this.numPerRow) * (width + Togo.H_SPACING) + Togo.MARGIN;
             const y = this.y + Math.floor(i / this.numPerRow) * (height + Togo.V_SPACING) + Togo.MARGIN;
-            const rect = new Rectangle(x, y, width, height, true);
+            const rect = new SeatButton(x, y, width, height);
+            rect.text = names[i];
 
-            rect.draw(context, {fillStyle: 'white'});
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.font = '12pt Arial';
-            context.fillStyle = 'black';
-            context.fillText(names[i], ...rect.center);
+            rect.draw(context);
         }
     }
 }

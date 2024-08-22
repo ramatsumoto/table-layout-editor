@@ -31,7 +31,7 @@ const Options = {
         height: 50,
         wConstant: 'TOGO_BUTTON_WIDTH',
         hConstant: 'TOGO_BUTTON_HEIGHT',
-        color: '#808080',
+        color: '#F5FAF5',
         count: 0
     }
 }
@@ -114,7 +114,6 @@ function drawPOSBounds() {
 }
 
 function drawCursor(x, y) {
-    if(shift) console.log('hi');
     if(canClick()) {
         ctx.fillStyle = 'black';
     } else {
