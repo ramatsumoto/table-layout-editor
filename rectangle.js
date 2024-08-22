@@ -1,4 +1,3 @@
-const container = document.getElementById("mainContainer");
 const main = document.getElementById("main");
 const ctx = main.getContext("2d");
 
@@ -16,12 +15,6 @@ class Rectangle {
             this.name = `table` + this.id;
         }
         this.clicked = false;
-        this.attachment = {
-            top: [-1, y],
-            left: [-1, x],
-            bottom: [-1, y + h],
-            right: [-1, x + w]
-        };
     }
 
     get center() {

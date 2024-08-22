@@ -133,8 +133,6 @@ function frame() {
     ctx.clearRect(0, 0, main.width, main.height);
     drawGrid();
 
-    // updateOptions();
-
     let processClick = -1;
     for(const x of drawn) {
         let style = {};
