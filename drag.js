@@ -22,11 +22,24 @@ function unselectRectangle() {
 
 main.addEventListener('mousedown', e => {
     for(const rectangle of State.drawn.toReversed()) {
-        if(State.mode == 'register' && rectangle.hitTest(...State.mouse)) {
+        const isClicked = rectangle.hitTest(...State.mouse);
+        if(State.mode == 'register' && isClicked) {
             clickedRectangle = rectangle.id;
             rectangle.clicked = true;
             return true;
         }
+        if(State.mode == 'handy' && isClicked) {
+            if(e.shiftKey) {
+                // Delete
+            } else {
+                // Change ID
+            }
+            return true;
+        }
+    }
+    
+    if(State.mode == 'handy') {
+        // Place seat
     }
 });
 

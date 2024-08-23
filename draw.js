@@ -167,7 +167,12 @@ function frame() {
     }
 
     if(State.mode == 'handy') {
-        drawCursor(...State.mouse.map(n => Math.round(n / 5) * 5));
+        const roundedPos = State.mouse.map(n => Math.round(n / 5) * 5);
+        drawCursor(...roundedPos);
+        const preview = new Seat(...roundedPos, 100, 100, 0, true);
+        if(!checkForOverlaps(preview)) {
+            preview.draw(ctx);
+        }
     }
 
     window.requestAnimationFrame(frame);
