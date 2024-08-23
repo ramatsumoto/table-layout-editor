@@ -1,5 +1,19 @@
+const main = document.getElementById("main");
+const ctx = main.getContext("2d");
+
 const origin = [0, 0];
-const drawn = [];
+const drawnRegister = [];
+const drawnHandy = [];
+
+const State = {
+    mode: 'register',
+    posDimensions: {
+        width: 942,
+        height: 624
+    },
+    mouse: [0, 0],
+    drawn: drawnRegister
+}
 
 const Options = {
     table: {
@@ -37,9 +51,9 @@ const Options = {
 }
 
 function deleteFromDrawn(id) {
-    const index = drawn.findIndex(r => r.id == id);
+    const index = State.drawn.findIndex(r => r.id == id);
     if(index >= 0) {
-        drawn.splice(index, 1);
+        State.drawn.splice(index, 1);
     }
 }
 
@@ -58,7 +72,7 @@ function updateOptions(e) {
         }
     }
 
-    for(const rect of drawn) {
+    for(const rect of State.drawn) {
         if(rect instanceof Panel) {
             rect.calculateSize();
         }
@@ -114,15 +128,16 @@ function drawPOSBounds() {
 }
 
 function drawCursor(x, y) {
-    if(canClick()) {
-        ctx.fillStyle = 'black';
-    } else {
-        if(Seat.seats.some(seat => seat.inBounds(...mouseRounded())) && shift) {
-            ctx.fillStyle = 'red';
-        } else {
-            ctx.fillStyle = 'grey';
-        }
-    }
+    // if(canClick()) {
+    //     ctx.fillStyle = 'black';
+    // } else {
+    //     if(Seat.seats.some(seat => seat.inBounds(...mouseRounded())) && shift) {
+    //         ctx.fillStyle = 'red';
+    //     } else {
+    //         ctx.fillStyle = 'grey';
+    //     }
+    // }
+    ctx.fillStyle = 'black';
     ctx.beginPath();
     ctx.ellipse(x, y, 3, 3, 0, 0, 7);
     ctx.fill();
@@ -133,7 +148,7 @@ function frame() {
     drawGrid();
 
     let processClick = -1;
-    for(const x of drawn) {
+    for(const x of State.drawn) {
         let style = {};
         if(x.selected) style = { strokeStyle: 'black' };
         if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red', lineWidth: 2 };
@@ -144,14 +159,28 @@ function frame() {
         }
     }
     if(processClick >= 0) {
-        const clicked = drawn.find(r => r.id == processClick)
-        const others = drawn.filter(r => r != clicked);
+        const clicked = State.drawn.find(r => r.id == processClick)
+        const others = State.drawn.filter(r => r != clicked);
         clicked.connectAligned(ctx, others);
         clicked.connectNearest(ctx, others);
         clicked.almostAligned(ctx, others);
+    }
+
+    if(State.mode == 'handy') {
+        drawCursor(...State.mouse.map(n => Math.round(n / 5) * 5));
     }
 
     window.requestAnimationFrame(frame);
 }
 
 frame();
+
+function switchCanvas() {
+    if(State.mode == 'register') {
+        State.mode = 'handy'
+        State.drawn = drawnHandy;
+    } else {
+        State.mode = 'register'
+        State.drawn = drawnRegister;
+    }
+}

@@ -1,6 +1,3 @@
-const main = document.getElementById("main");
-const ctx = main.getContext("2d");
-
 class Rectangle {
     static SCALE = 1;
     static counter = 0;

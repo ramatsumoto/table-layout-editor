@@ -118,7 +118,7 @@ function prepareLaneDialog() {
         isVertical: lane.isVertical
     };
 
-    const others = drawn.filter(r => r != lane);
+    const others = State.drawn.filter(r => r != lane);
     for(const [edge, nearest] of Object.entries(lane.getNearest(others))) {
         if(nearest == Rectangle.MAX) continue;
 
@@ -187,7 +187,7 @@ function prepareGroupDialog() {
     [start.value, end.value] = group.tableIDs;
     end.setAttribute('min', group.tableIDs[1] - group.tableIDs[0] + 1);
 
-    const others = drawn.filter(r => r != group);
+    const others = State.drawn.filter(r => r != group);
     for(const [edge, nearest] of Object.entries(group.getNearest(others))) {
         if(edge != 'left' && edge != 'right') continue;
 
@@ -266,7 +266,7 @@ function createFromDialog(x, y) {
 
     if(type == 'panel') {
         Options[Util.value('dSeatType')].count += +Util.value('dSeatNum');
-        drawn.push(new Panel(
+        State.drawn.push(new Panel(
             x,
             y,
             +Util.value('dSeatNum'),
@@ -280,7 +280,7 @@ function createFromDialog(x, y) {
             }
         ));
     } else if(type == 'lane') {
-        drawn.push(new Lane(
+        State.drawn.push(new Lane(
             x,
             y,
             +Util.value('dWidth'),
@@ -293,7 +293,7 @@ function createFromDialog(x, y) {
         if(Util.value('dGroupPanels') == '1') panelCounts.pop();
 
         Options[Util.value('dSeatType')].count += Util.sum(panelCounts);
-        drawn.push(new Group(
+        State.drawn.push(new Group(
             x,
             y,
             Util.value('dText'),
@@ -303,7 +303,7 @@ function createFromDialog(x, y) {
             Util.value('dIndent') == 'left'
         ));
     } else if(type == 'togo') {
-        drawn.push(new Togo(
+        State.drawn.push(new Togo(
             x,
             y,
             +Util.value('dTogoRow'),
@@ -409,7 +409,7 @@ function seatingLinks(e) {
 }
 
 function getCurrentRectangle() {
-    return drawn.find(r => r.id == dialog.dataset.id);
+    return State.drawn.find(r => r.id == dialog.dataset.id);
 }
 
 function suggestedName() {
@@ -439,7 +439,7 @@ function suggestedName() {
         name = 'togoPanel';
     }
 
-    for(const other of drawn.filter(r => r != rect)) {
+    for(const other of State.drawn.filter(r => r != rect)) {
         if(other.name.startsWith(name)) {
             duplicateCount++;
         }
