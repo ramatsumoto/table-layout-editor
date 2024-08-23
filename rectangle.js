@@ -504,16 +504,19 @@ const Util = {
     deleteChildren: (element) => {
         while(element.hasChildNodes()) element.lastChild.remove();    
     },
-    get: (id) => {
-        const e = document.getElementById(id);
+    get: (idOrElem) => {
+        let e = idOrElem;
+        if(typeof idOrElem == 'string') {
+            e = document.getElementById(idOrElem);
+        }
         if(e.parentElement.tagName.toUpperCase() == 'LABEL') {
             return e.parentElement;
         } else {
             return e;
         }
     },
-    hide: (id) => Util.get(id).classList.add('hidden'),
-    unhide: (id) => Util.get(id).classList.remove('hidden'),
+    hide: (idOrElem) => Util.get(idOrElem).classList.add('hidden'),
+    unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
     value: (id) => document.getElementById(id).value,
     fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input'))
 }

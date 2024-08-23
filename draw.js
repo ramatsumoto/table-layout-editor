@@ -184,8 +184,12 @@ function switchCanvas() {
     if(State.mode == 'register') {
         State.mode = 'handy'
         State.drawn = drawnHandy;
+        document.querySelectorAll('[data-target="register"]').forEach(Util.hide);
+        document.querySelectorAll('[data-target="handy"]').forEach(Util.unhide);
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
+        document.querySelectorAll('[data-target="register"]').forEach(Util.unhide);
+        document.querySelectorAll('[data-target="handy"]').forEach(Util.hide);
     }
 }

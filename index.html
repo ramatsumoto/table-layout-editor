@@ -76,35 +76,77 @@
     <div>
         <strong>Set width/height</strong>
         <dl id="setDimensions">
-            <dt>Tables <input type="color" value="#ffa500" id="setTableColor" data-type="table" data-dimension="color"></dt>
-            <dd>
-                <label>Width: <input id="setTableWidth" type="number" class="long" value="100" data-type="table" data-dimension="width"></label>
-            </dd>
-            <dd>
-                <label>Height: <input id="setTableHeight" type="number" class="long" value="60" data-type="table" data-dimension="height"></label>
-            </dd>
-            <dt>Counter <input type="color" value="#ffff00" id="setCounterColor" data-type="counter" data-dimension="color"></dt>
-            <dd>
-                <label>Width: <input id="setCounterWidth" type="number" class="long" value="90" data-type="counter" data-dimension="width"></label>
-            </dd>
-            <dd>
-                <label>Height: <input id="setCounterHeight" type="number" class="long" value="50" data-type="counter" data-dimension="height"></label>
-            </dd>
-            <dt>Bar <input type="color" value="#008000" id="setBarColor" data-type="bar" data-dimension="color"></dt>
-            <dd>
-                <label>Width: <input id="setBarWidth" type="number" class="long" value="90" data-type="bar" data-dimension="width"></label>
-            </dd>
-            <dd>
-                <label>Height: <input id="setBarHeight" type="number" class="long" value="53" data-type="bar" data-dimension="height"></label>
-            </dd>
-            <dt>To go <input type="color" value="#F5FAF5" id="setTogoColor" data-type="togo" data-dimension="color"></dt>
-            <dd>
-                <label>Width: <input id="setTogoWidth" type="number" class="long" value="90" data-type="togo" data-dimension="width"></label>
-            </dd>
-            <dd>
-                <label>Height: <input id="setTogoHeight" type="number" class="long" value="50" data-type="togo" data-dimension="height"></label>
-            </dd>
+            <div data-target="register">
+                <dt>Tables <input type="color" value="#ffa500" data-type="table" data-dimension="color" data-target="register"></dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="100" data-type="table" data-dimension="width" data-target="register"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="60" data-type="table" data-dimension="height" data-target="register"></label>
+                </dd>
+                <dt>Counter <input type="color" value="#ffff00" data-type="counter" data-dimension="color" data-target="register"></dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="90" data-type="counter" data-dimension="width" data-target="register"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="50" data-type="counter" data-dimension="height" data-target="register"></label>
+                </dd>
+                <dt>Bar <input type="color" value="#008000" data-type="bar" data-dimension="color" data-target="register"></dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="90" data-type="bar" data-dimension="width" data-target="register"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="53" data-type="bar" data-dimension="height" data-target="register"></label>
+                </dd>
+                <dt>To go <input type="color" value="#F5FAF5" data-type="togo" data-dimension="color" data-target="register"></dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="90" data-type="togo" data-dimension="width" data-target="register"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="50" data-type="togo" data-dimension="height" data-target="register"></label>
+                </dd>
+            </div>
+            <div data-target="handy">
+                <dt><b>Presets</b></dt>
+                <dt>Table</dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="130" data-type="table" data-dimension="width" data-target="handy"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="100" data-type="table" data-dimension="height" data-target="handy"></label>
+                </dd>
+                <dt>Counter</dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="80" data-type="counter" data-dimension="width" data-target="handy"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="70" data-type="counter" data-dimension="height" data-target="handy"></label>
+                </dd>
+                <dt>Togo</dt>
+                <dd>
+                    <label>Width: <input type="number" class="long" value="100" data-type="togo" data-dimension="width" data-target="handy"></label>
+                </dd>
+                <dd>
+                    <label>Height: <input type="number" class="long" value="100" data-type="togo" data-dimension="height" data-target="handy"></label>
+                </dd>
+            </div>
         </dl>
+        <div data-target="handy">
+            <b>Select current shape</b>
+            <br>
+            <label>Use preset: <select>
+                <option value="table">Table</option>
+                <option value="counter">Counter</option>
+                <option value="togo">Togo</option>
+            </select><br></label>
+            <br>
+            <label>Width: <input type="number" class="long" value="130" id="setSeatWidth"><br></label>
+            <label>Height: <input type="number" class="long" value="100" id="setSeatHeight"><br></label>
+            <label>Shape: <select id="setSeatShape">
+                <option value="0">Rectanglar</option>
+                <option value="1">Circular</option>
+            </select></label>
+        </div>
         <hr>
         <p><strong>Download/Export</strong></p>
         <label>Store Code: <input id="storeCode" value="test" class="short"></label>
@@ -119,20 +161,29 @@
     <div style="width: 20%;">
         <strong>Usage</strong>
         <dl>
-            <dt>While clicking on an element, press <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
-            <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
-            <dt>Click and drag on an element, to move it around.</dt>
-            <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
-            <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
-            
-            <dt>Double click on an empty area of the grid to create a new element.</dt>
-            <dd>A Panel is a line of tables.</dd>
-            <dd>A Lane is a rectangle with text.</dd>
-            <dd>A Group is a set of Panels put together with a title.</dd>
-            <dd>Togo creates a grid of exclusively to-go tables.<br><br></dd>
+            <div data-target="register">
+                <dt>While clicking on an element, press <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
+                <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
+                <dt>Click and drag on an element, to move it around.</dt>
+                <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
+                <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
+                
+                <dt>Double click on an empty area of the grid to create a new element.</dt>
+                <dd>A Panel is a line of tables.</dd>
+                <dd>A Lane is a rectangle with text.</dd>
+                <dd>A Group is a set of Panels put together with a title.</dd>
+                <dd>Togo creates a grid of exclusively to-go tables.<br><br></dd>
+    
+                <dt>Double click on an element to edit parts of it.</dt>
+                <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
+            </div>
 
-            <dt>Double click on an element to edit parts of it.</dt>
-            <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
+            <div data-target="handy">
+                <dt>Create the layout just by clicking.</dt>
+                <dd>Click on a blank space to create a seat with the parameters under <b>Select current shape</b>.</dd>
+                <dd>Click on a seat to edit its <b>table_seating</b> id.</dd>
+                <dd>Hold <kbd>Shift</kbd> and click to delete it.<br><br></dd>
+            </div>
 
             <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
             <dd>Change which names/IDs are used in a Panel or Group by double-clicking on them.<br><br></dd>
