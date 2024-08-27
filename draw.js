@@ -1,7 +1,6 @@
 const main = document.getElementById("main");
 const ctx = main.getContext("2d");
 
-const origin = [0, 0];
 const drawnRegister = [];
 const drawnHandy = [];
 
@@ -14,7 +13,9 @@ const State = {
     mouse: [0, 0],
     drawn: drawnRegister,
     cursorColor: 'black',
-    shift: false
+    shift: false,
+    origin: [100, 1000],
+    originClicked: false,
 }
 
 const Options = {
@@ -120,7 +121,7 @@ function drawGrid() {
     if(State.mode == 'register') {
         drawPOSBounds();
     } else {
-        // Draw origin
+        drawOrigin(...State.origin);
     }
 }
 
@@ -138,6 +139,30 @@ function drawCursor(x, y) {
     ctx.beginPath();
     ctx.ellipse(x, y, 3, 3, 0, 0, 7);
     ctx.fill();
+}
+
+function drawOrigin(x, y) {
+    ctx.save();
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = 'black';
+
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, main.height);
+    ctx.moveTo(0, y);
+    ctx.lineTo(main.width, y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    ctx.moveTo(x - 5, y - 5);
+    ctx.lineTo(x + 5, y + 5);
+    ctx.moveTo(x - 5, y + 5);
+    ctx.lineTo(x + 5, y - 5);
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 function frame() {
@@ -163,33 +188,37 @@ function frame() {
         clicked.almostAligned(ctx, others);
     }
 
-    if(State.mode == 'handy') {
+    if(State.mode == 'handy' && !State.originClicked) {
         const roundedPos = State.mouse.map(Util.round(5));
+
         drawCursor(...roundedPos);
 
-        const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
-
-        const previews = [];
-        let [x, y] = roundedPos;
-        for(const i of Array(count)) {
-            const seat = new Seat(x, y, width, height, shape, true);
-            previews.push(seat);
-            if(direction) {
-                x += width;
+        if(!Util.arrEquals(roundedPos, State.origin)) {
+            const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
+    
+            const previews = [];
+            let [x, y] = roundedPos;
+            for(const i of Array(count)) {
+                const seat = new Seat(x, y, width, height, shape, true);
+                previews.push(seat);
+                if(direction) {
+                    x += width;
+                } else {
+                    y += height;
+                }
+            }
+    
+            const isOverlapping = previews.some(checkForOverlaps);
+            if(!isOverlapping) {
+                previews.forEach(s => s.draw(ctx));
+                State.cursorColor = 'black';
+            } else if(State.drawn.some(r => r.hitTest(...roundedPos)) && State.shift) {
+                State.cursorColor = 'red';
             } else {
-                y += height;
+                State.cursorColor = 'grey';
             }
         }
 
-        const isOverlapping = previews.some(checkForOverlaps);
-        if(!isOverlapping) {
-            previews.forEach(s => s.draw(ctx));
-            State.cursorColor = 'black';
-        } else if(State.drawn.some(r => r.hitTest(...roundedPos)) && State.shift) {
-            State.cursorColor = 'red';
-        } else {
-            State.cursorColor = 'grey';
-        }
     }
 
     window.requestAnimationFrame(frame);
@@ -204,13 +233,16 @@ function switchCanvas() {
         document.querySelectorAll('[data-target="register"]').forEach(Util.hide);
         document.querySelectorAll('[data-target="handy"]').forEach(Util.unhide);
         Util.hide('previewLayout');
+        document.getElementById('canvasToggle').innerText = 'Switch to Register layout';
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
         document.querySelectorAll('[data-target="register"]').forEach(Util.unhide);
         document.querySelectorAll('[data-target="handy"]').forEach(Util.hide);
         Util.unhide('previewLayout');
+        document.getElementById('canvasToggle').innerText = 'Switch to Handy layout';
     }
 }
 
+switchCanvas();
 switchCanvas();

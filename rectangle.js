@@ -519,5 +519,6 @@ const Util = {
     unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
     value: (id) => document.getElementById(id).value,
     fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input')),
-    round: (k) => n => Math.round(n / k) * k
+    round: (k) => n => Math.round(n / k) * k,
+    arrEquals: (arr1, arr2) => arr1.every((x, i) => x == arr2[i]),
 }

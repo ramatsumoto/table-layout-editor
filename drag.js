@@ -39,8 +39,14 @@ main.addEventListener('mousedown', e => {
         }
     }
     
-    if(State.mode == 'handy') {
+    if(State.mode == 'handy') {        
         let [x, y] = State.mouse.map(Util.round(5));
+
+        if(Util.arrEquals(State.origin, [x, y])) {
+            State.originClicked = true;
+            return;
+        }
+
         const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
 
         const seats = [];
@@ -62,6 +68,11 @@ main.addEventListener('mousedown', e => {
 
 main.addEventListener('mousemove', e => {
     State.mouse = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
+
+    if(State.originClicked) {
+        State.origin = State.mouse.map(Util.round(5));
+        return;
+    }
 
     if(clickedRectangle < 0) return ;
 
@@ -94,7 +105,10 @@ main.addEventListener('mousemove', e => {
     }
 });
 
-main.addEventListener('mouseup', unselectRectangle);
+main.addEventListener('mouseup', () => {
+    unselectRectangle();
+    State.originClicked = false;
+});
 main.addEventListener('mouseleave', unselectRectangle);
 
 main.addEventListener('dblclick', e => {
