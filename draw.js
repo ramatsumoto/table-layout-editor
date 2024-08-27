@@ -167,7 +167,7 @@ function frame() {
         if(!isOverlapping) {
             preview.draw(ctx);
             State.cursorColor = 'black';
-        } else if(State.drawn.every(r => r.hitTest(...State.mouse.map(Util.round(5)))) && State.shift) {
+        } else if(State.drawn.some(r => r.hitTest(...State.mouse.map(Util.round(5)))) && State.shift) {
             State.cursorColor = 'red';
         } else {
             State.cursorColor = 'grey';
@@ -195,5 +195,3 @@ function switchCanvas() {
     }
 }
 
-
-switchCanvas();

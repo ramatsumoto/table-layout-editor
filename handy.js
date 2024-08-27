@@ -48,3 +48,16 @@ class Seat extends Rectangle {
         this.tableID = asNum;
     }
 }
+
+document.getElementById('setSeatPreset').addEventListener('change', e => {
+    const preset = e.target.value;
+    const inputs = [...document.querySelectorAll('dl#setDimensions input')].filter(i => i.dataset.target == 'handy');
+
+    const w = inputs.find(i => i.dataset.type == preset && i.dataset.dimension == 'width');
+    const h = inputs.find(i => i.dataset.type == preset && i.dataset.dimension == 'height');
+    const shape = (preset == 'counter') ? 1 : 0;
+
+    document.getElementById('setSeatWidth').value = w.value;
+    document.getElementById('setSeatHeight').value = h.value;
+    document.getElementById('setSeatShape').value = shape;
+});
