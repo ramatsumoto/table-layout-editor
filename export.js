@@ -96,6 +96,33 @@ function exportJava(name, drawn) {
     return text;
 }
 
+function exportSeat(seat) {
+    let name = Table.get(seat.id);
+    if(name == '[N/A]') name = 'TABLE';
+    return `      <tableGUIType TABLE_ID="${seat.tableID}">
+    <name>${name}</name>
+    <shape>${seat.shape}</shape>
+    <minx>${seat.x - State.origin[0]}</minx>
+    <miny>${seat.y - State.origin[1]}</miny>
+    <maxx>${seat.x + seat.w - State.origin[0]}</maxx>
+    <maxy>${seat.y + seat.h - State.origin[1]}</maxy>
+ </tableGUIType>`
+}
+
+function readyXMLFile(name, drawn) {
+    const filename = `tables_${name.trim().toLowerCase()}.xml`;
+    const seats = drawn.map(s => exportSeat(s));
+    const text = XMLTemplate.replace('{}', seats.join('\n'));
+    const xml = new Blob([text], { type: 'text/xml' });
+    const url = URL.createObjectURL(xml);
+
+    const link = document.getElementById('downloadXML');
+    link.removeAttribute('href');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.innerText = filename;
+}
+
 function readyJavaFile(name, drawn) {
     name = name.trim().toUpperCase();
     const filename = `TablePanelImplKula${name}.java`;
@@ -146,19 +173,25 @@ function readyConflictSQLFile(name, tableRows) {
 
 function readyDownloads() {
     const name = document.getElementById('storeCode').value;
-    readyJavaFile(name, drawn);
+    readyJavaFile(name, State.drawn);
     readySQLFile(name, Table.getData());
     readyConflictSQLFile(name, Table.getData());
+    readyXMLFile(name, State.drawn);
 }
 
 function canvasHasChanged() {
-    document.getElementById('downloadJava').removeAttribute('href');
+    if(State.mode == 'register') {
+        document.getElementById('downloadJava').removeAttribute('href');
+    } else if(State.mode == 'handy') {
+        document.getElementById('downloadXML').removeAttribute('href');
+    }
 }
 
 function tableSeatingHasChanged() {
     document.getElementById('downloadSQL').removeAttribute('href');
     document.getElementById('downloadConflictSQL').removeAttribute('href');
 }
+
 
 function createPreview(drawn) {
     const width = Math.max(942, ...drawn.map(r => r.right));

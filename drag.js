@@ -2,9 +2,9 @@ let clickedRectangle = -1;
 
 function checkForOverlaps(target = null) {
     if(target) {
-        return drawn.filter(r => r != target).some(r => r.isOverlapping(target));
+        return State.drawn.filter(r => r != target).some(r => r.isOverlapping(target));
     } else {
-        const drawnCopy = [...drawn];
+        const drawnCopy = [...State.drawn];
         while(drawnCopy.length) {
             target = drawnCopy.shift();
             if(drawnCopy.some(r => r.isOverlapping(target))) {
@@ -16,25 +16,68 @@ function checkForOverlaps(target = null) {
 }
 
 function unselectRectangle() {
-    drawn.find(r => r.id == clickedRectangle)?.unselect?.();
+    State.drawn.find(r => r.id == clickedRectangle)?.unselect?.();
     clickedRectangle = -1;
 }
 
 main.addEventListener('mousedown', e => {
-    for(const rectangle of drawn.toReversed()) {
-        if(rectangle.hitTest(e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top)) {
+    for(const rectangle of State.drawn.toReversed()) {
+        const isClicked = rectangle.hitTest(...State.mouse);
+        if(State.mode == 'register' && isClicked) {
             clickedRectangle = rectangle.id;
             rectangle.clicked = true;
             return true;
         }
+        if(State.mode == 'handy' && rectangle.hitTest(...State.mouse.map(Util.round(5)))) {
+            if(e.shiftKey) {
+                deleteFromDrawn(rectangle.id);
+            } else {
+                rectangle.changeID();
+            }
+            canvasHasChanged();
+            return true;
+        }
+    }
+    
+    if(State.mode == 'handy') {        
+        let [x, y] = State.mouse.map(Util.round(5));
+
+        if(Util.arrEquals(State.origin, [x, y])) {
+            State.originClicked = true;
+            return;
+        }
+
+        const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
+
+        const seats = [];
+        for(const i of Array(count)) {
+            const seat = new Seat(x, y, width, height, shape);
+            seats.push(seat);
+            if(direction) {
+                x += width;
+            } else {
+                y += height;
+            }
+        }
+        if(seats.some(checkForOverlaps)) return;
+
+        State.drawn.push(...seats);
+        canvasHasChanged();
     }
 });
 
 main.addEventListener('mousemove', e => {
+    State.mouse = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
+
+    if(State.originClicked) {
+        State.origin = State.mouse.map(Util.round(5));
+        return;
+    }
+
     if(clickedRectangle < 0) return ;
 
-    const target = drawn.find(r => r.id == clickedRectangle);
-    const others = drawn.filter(r => r != target);
+    const target = State.drawn.find(r => r.id == clickedRectangle);
+    const others = State.drawn.filter(r => r != target);
     const [dx, dy] = [e.movementX, e.movementY];
     const [x, y] = [target.x + dx, target.y + dy];
 
@@ -62,13 +105,15 @@ main.addEventListener('mousemove', e => {
     }
 });
 
-main.addEventListener('mouseup', unselectRectangle);
+main.addEventListener('mouseup', () => {
+    unselectRectangle();
+    State.originClicked = false;
+});
 main.addEventListener('mouseleave', unselectRectangle);
 
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
-    const adjustedPosition = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
-    const clicked = drawn.toReversed().find(r => r.hitTest(...adjustedPosition));
+    const clicked = State.drawn.toReversed().find(r => r.hitTest(...State.mouse));
     
     dialog.dataset.id = clicked?.id ?? -1;
 
@@ -81,15 +126,15 @@ main.addEventListener('dblclick', e => {
     } else if(clicked instanceof Togo) {
         showDialog('togo');
     } else if(clicked === undefined) {
-        dialog.dataset.x = Math.round(adjustedPosition[0]);
-        dialog.dataset.y = Math.round(adjustedPosition[1]);
+        dialog.dataset.x = Math.round(State.mouse[0]);
+        dialog.dataset.y = Math.round(State.mouse[1]);
         showDialog('create');
     }
 });
 
 document.body.addEventListener('keydown', e => {
     if(clickedRectangle >= 0) {
-        const target = drawn.find(r => r.id == clickedRectangle);
+        const target = State.drawn.find(r => r.id == clickedRectangle);
         if('wasdWASD'.includes(e.key)) canvasHasChanged();
 
         switch(e.key) {
@@ -120,5 +165,21 @@ document.body.addEventListener('keydown', e => {
         }
         target.y = Math.min(Math.max(0, target.y), main.height);
         target.x = Math.min(Math.max(0, target.x), main.width);
+    }
+    if(State.mode == 'handy') {
+        if(e.key == 'Shift') {
+            State.shift = true;
+        }
+
+        const shiftNum = '!@#$%^&*()'.indexOf(e.key);
+        if(shiftNum >= 0) {
+            document.getElementById('setSeatCount').value = shiftNum + 1;
+        }
+    }
+});
+
+document.body.addEventListener('keyup', e => {
+    if(State.shift && e.key == 'Shift') {
+        State.shift = false;
     }
 });

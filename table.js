@@ -17,12 +17,18 @@ const Table = {
         name: tr.querySelector('input').value,
         isTogo: tr.querySelector('input[type="checkbox"]').checked
     })),
+    get: (index, includeID = false) => {
+        const row = Table.getData().find(tr => tr.id == index);
+        const name = row?.name ?? '[N/A]';
+        if(includeID) {
+            return name + ` (${index})`;
+        } else {
+            return name;
+        }
+    },
     getRange: (start, end, includeID = false) => {
         if(start < 1) return false;
-        const length = end - start + 1;
-        const validRange = Table.getData().map(d => includeID ? `${d.name} (${d.id})` : d.name).slice(start - 1, end);
-        while(validRange.length < length) validRange.push(`[N/A] (${start + validRange.length})`);
-        return validRange;
+        return Array.from({ length: end - start + 1 }, (_, i) => Table.get(i + start, includeID));
     },
     setRow: (id, text, togo) => {
         if(id < 1 || id > Table.length()) return false;
