@@ -79,6 +79,7 @@ function preparePanelDialog() {
         [mBottom, 'input', () => panel.margin.bottom = +mBottom.value],
         [mLeft, 'input', () => panel.margin.left = +mLeft.value],
         [mRight, 'input', () => panel.margin.right = +mRight.value],
+        [dialog, 'input', () => panel.calculateSize()]
     ]);
     [start.value, end.value] = panel.tableIDs;
     end.setAttribute('min', panel.tableIDs[1] - panel.tableIDs[0] + 1);
@@ -91,6 +92,7 @@ function preparePanelDialog() {
         panel.tableIDs = initial.tableIDs;
         panel.isVertical = initial.isVertical;
         panel.margin = initial.margins;
+        panel.calculateSize();
     }
 
     return { confirm, cancel };
@@ -253,6 +255,8 @@ function prepareTogoDialog() {
 function prepareCreateDialog(x, y) {
     Util.unhide('dCreateType');
     Util.fireInputEvent('dCreateType');
+
+    ['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight'].forEach(id => document.getElementById(id).value = 3);
 
     const confirm = () => {
         createFromDialog(x, y);
