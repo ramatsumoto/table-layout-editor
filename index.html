@@ -152,9 +152,10 @@
         <label>Store Code: <input id="storeCode" value="test" class="short"></label>
         <br>
         <button id="readyDownloads" onclick="readyDownloads()">Generate Files</button>
-        <button id="previewLayout" onclick="createPreview(drawn)">Preview Layout</button>
+        <button id="previewLayout" onclick="createPreview(State.drawn)">Preview Layout</button>
         <br>
         <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
+        <p><a id="downloadXML">tables_test.xml</a></p>
         <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
         <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a></p>
     </div>
@@ -279,8 +280,8 @@
 
     <script src="./rectangle.js"></script>
     <script src="./handy.js"></script>
-    <script src="./draw.js"></script>
     <script src="./drag.js"></script>
+    <script src="./draw.js"></script>
     <script src="./table.js"></script>
     <script src="./dialog.js"></script>
 </body>

@@ -28,18 +28,24 @@ main.addEventListener('mousedown', e => {
             rectangle.clicked = true;
             return true;
         }
-        if(State.mode == 'handy' && isClicked) {
+        if(State.mode == 'handy' && rectangle.hitTest(...State.mouse.map(Util.round(5)))) {
             if(e.shiftKey) {
-                // Delete
+                deleteFromDrawn(rectangle.id);
             } else {
-                // Change ID
+                rectangle.changeID();
             }
+            canvasHasChanged();
             return true;
         }
     }
     
     if(State.mode == 'handy') {
-        // Place seat
+        const position = State.mouse.map(Util.round(5));
+        const seat = new Seat(...position, +Util.value('setSeatWidth'), +Util.value('setSeatHeight'), +Util.value('setSeatShape'));
+        if(checkForOverlaps(seat)) return;
+
+        State.drawn.push(seat);
+        canvasHasChanged();
     }
 });
 
@@ -134,5 +140,14 @@ document.body.addEventListener('keydown', e => {
         }
         target.y = Math.min(Math.max(0, target.y), main.height);
         target.x = Math.min(Math.max(0, target.x), main.width);
+    }
+    if(e.key == 'Shift') {
+        State.shift = true;
+    }
+});
+
+document.body.addEventListener('keyup', e => {
+    if(State.shift && e.key == 'Shift') {
+        State.shift = false;
     }
 });

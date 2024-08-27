@@ -12,7 +12,9 @@ const State = {
         height: 624
     },
     mouse: [0, 0],
-    drawn: drawnRegister
+    drawn: drawnRegister,
+    cursorColor: 'black',
+    shift: false
 }
 
 const Options = {
@@ -128,16 +130,7 @@ function drawPOSBounds() {
 }
 
 function drawCursor(x, y) {
-    // if(canClick()) {
-    //     ctx.fillStyle = 'black';
-    // } else {
-    //     if(Seat.seats.some(seat => seat.inBounds(...mouseRounded())) && shift) {
-    //         ctx.fillStyle = 'red';
-    //     } else {
-    //         ctx.fillStyle = 'grey';
-    //     }
-    // }
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = State.cursorColor;
     ctx.beginPath();
     ctx.ellipse(x, y, 3, 3, 0, 0, 7);
     ctx.fill();
@@ -167,11 +160,17 @@ function frame() {
     }
 
     if(State.mode == 'handy') {
-        const roundedPos = State.mouse.map(n => Math.round(n / 5) * 5);
+        const roundedPos = State.mouse.map(Util.round(5));
         drawCursor(...roundedPos);
-        const preview = new Seat(...roundedPos, 100, 100, 0, true);
-        if(!checkForOverlaps(preview)) {
+        const preview = new Seat(...roundedPos,  +Util.value('setSeatWidth'), +Util.value('setSeatHeight'), +Util.value('setSeatShape'), true);
+        const isOverlapping = checkForOverlaps(preview);
+        if(!isOverlapping) {
             preview.draw(ctx);
+            State.cursorColor = 'black';
+        } else if(State.drawn.every(r => r.hitTest(...State.mouse.map(Util.round(5)))) && State.shift) {
+            State.cursorColor = 'red';
+        } else {
+            State.cursorColor = 'grey';
         }
     }
 
@@ -186,10 +185,15 @@ function switchCanvas() {
         State.drawn = drawnHandy;
         document.querySelectorAll('[data-target="register"]').forEach(Util.hide);
         document.querySelectorAll('[data-target="handy"]').forEach(Util.unhide);
+        Util.hide('previewLayout');
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
         document.querySelectorAll('[data-target="register"]').forEach(Util.unhide);
         document.querySelectorAll('[data-target="handy"]').forEach(Util.hide);
+        Util.unhide('previewLayout');
     }
 }
+
+
+switchCanvas();

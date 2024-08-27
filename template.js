@@ -100,4 +100,40 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 
         this.pack();
 	}
-}`
+}`;
+
+const XMLTemplate = `<tableLayoutGUIType xmlns="http://www.acropoint.com/rest/domains/session_data">
+<table class="java.util.ArrayList">
+	
+{}
+
+   
+</table>
+<background R="250" G="250" B="250"/>
+<status class="java.util.ArrayList">
+   <tableStatus _id="0">
+	  <color R="0" G="200" B="200"/>
+	  <name>NULL</name>
+   </tableStatus>
+   <tableStatus _id="1">
+	  <color R="100" G="100" B="200"/>
+	  <name>Draft</name>
+   </tableStatus>
+   <tableStatus _id="2">
+	  <color R="200" G="0" B="0"/>
+	  <name>Ordered</name>
+   </tableStatus>
+   <tableStatus _id="3">
+	  <color R="200" G="200" B="0"/>
+	  <name>Payment</name>
+   </tableStatus>
+   <tableStatus _id="4">
+	  <color R="0" G="200" B="0"/>
+	  <name>Completed</name>
+   </tableStatus>
+   <tableStatus _id="5">
+	  <color R="200" G="0" B="200"/>
+	  <name>Multiple</name>
+   </tableStatus>
+</status>
+</tableLayoutGUIType>`;

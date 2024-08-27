@@ -34,8 +34,17 @@ class Seat extends Rectangle {
         context.textBaseline = 'middle';
         context.font = '12pt Arial';
         context.fillStyle = 'black';
-        context.fillText(Table.get(this.tableID), ...this.center);
+        context.fillText(Table.get(this.tableID, true), ...this.center);
 
         context.restore();
+    }
+
+    changeID() {
+        const response = window.prompt('Set new table seating ID', this.tableID);
+        const asNum = Number.parseInt(response);
+
+        if(Number.isNaN(asNum)) return;
+
+        this.tableID = asNum;
     }
 }

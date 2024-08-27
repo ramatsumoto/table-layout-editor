@@ -518,5 +518,6 @@ const Util = {
     hide: (idOrElem) => Util.get(idOrElem).classList.add('hidden'),
     unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
     value: (id) => document.getElementById(id).value,
-    fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input'))
+    fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input')),
+    round: (k) => n => Math.round(n / k) * k
 }
