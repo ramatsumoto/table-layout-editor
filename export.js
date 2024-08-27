@@ -100,13 +100,13 @@ function exportSeat(seat) {
     let name = Table.get(seat.id);
     if(name == '[N/A]') name = 'TABLE';
     return `      <tableGUIType TABLE_ID="${seat.tableID}">
-    <name>${name}</name>
-    <shape>${seat.shape}</shape>
-    <minx>${seat.x - State.origin[0]}</minx>
-    <miny>${seat.y - State.origin[1]}</miny>
-    <maxx>${seat.x + seat.w - State.origin[0]}</maxx>
-    <maxy>${seat.y + seat.h - State.origin[1]}</maxy>
- </tableGUIType>`
+         <name>${name}</name>
+         <shape>${seat.shape}</shape>
+         <minx>${seat.x - State.origin[0]}</minx>
+         <miny>${seat.y - State.origin[1]}</miny>
+         <maxx>${seat.x + seat.w - State.origin[0]}</maxx>
+         <maxy>${seat.y + seat.h - State.origin[1]}</maxy>
+      </tableGUIType>`
 }
 
 function readyXMLFile(name, drawn) {
