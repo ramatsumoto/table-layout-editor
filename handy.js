@@ -55,9 +55,16 @@ document.getElementById('setSeatPreset').addEventListener('change', e => {
 
     const w = inputs.find(i => i.dataset.type == preset && i.dataset.dimension == 'width');
     const h = inputs.find(i => i.dataset.type == preset && i.dataset.dimension == 'height');
+    if(!w || !h) {
+        return ;
+    }
     const shape = (preset == 'counter') ? 1 : 0;
 
     document.getElementById('setSeatWidth').value = w.value;
     document.getElementById('setSeatHeight').value = h.value;
     document.getElementById('setSeatShape').value = shape;
 });
+
+['setSeatWidth', 'setSeatHeight', 'setSeatShape'].forEach(id => document.getElementById(id).addEventListener('input', e => {
+    document.getElementById('setSeatPreset').value = 'custom';
+}));
