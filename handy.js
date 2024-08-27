@@ -3,7 +3,7 @@ class Seat extends Rectangle {
         super(x, y, w, h, temp);
         this.shape = shape;
         this.temp = temp;
-        this.tableID = 0;
+        this.tableID = 1;
     }
 
     draw(context) {
@@ -43,7 +43,7 @@ class Seat extends Rectangle {
         const response = window.prompt('Set new table seating ID', this.tableID);
         const asNum = Number.parseInt(response);
 
-        if(Number.isNaN(asNum)) return;
+        if(Number.isNaN(asNum) || asNum < 1) return;
 
         this.tableID = asNum;
     }

@@ -117,7 +117,11 @@ function drawGrid() {
         ctx.stroke();
     }
 
-    drawPOSBounds();
+    if(State.mode == 'register') {
+        drawPOSBounds();
+    } else {
+        // Draw origin
+    }
 }
 
 function drawPOSBounds() {
@@ -162,12 +166,26 @@ function frame() {
     if(State.mode == 'handy') {
         const roundedPos = State.mouse.map(Util.round(5));
         drawCursor(...roundedPos);
-        const preview = new Seat(...roundedPos,  +Util.value('setSeatWidth'), +Util.value('setSeatHeight'), +Util.value('setSeatShape'), true);
-        const isOverlapping = checkForOverlaps(preview);
+
+        const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
+
+        const previews = [];
+        let [x, y] = roundedPos;
+        for(const i of Array(count)) {
+            const seat = new Seat(x, y, width, height, shape, true);
+            previews.push(seat);
+            if(direction) {
+                x += width;
+            } else {
+                y += height;
+            }
+        }
+
+        const isOverlapping = previews.some(checkForOverlaps);
         if(!isOverlapping) {
-            preview.draw(ctx);
+            previews.forEach(s => s.draw(ctx));
             State.cursorColor = 'black';
-        } else if(State.drawn.some(r => r.hitTest(...State.mouse.map(Util.round(5)))) && State.shift) {
+        } else if(State.drawn.some(r => r.hitTest(...roundedPos)) && State.shift) {
             State.cursorColor = 'red';
         } else {
             State.cursorColor = 'grey';
@@ -195,3 +213,4 @@ function switchCanvas() {
     }
 }
 
+switchCanvas();

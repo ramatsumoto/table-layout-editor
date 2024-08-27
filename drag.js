@@ -40,11 +40,22 @@ main.addEventListener('mousedown', e => {
     }
     
     if(State.mode == 'handy') {
-        const position = State.mouse.map(Util.round(5));
-        const seat = new Seat(...position, +Util.value('setSeatWidth'), +Util.value('setSeatHeight'), +Util.value('setSeatShape'));
-        if(checkForOverlaps(seat)) return;
+        let [x, y] = State.mouse.map(Util.round(5));
+        const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
 
-        State.drawn.push(seat);
+        const seats = [];
+        for(const i of Array(count)) {
+            const seat = new Seat(x, y, width, height, shape);
+            seats.push(seat);
+            if(direction) {
+                x += width;
+            } else {
+                y += height;
+            }
+        }
+        if(seats.some(checkForOverlaps)) return;
+
+        State.drawn.push(...seats);
         canvasHasChanged();
     }
 });
@@ -141,8 +152,15 @@ document.body.addEventListener('keydown', e => {
         target.y = Math.min(Math.max(0, target.y), main.height);
         target.x = Math.min(Math.max(0, target.x), main.width);
     }
-    if(e.key == 'Shift') {
-        State.shift = true;
+    if(State.mode == 'handy') {
+        if(e.key == 'Shift') {
+            State.shift = true;
+        }
+
+        const shiftNum = '!@#$%^&*()'.indexOf(e.key);
+        if(shiftNum >= 0) {
+            document.getElementById('setSeatCount').value = shiftNum + 1;
+        }
     }
 });
 

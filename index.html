@@ -146,6 +146,13 @@
                 <option value="0">Rectanglar</option>
                 <option value="1">Circular</option>
             </select></label>
+            <br>
+            <br>
+            <label># Seats: <input type="number" class="short" min="1" value="1" max="10" id="setSeatCount"><br></label>
+            <label>Direction: <select id="setSeatDirection">
+                <option value="1">Horizontal</option>
+                <option value="0">Vertical</option>
+            </select></label>
         </div>
         <hr>
         <p><strong>Download/Export</strong></p>
@@ -184,6 +191,9 @@
                 <dd>Click on a blank space to create a seat with the parameters under <b>Select current shape</b>.</dd>
                 <dd>Click on a seat to edit its <b>table_seating</b> id.</dd>
                 <dd>Hold <kbd>Shift</kbd> and click to delete it.<br><br></dd>
+                
+                <dt>Place multiple by changing <label for="setSeatCount"><i># Seats</i></label></dt>
+                <dd>Press <kbd>Shift+1,2,3,...</kbd> to quickly change <label for="setSeatCount"><i># Seats</i></label><br><br></dd>
             </div>
 
             <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
