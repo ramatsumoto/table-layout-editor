@@ -47,6 +47,17 @@ class Seat extends Rectangle {
 
         this.tableID = asNum;
     }
+
+    multiply(rows, cols, temp = false) {
+        const seats = [];
+        for(const i of Array(rows).keys()) {
+            for(const j of Array(cols).keys()) {
+                const seat = new Seat(this.x + j * this.w, this.y + i * this.h, this.w, this.h, this.shape, temp);
+                seats.push(seat);
+            }
+        }
+        return seats;
+    }
 }
 
 document.getElementById('setSeatPreset').addEventListener('change', e => {

@@ -123,7 +123,7 @@ function drawGrid() {
     if(State.mode == 'register') {
         drawPOSBounds();
     } else {
-        drawOrigin(...State.origin);
+        // drawOrigin(...State.origin);
     }
 }
 
@@ -187,7 +187,6 @@ function frame() {
         clicked.almostAligned(ctx, others);
     } else if(State.clicked.size > 1) {
         const clicked = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
-
         const x = clicked.sort((a, b) => a.left - b.left)[0].left;
         const y = clicked.sort((a, b) => a.top - b.top)[0].top;
         const bounding = new Rectangle(

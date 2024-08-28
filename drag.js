@@ -1,5 +1,3 @@
-let clickedRectangle = -1;
-
 function checkForOverlaps(target = null) {
     if(target) {
         return State.drawn.filter(r => r != target).some(r => r.isOverlapping(target));
@@ -16,8 +14,6 @@ function checkForOverlaps(target = null) {
 }
 
 function unselectRectangle() {
-    State.drawn.find(r => r.id == clickedRectangle)?.unselect?.();
-    clickedRectangle = -1;
     State.clicked.clear();
     for(const r of State.drawn) {
         r.unselect();
@@ -40,52 +36,9 @@ main.addEventListener('mousedown', e => {
             State.clicked.add(rectangle.id);
         }
         return true;
-
-        if(State.mode == 'register' && isClicked) {
-            clickedRectangle = rectangle.id;
-            rectangle.clicked = true;
-            State.clicked.add(rectangle.id);
-            return true;
-        }
-        if(State.mode == 'handy' && rectangle.hitTest(...State.mouse.map(Util.round(5)))) {
-            if(e.shiftKey) {
-                deleteFromDrawn(rectangle.id);
-            } else {
-                rectangle.changeID();
-            }
-            canvasHasChanged();
-            return true;
-        }
     }
 
     State.clicked.clear();
-    
-    if(State.mode == 'handy') {        
-        let [x, y] = State.mouse.map(Util.round(5));
-
-        if(Util.arrEquals(State.origin, [x, y])) {
-            State.originClicked = true;
-            return;
-        }
-
-        const [width, height, shape, count, direction] = 
-            ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
-
-        const seats = [];
-        for(const i of Array(count)) {
-            const seat = new Seat(x, y, width, height, shape);
-            seats.push(seat);
-            if(direction) {
-                x += width;
-            } else {
-                y += height;
-            }
-        }
-        if(seats.some(checkForOverlaps)) return;
-
-        State.drawn.push(...seats);
-        canvasHasChanged();
-    }
 
     [State.selector.x, State.selector.y] = State.mouse;
 });
@@ -102,7 +55,7 @@ main.addEventListener('mousemove', e => {
         return;
     }
 
-    if(clickedRectangle < 0 && State.clicked.size == 0) return ;
+    if(State.clicked.size == 0) return ;
 
     const [dx, dy] = [e.movementX, e.movementY];
     const targets = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
@@ -165,8 +118,11 @@ main.addEventListener('dblclick', e => {
     
     dialog.dataset.id = clicked?.id ?? -1;
 
-    if(State.mode == 'handy') {
-        return console.log('this isnt real yet');
+    if(State.mode == 'handy' && !clicked) {
+        dialog.dataset.x = Util.round(5)(State.mouse[0]);
+        dialog.dataset.y = Util.round(5)(State.mouse[1]);
+        showDialog('handy');
+        return;
     }
 
     if(clicked instanceof Panel) {

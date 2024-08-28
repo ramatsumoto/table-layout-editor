@@ -27,6 +27,10 @@ function showDialog(type) {
         Util.hide('dialogDelete');
         Util.hide('dName');
         buttonEvents = prepareCreateDialog(x, y);
+    } else if(type == 'handy') {
+        Util.hide('dialogDelete');
+        Util.hide('dName');
+        buttonEvents = prepareSeatDialog();
     }
 
     const confirm = () => {
@@ -316,6 +320,27 @@ function createFromDialog(x, y) {
     }
 }
 
+function prepareSeatDialog() {
+    Util.unhide('dSeat');
+    Util.fireInputEvent('dSeatRows');
+
+    const [rows, cols, start, end] = ['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
+    const [w, h, shape] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => +Util.value(id));
+
+    const x = +dialog.dataset.x;
+    const y = +dialog.dataset.y;
+    const confirm = () => {
+        const seat = new Seat(x, y, w, h, shape, true);
+        const seats = seat.multiply(+rows.value, +cols.value);
+        const ids = createMatrix(...[rows, cols, start, end].map(x => +x.value)).flat();
+        for(const [i, s] of seats.entries()) {
+            s.tableID = ids[i];
+        }
+        State.drawn.push(...seats);
+    }
+
+    return { confirm };
+}
 
 function createTypeSelection(e) {
     const type = e.target.value;
@@ -456,6 +481,38 @@ function suggestedName() {
     }
 
     return name;
+}
+
+function createMatrix(rows, cols, start, end) {
+    const length = rows * cols;
+    const ascending = start < end;
+    const numbers = Array.from({ length }, (_, i) => ascending ? start + i : end - i);
+    const matrix = numbers.reduce((arrs, x) => arrs.at(-1).length < cols ? arrs.with(-1, [...arrs.at(-1), x]) : [...arrs, [x]], [[]]);
+    return matrix;
+}
+
+function createSeatPreview(rows, cols, start, end) {
+    const tr = [];
+    for(const row of createMatrix(rows, cols, start, end)) {
+        const cells = row.map(n => {
+            const e = document.createElement('td');
+            e.innerText = Table.get(n, true);
+            return e;
+        });
+        const r = document.createElement('tr');
+        r.append(...cells);
+        tr.push(r);
+    }
+    const tbody = document.createElement('tbody');
+    tbody.append(...tr);
+    return tbody;
+}
+for(const id of ['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd']) {
+    const elem = document.getElementById(id);
+    elem.addEventListener('input', e => {
+        const tbody = createSeatPreview(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => +Util.value(id)));
+        document.getElementById('dSeatPreview').replaceChildren(tbody);
+    });
 }
 
 document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {

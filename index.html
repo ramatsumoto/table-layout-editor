@@ -37,6 +37,10 @@
             max-width: fit-content; 
             align-items: end;
         }
+        #dSeatPreview td {
+            padding: 3px;
+            font-size: 10pt;
+        }
     </style>
     <script src="./template.js"></script>
     <script src="./export.js"></script>
@@ -285,6 +289,23 @@
             <br>
             <label>Panel 1 Seat Count: <input id="dGroupPanel1" type="number" class="short" min="1" value="4"><br></label>
             <label>Panel 2 Seat Count: <input id="dGroupPanel2" type="number" class="short" min="1" value="4"><br></label>
+        </div>
+
+        <div id="dSeat">
+            <b>Place seats in a grid</b>
+            <div class="grid">
+                <label># Rows: <input id="dSeatRows" type="number" class="short" min="1" value="1"></label>
+                <label># Columns: <input id="dSeatCols" type="number" class="short" min="1" value="4"></label>
+            </div>
+            <p>Set table seating IDs:</p>
+            <div class="grid">
+                <label>Start: <input id="dSeatIDStart" type="number" class="short" min="1" value="1"></label>
+                <label>End: <input id="dSeatIDEnd" type="number" class="short" min="1" value="4"></label>
+            </div>
+            <br>
+            <table id="dSeatPreview">
+            </table>
+            <br>
         </div>
 
         <button id="dialogConfirm">OK</button>
