@@ -19,19 +19,19 @@ class Rectangle {
     }
 
     get top() {
-        return this.y;
+        return Math.min(this.y, this.y + this.h);
     }
 
     get bottom() {
-        return this.y + this.h;
+        return Math.max(this.y, this.y + this.h);
     }
 
     get left() {
-        return this.x;
+        return Math.min(this.x, this.x + this.w);
     }
 
     get right() {
-        return this.x + this.w;
+        return Math.max(this.x, this.x + this.w);
     }
 
     get hRange() {
@@ -62,21 +62,15 @@ class Rectangle {
         }
     }
 
-    static MAX = new Rectangle(main.width, main.height, -main.width, -main.height, true);
-
     hitTest(mouseX, mouseY) {
         return (this.x < mouseX && mouseX < this.x + this.w) && (this.y < mouseY && mouseY < this.y + this.h);
     }
 
     isOverlapping(otherRectangle, includeEdges = false) {
-        const dx = otherRectangle.x - this.x;
-        const dy = otherRectangle.y - this.y;
+        const dx = otherRectangle.left - this.left;
+        const dy = otherRectangle.top - this.top;
 
-        if(includeEdges) { // for when there are edges created by using strokeRect()
-            return (-otherRectangle.w <= dx && dx <= this.w) && (-otherRectangle.h <= dy && dy <= this.h);
-        } else {
-            return (-otherRectangle.w < dx && dx < this.w) && (-otherRectangle.h < dy && dy < this.h);
-        }
+        return Util.isOverlapping(this.hRange, otherRectangle.hRange, includeEdges) && Util.isOverlapping(this.vRange, otherRectangle.vRange, includeEdges);
     }
 
     draw(context, style = {}) {
@@ -116,10 +110,10 @@ class Rectangle {
         };
 
         const nearest = {
-            top: near.top.filter(other => !Util.isDisjoint(other.hRange, this.hRange))?.[0] ?? Rectangle.MAX,
-            bottom: near.bottom.filter(other => !Util.isDisjoint(other.hRange, this.hRange))?.[0] ?? Rectangle.MAX,
-            left: near.left.filter(other => !Util.isDisjoint(other.vRange, this.vRange))?.[0] ?? Rectangle.MAX,
-            right: near.right.filter(other => !Util.isDisjoint(other.vRange, this.vRange))?.[0] ?? Rectangle.MAX,
+            top: near.top.filter(other => !Util.isDisjoint(other.hRange, this.hRange))?.[0] ?? Border.MAX,
+            bottom: near.bottom.filter(other => !Util.isDisjoint(other.hRange, this.hRange))?.[0] ?? Border.MAX,
+            left: near.left.filter(other => !Util.isDisjoint(other.vRange, this.vRange))?.[0] ?? Border.MAX,
+            right: near.right.filter(other => !Util.isDisjoint(other.vRange, this.vRange))?.[0] ?? Border.MAX,
         }
 
         return nearest;
@@ -232,6 +226,30 @@ class Rectangle {
     isOutOfBounds(maxWidth = main.width, maxHeight = main.height) {
         return this.left < 0 || this.top < 0 || this.right > maxWidth || this.bottom > maxHeight;
     }
+}
+
+class Border extends Rectangle {
+    constructor(maxW, maxH) {
+        super(0, 0, maxW, maxH);
+    }
+
+    get left() {
+        return this.x + this.w;
+    }
+
+    get right() {
+        return this.x;
+    }
+
+    get top() {
+        return this.y + this.h;
+    }
+
+    get bottom() {
+        return this.y;
+    }
+
+    static MAX = new Border(main.width, main.height);
 }
 
 class SeatButton extends Rectangle {
@@ -489,6 +507,7 @@ class Togo extends Rectangle {
 const Util = {
     intersection: ([min1, max1], [min2, max2]) => [Math.max(min1, min2), Math.min(max1, max2)],
     isDisjoint: ([min1, max1], [min2, max2]) => (max1 < min2) || (max2 < min1),
+    isOverlapping: (range1, range2, closed = false) => !Util.isDisjoint(range1, range2) && (new Set(Util.intersection(range1, range2)).size != 1 || closed),
     sum: (arr) => arr.reduce((a, b) => a + b, 0),
     average: (...n) => Util.sum(n) / n.length,
     edges: ['top', 'bottom', 'left', 'right'],
