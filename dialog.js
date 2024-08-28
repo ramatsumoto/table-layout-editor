@@ -486,14 +486,14 @@ function suggestedName() {
 function createMatrix(rows, cols, start, end) {
     const length = rows * cols;
     const ascending = start < end;
-    const numbers = Array.from({ length }, (_, i) => ascending ? start + i : end - i);
+    const numbers = Array.from({ length }, (_, i) => ascending ? start + i : start - i);
     const matrix = numbers.reduce((arrs, x) => arrs.at(-1).length < cols ? arrs.with(-1, [...arrs.at(-1), x]) : [...arrs, [x]], [[]]);
     return matrix;
 }
 
-function createSeatPreview(rows, cols, start, end) {
+function createSeatPreview() {
     const tr = [];
-    for(const row of createMatrix(rows, cols, start, end)) {
+    for(const row of createMatrix(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => +Util.value(id)))) {
         const cells = row.map(n => {
             const e = document.createElement('td');
             e.innerText = Table.get(n, true);
@@ -505,15 +505,14 @@ function createSeatPreview(rows, cols, start, end) {
     }
     const tbody = document.createElement('tbody');
     tbody.append(...tr);
-    return tbody;
+    document.getElementById('dSeatPreview').replaceChildren(tbody);
 }
-for(const id of ['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd']) {
-    const elem = document.getElementById(id);
-    elem.addEventListener('input', e => {
-        const tbody = createSeatPreview(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => +Util.value(id)));
-        document.getElementById('dSeatPreview').replaceChildren(tbody);
-    });
-}
+['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].forEach(id => document.getElementById(id).addEventListener('input', createSeatPreview));
+document.getElementById('dSeatIDReverse').addEventListener('click', e => {
+    const [start, end] = [document.getElementById('dSeatIDStart'), document.getElementById('dSeatIDEnd')];
+    [start.value, end.value] = [end.value, start.value];
+    createSeatPreview();
+});
 
 document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {
     const rect = getCurrentRectangle();

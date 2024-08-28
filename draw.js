@@ -203,37 +203,8 @@ function frame() {
         bounding.almostAligned(ctx, others);
     }
 
-    if(State.mode == 'handy' && !State.originClicked) {
-        const roundedPos = State.mouse.map(Util.round(5));
-
-        drawCursor(...roundedPos);
-
-        if(!Util.arrEquals(roundedPos, State.origin)) {
-            const [width, height, shape, count, direction] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape', 'setSeatCount', 'setSeatDirection'].map(id => +Util.value(id));
-    
-            const previews = [];
-            let [x, y] = roundedPos;
-            for(const i of Array(count)) {
-                const seat = new Seat(x, y, width, height, shape, true);
-                previews.push(seat);
-                if(direction) {
-                    x += width;
-                } else {
-                    y += height;
-                }
-            }
-    
-            const isOverlapping = previews.some(checkForOverlaps);
-            if(!isOverlapping) {
-                previews.forEach(s => s.draw(ctx));
-                State.cursorColor = 'black';
-            } else if(State.drawn.some(r => r.hitTest(...roundedPos)) && State.shift) {
-                State.cursorColor = 'red';
-            } else {
-                State.cursorColor = 'grey';
-            }
-        }
-
+    if(State.mode == 'handy') {
+        drawCursor(State.mouse.map(Util.round(5)));
     }
 
     State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });
