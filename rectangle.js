@@ -12,6 +12,7 @@ class Rectangle {
             this.name = `table` + this.id;
         }
         this.clicked = false;
+        this.selected = false;
     }
 
     get center() {
@@ -99,6 +100,7 @@ class Rectangle {
 
     unselect() {
         this.clicked = false;
+        this.selected = false;
     }
 
     getNearest(others) {

@@ -16,6 +16,8 @@ const State = {
     shift: false,
     origin: [100, 1000],
     originClicked: false,
+    clicked: new Set(),
+    selector: new Rectangle(0, 0, 0, 0, true)
 }
 
 const Options = {
@@ -169,23 +171,37 @@ function frame() {
     ctx.clearRect(0, 0, main.width, main.height);
     drawGrid();
 
-    let processClick = -1;
     for(const x of State.drawn) {
         let style = {};
         if(x.selected) style = { strokeStyle: 'black' };
         if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red', lineWidth: 2 };
 
         x.draw(ctx, style);
-        if(x.clicked) {
-            processClick = x.id;
-        }
     }
-    if(processClick >= 0) {
-        const clicked = State.drawn.find(r => r.id == processClick)
+
+    if(State.clicked.size == 1) {
+        const clicked = State.drawn.find(r => r.id == [...State.clicked][0]);
         const others = State.drawn.filter(r => r != clicked);
         clicked.connectAligned(ctx, others);
         clicked.connectNearest(ctx, others);
         clicked.almostAligned(ctx, others);
+    } else if(State.clicked.size > 1) {
+        const clicked = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
+
+        const x = clicked.sort((a, b) => a.left - b.left)[0].left;
+        const y = clicked.sort((a, b) => a.top - b.top)[0].top;
+        const bounding = new Rectangle(
+            x,
+            y,
+            clicked.sort((a, b) => b.right - a.right)[0].right - x,
+            clicked.sort((a, b) => b.bottom - a.bottom)[0].bottom - y,
+            true
+        );
+        const others = State.drawn.filter(r => !State.clicked.has(r.id));
+        bounding.draw(ctx, { fillStyle: 'rgba(0,0,0,0)', strokeStyle: 'darkgrey'});
+        bounding.connectAligned(ctx, others);
+        bounding.connectNearest(ctx, others);
+        bounding.almostAligned(ctx, others);
     }
 
     if(State.mode == 'handy' && !State.originClicked) {
@@ -220,6 +236,8 @@ function frame() {
         }
 
     }
+
+    State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });
 
     window.requestAnimationFrame(frame);
 }
