@@ -40,6 +40,20 @@ main.addEventListener('mousedown', e => {
     State.clicked.clear();
 
     [State.selector.x, State.selector.y] = State.mouse;
+
+    if(e.shiftKey && State.mode == 'handy') {
+        const preview = previewSeat(...State.mouse.map(Util.round(5)));
+        if(!checkForOverlaps(preview)) {
+            const id = window.prompt('Set table_seating ID.', '1');
+            const asNum = Number.parseInt(id);
+
+            if(!Number.isNaN(asNum) && asNum >= 1) {
+                const seat = new Seat(preview.x, preview.y, preview.w, preview.h, preview.shape);
+                seat.tableID = asNum;
+                State.drawn.push(seat);
+            }
+        }
+    }
 });
 
 main.addEventListener('mousemove', e => {
@@ -112,7 +126,11 @@ main.addEventListener('mouseup', () => {
     State.selector.h = 0;
 
 });
-main.addEventListener('mouseleave', unselectRectangle);
+main.addEventListener('mouseleave', () => {
+    State.clicked.clear();
+    State.selector.w = 0;
+    State.selector.h = 0;
+});
 
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
@@ -192,11 +210,6 @@ document.body.addEventListener('keydown', e => {
     if(State.mode == 'handy') {
         if(e.key == 'Shift') {
             State.shift = true;
-        }
-
-        const shiftNum = '!@#$%^&*()'.indexOf(e.key);
-        if(shiftNum >= 0) {
-            document.getElementById('setSeatCount').value = shiftNum + 1;
         }
     }
 });

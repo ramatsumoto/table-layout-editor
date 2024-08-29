@@ -203,8 +203,12 @@ function frame() {
         bounding.almostAligned(ctx, others);
     }
 
-    if(State.mode == 'handy') {
-        drawCursor(State.mouse.map(Util.round(5)));
+    if(State.mode == 'handy' && State.shift) {
+        const ids = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'];
+        const preview = new Seat(...State.mouse.map(Util.round(5)), ...ids.map(id => +Util.value(id)), true);
+        if(!checkForOverlaps(preview)) {
+            preview.draw(ctx);
+        }
     }
 
     State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });

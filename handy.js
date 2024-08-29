@@ -39,15 +39,6 @@ class Seat extends Rectangle {
         context.restore();
     }
 
-    changeID() {
-        const response = window.prompt('Set new table seating ID', this.tableID);
-        const asNum = Number.parseInt(response);
-
-        if(Number.isNaN(asNum) || asNum < 1) return;
-
-        this.tableID = asNum;
-    }
-
     multiply(rows, cols, temp = false) {
         const seats = [];
         for(const i of Array(rows).keys()) {
@@ -79,3 +70,7 @@ document.getElementById('setSeatPreset').addEventListener('change', e => {
 ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].forEach(id => document.getElementById(id).addEventListener('input', e => {
     document.getElementById('setSeatPreset').value = 'custom';
 }));
+
+function previewSeat(x, y) {
+    return new Seat(x, y, ...['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => +Util.value(id)), true);
+}
