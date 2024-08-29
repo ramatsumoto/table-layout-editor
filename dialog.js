@@ -31,6 +31,9 @@ function showDialog(type) {
         Util.hide('dialogDelete');
         Util.hide('dName');
         buttonEvents = prepareSeatDialog();
+    } else if(type == 'seat') {
+        Util.hide('dName');
+        buttonEvents = prepareSeatEditDialog();
     }
 
     const confirm = () => {
@@ -342,6 +345,20 @@ function prepareSeatDialog() {
     return { confirm };
 }
 
+function prepareSeatEditDialog() {
+    const seat = getCurrentRectangle();
+    Util.unhide('dSeatEdit');
+    const id = document.getElementById('dSeatIDChange');
+    id.value = seat.tableID;
+    Util.fireInputEvent(id.id);
+
+    const confirm = () => {
+        seat.tableID = +id.value;
+    }
+
+    return { confirm };
+}
+
 function createTypeSelection(e) {
     const type = e.target.value;
 
@@ -533,6 +550,9 @@ document.getElementById('dSeatIDReverse').addEventListener('click', e => {
     const [start, end] = [document.getElementById('dSeatIDStart'), document.getElementById('dSeatIDEnd')];
     [start.value, end.value] = [end.value, start.value];
     createSeatPreview();
+});
+document.getElementById('dSeatIDChange').addEventListener('input', e => {
+    document.querySelector('[for="dSeatIDChange"]').innerText = `\u21A6 ${Table.get(+e.target.value)}`;
 });
 
 document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {

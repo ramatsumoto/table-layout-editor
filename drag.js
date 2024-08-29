@@ -120,25 +120,31 @@ main.addEventListener('dblclick', e => {
     
     dialog.dataset.id = clicked?.id ?? -1;
 
-    if(State.mode == 'handy' && !clicked) {
-        dialog.dataset.x = Util.round(5)(State.mouse[0]);
-        dialog.dataset.y = Util.round(5)(State.mouse[1]);
-        showDialog('handy');
+    if(State.mode == 'handy') {
+        if(clicked instanceof Seat) {
+            showDialog('seat');
+        } else if(clicked == undefined) {
+            dialog.dataset.x = Util.round(5)(State.mouse[0]);
+            dialog.dataset.y = Util.round(5)(State.mouse[1]);
+            showDialog('handy');
+        }
         return;
     }
 
-    if(clicked instanceof Panel) {
-        showDialog('panel');
-    } else if(clicked instanceof Lane) {
-        showDialog('lane');
-    } else if(clicked instanceof Group) {
-        showDialog('group');
-    } else if(clicked instanceof Togo) {
-        showDialog('togo');
-    } else if(clicked === undefined) {
-        dialog.dataset.x = Math.round(State.mouse[0]);
-        dialog.dataset.y = Math.round(State.mouse[1]);
-        showDialog('create');
+    if(State.mode == 'register') {
+        if(clicked instanceof Panel) {
+            showDialog('panel');
+        } else if(clicked instanceof Lane) {
+            showDialog('lane');
+        } else if(clicked instanceof Group) {
+            showDialog('group');
+        } else if(clicked instanceof Togo) {
+            showDialog('togo');
+        } else if(clicked === undefined) {
+            dialog.dataset.x = Math.round(State.mouse[0]);
+            dialog.dataset.y = Math.round(State.mouse[1]);
+            showDialog('create');
+        }
     }
 });
 
