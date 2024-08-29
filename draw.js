@@ -15,7 +15,8 @@ const State = {
     cursorColor: 'black',
     shift: false,
     clicked: new Set(),
-    selector: new Rectangle(0, 0, 0, 0, true)
+    selector: new Rectangle(0, 0, 0, 0, true),
+    getClicked: () => State.drawn.filter(r => State.clicked.has(r.id))
 }
 
 const Options = {
@@ -152,13 +153,13 @@ function frame() {
     }
 
     if(State.clicked.size == 1) {
-        const clicked = State.drawn.find(r => r.id == [...State.clicked][0]);
+        const clicked = State.getClicked()[0];
         const others = State.drawn.filter(r => r != clicked);
         clicked.connectAligned(ctx, others);
         clicked.connectNearest(ctx, others);
         clicked.almostAligned(ctx, others);
     } else if(State.clicked.size > 1) {
-        const clicked = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
+        const clicked = State.getClicked();
         const x = clicked.sort((a, b) => a.left - b.left)[0].left;
         const y = clicked.sort((a, b) => a.top - b.top)[0].top;
         const bounding = new Rectangle(

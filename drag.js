@@ -32,7 +32,9 @@ main.addEventListener('mousedown', e => {
             selected.forEach(r => State.clicked.add(r.id));
         } else {
             rectangle.clicked = true;
+            rectangle.selected = true;
             State.clicked.add(rectangle.id);
+            State.drawn.filter(r => r != rectangle).forEach(r => r.selected = false);
         }
         return true;
     }
@@ -66,7 +68,7 @@ main.addEventListener('mousemove', e => {
     if(State.clicked.size == 0) return ;
 
     const [dx, dy] = [e.movementX, e.movementY];
-    const targets = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
+    const targets = State.getClicked();
     const others = State.drawn.filter(r => !targets.includes(r));
 
     if(targets.length > 1) {
@@ -82,7 +84,7 @@ main.addEventListener('mousemove', e => {
         return;
     }
 
-    const target = State.drawn.find(r => r.id == [...State.clicked][0]);
+    const target = State.getClicked()[0];
 
     target.move(dx, dy, e.shiftKey);
 
@@ -101,9 +103,7 @@ main.addEventListener('mousemove', e => {
 });
 
 main.addEventListener('mouseup', () => {
-    const isOverClickedRectangle = 
-        State.drawn.filter(r => State.clicked.has(r.id))
-            .some(r => r.hitTest(...State.mouse));
+    const isOverClickedRectangle = State.getClicked().some(r => r.hitTest(...State.mouse));
 
     if(!isOverClickedRectangle) {
         unselectRectangle();
@@ -161,8 +161,11 @@ main.addEventListener('dblclick', e => {
 });
 
 document.body.addEventListener('keydown', e => {
-    if(State.clicked.size > 0) {
-        const targets = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
+    const selected = new Set(State.drawn.filter(r => r.selected).map(r => r.id));
+    const clicked = selected.union(State.clicked);
+
+    if(clicked.size > 0) {
+        const targets = [...clicked].map(id => State.drawn.find(r => r.id == id));
         if('wasdWASD'.includes(e.key)) canvasHasChanged();
 
         switch(e.key) {
@@ -178,8 +181,17 @@ document.body.addEventListener('keydown', e => {
             case 'd':
                 targets.forEach(t => t.move(1, 0, true));
                 break;
+            case 'Backspace':
+            case 'Delete':
+                const text = targets.length == 1 ? 'element?' : targets.length + ' elements?';
+                if(window.confirm('Delete the selected ' + text)) {
+                    clicked.forEach(deleteFromDrawn);
+                    State.clicked.clear();
+                    canvasHasChanged();
+                }
+                break;
         }
-        if(State.clicked.size == 1) {
+        if(clicked.size == 1) {
             const target = targets[0];
             switch(e.key) {
                 case 'W':
@@ -193,6 +205,11 @@ document.body.addEventListener('keydown', e => {
                     break;
                 case 'D':
                     target.setEdge('right', 10 * Math.ceil((target.right + 1) / 10));
+                    break;
+                case 'Enter':
+                    const dblclick = new MouseEvent('dblclick');
+                    State.mouse = target.center;
+                    main.dispatchEvent(dblclick);
                     break;
             }
         }
