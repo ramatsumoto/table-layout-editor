@@ -16,7 +16,8 @@ const State = {
     shift: false,
     clicked: new Set(),
     selector: new Rectangle(0, 0, 0, 0, true),
-    getClicked: () => State.drawn.filter(r => State.clicked.has(r.id))
+    getClicked: () => State.drawn.filter(r => State.clicked.has(r.id)),
+    debugPoint: [0, 0]
 }
 
 const Options = {
@@ -185,6 +186,13 @@ function frame() {
     }
 
     State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });
+
+    ctx.save();
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.ellipse(State.debugPoint[0] + 2, State.debugPoint[1] + 2, 2, 2, 0, 0, 7);
+    ctx.fill();
+    ctx.restore();
 
     window.requestAnimationFrame(frame);
 }
