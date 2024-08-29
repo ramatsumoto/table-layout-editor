@@ -229,7 +229,7 @@ class Rectangle {
         return this.left < 0 || this.top < 0 || this.right > maxWidth || this.bottom > maxHeight;
     }
 
-    move(dx, dy, ignoreCollision = false) {
+    move(dx, dy, ignoreCollision = false, ignoreOOB = false) {
         const isOverlapping = () => checkForOverlaps(this) && !ignoreCollision;
 
         if(isOverlapping()) {
@@ -244,7 +244,7 @@ class Rectangle {
             this.y -= dy;
         }
 
-        this.preventOOB();
+        if(!ignoreOOB) this.preventOOB();
     }
 
     preventOOB() {

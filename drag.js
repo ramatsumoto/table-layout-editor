@@ -58,16 +58,22 @@ main.addEventListener('mousemove', e => {
 
     const [dx, dy] = [e.movementX, e.movementY];
     const targets = [...State.clicked].map(id => State.drawn.find(r => r.id == id));
+    const others = State.drawn.filter(r => !targets.includes(r));
 
     if(targets.length > 1) {
         for(const t of targets) {
-            t.move(dx, dy, true);
+            t.move(dx, dy, true, true);
+        }
+        const overlappingUnselected = targets.some(r => others.some(other => r.isOverlapping(other)));
+        if(overlappingUnselected || targets.some(r => r.isOutOfBounds())) {
+            for(const t of targets) {
+                t.move(-dx, -dy, true);
+            }
         }
         return;
     }
 
     const target = State.drawn.find(r => r.id == [...State.clicked][0]);
-    const others = State.drawn.filter(r => r != target);
 
     target.move(dx, dy, e.shiftKey);
 
