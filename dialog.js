@@ -507,7 +507,28 @@ function createSeatPreview() {
     tbody.append(...tr);
     document.getElementById('dSeatPreview').replaceChildren(tbody);
 }
-['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].forEach(id => document.getElementById(id).addEventListener('input', createSeatPreview));
+
+function updateSeatIDs(e) {
+    const [start, end] = ['dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
+    const length = +Util.value('dSeatRows') * +Util.value('dSeatCols') - 1;
+    const ascending = +start.value < +end.value;
+    const count = ascending ? length : -length;
+
+    if(e.target == start) {
+        end.value = +start.value + count;
+    } else if(e.target == end) {
+        start.value = +end.value - count;
+    } else if(ascending) {
+        end.value = +start.value + count;
+    } else if(!ascending) {
+        start.value = +end.value - count;
+    }
+}
+
+['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].forEach(id => document.getElementById(id).addEventListener('input', e => {
+    updateSeatIDs(e);
+    createSeatPreview();
+}));
 document.getElementById('dSeatIDReverse').addEventListener('click', e => {
     const [start, end] = [document.getElementById('dSeatIDStart'), document.getElementById('dSeatIDEnd')];
     [start.value, end.value] = [end.value, start.value];
