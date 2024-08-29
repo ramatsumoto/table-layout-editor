@@ -10,7 +10,7 @@ class Seat extends Rectangle {
         context.save();
         context.beginPath();
         context.fillStyle = 'white';
-        context.strokeStyle = 'black';
+        context.strokeStyle = this.selected ? 'green' : 'black';
         context.strokeWidth = 2;
 
         const [x, y, w ,h] = [this.x, this.y, this.w, this.h].map(n => n * Rectangle.SCALE);

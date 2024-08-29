@@ -173,7 +173,7 @@ function frame() {
 
     for(const x of State.drawn) {
         let style = {};
-        if(x.selected) style = { strokeStyle: 'black' };
+        if(x.selected) style = { strokeStyle: 'green' };
         if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red', lineWidth: 2 };
 
         x.draw(ctx, style);

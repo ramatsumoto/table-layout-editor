@@ -62,20 +62,15 @@ main.addEventListener('mousemove', e => {
 
     if(targets.length > 1) {
         for(const t of targets) {
-            t.x += dx;
-            t.y += dy;
+            t.move(dx, dy, true);
         }
         return;
     }
 
     const target = State.drawn.find(r => r.id == [...State.clicked][0]);
-    const [x, y] = [target.x + dx, target.y + dy];
     const others = State.drawn.filter(r => r != target);
 
-    if(target.isOutOfBounds() && !e.shiftKey) return;
-
-    target.x = x;
-    target.y = y;
+    target.move(dx, dy, e.shiftKey);
 
     canvasHasChanged();
 
@@ -88,11 +83,6 @@ main.addEventListener('mousemove', e => {
                 target.setEdge(edge, other[edge]);
             }
         }
-    }
-    
-    if(checkForOverlaps(target) || target.isOutOfBounds()) {
-        target.x -= dx;
-        target.y -= dy;
     }
 });
 
@@ -147,16 +137,16 @@ document.body.addEventListener('keydown', e => {
 
         switch(e.key) {
             case 'w':
-                targets.forEach(t => t.y -= 1);
+                targets.forEach(t => t.move(0, -1, true));
                 break;
             case 'a':
-                targets.forEach(t => t.x -= 1);
+                targets.forEach(t => t.move(-1, 0, true));
                 break;
             case 's':
-                targets.forEach(t => t.y += 1);
+                targets.forEach(t => t.move(0, 1, true));
                 break;
             case 'd':
-                targets.forEach(t => t.x += 1);
+                targets.forEach(t => t.move(1, 0, true));
                 break;
         }
         if(State.clicked.size == 1) {

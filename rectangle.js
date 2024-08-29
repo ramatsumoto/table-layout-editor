@@ -228,6 +228,29 @@ class Rectangle {
     isOutOfBounds(maxWidth = main.width, maxHeight = main.height) {
         return this.left < 0 || this.top < 0 || this.right > maxWidth || this.bottom > maxHeight;
     }
+
+    move(dx, dy, ignoreCollision = false) {
+        const isOverlapping = () => checkForOverlaps(this) && !ignoreCollision;
+
+        if(isOverlapping()) {
+            return false;
+        }
+
+        this.x += dx;
+        this.y += dy;
+
+        if(isOverlapping()) {
+            this.x -= dx;
+            this.y -= dy;
+        }
+
+        this.preventOOB();
+    }
+
+    preventOOB() {
+        this.x = Math.min(Math.max(0, this.x), main.width - this.w);
+        this.y = Math.min(Math.max(0, this.y), main.height - this.h);
+    }
 }
 
 class Border extends Rectangle {
