@@ -68,7 +68,7 @@ function updateOptions(e) {
         const tableType = input.dataset.type;
         const dimension = input.dataset.dimension;
 
-        if(tableType && dimension) {
+        if(tableType && dimension && input.dataset.target == 'register') {
             if(dimension == 'color') {
                 Options[tableType][dimension] = input.value;
             } else {
