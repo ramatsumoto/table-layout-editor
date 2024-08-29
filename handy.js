@@ -6,12 +6,16 @@ class Seat extends Rectangle {
         this.tableID = 1;
     }
 
-    draw(context) {
+    draw(context, style = {}) {
         context.save();
         context.beginPath();
         context.fillStyle = 'white';
         context.strokeStyle = this.selected ? 'green' : 'black';
         context.strokeWidth = 2;
+        
+        for(const prop in style) {
+            context[prop] = style[prop];
+        }
 
         const [x, y, w ,h] = [this.x, this.y, this.w, this.h].map(n => n * Rectangle.SCALE);
 
@@ -21,8 +25,8 @@ class Seat extends Rectangle {
             context.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, 2 * Math.PI);
         }
 
-        context.clip();
         if(this.temp) {
+            context.clip();
             context.stroke();
             context.restore();
             return;
