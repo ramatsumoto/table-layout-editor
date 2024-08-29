@@ -14,7 +14,6 @@ function checkForOverlaps(target = null) {
 }
 
 function unselectRectangle() {
-    State.clicked.clear();
     for(const r of State.drawn) {
         r.unselect();
     }
@@ -87,7 +86,14 @@ main.addEventListener('mousemove', e => {
 });
 
 main.addEventListener('mouseup', () => {
-    unselectRectangle();
+    const isOverClickedRectangle = 
+        State.drawn.filter(r => State.clicked.has(r.id))
+            .some(r => r.hitTest(...State.mouse));
+
+    if(!isOverClickedRectangle) {
+        unselectRectangle();
+    }
+    State.clicked.clear();
     State.originClicked = false;
     
     for(const r of State.drawn) {
