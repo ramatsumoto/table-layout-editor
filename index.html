@@ -168,39 +168,36 @@
     <div style="width: 20%;">
         <strong>Usage</strong>
         <dl>
+            <dt>While clicking on an element, press <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
+            <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
+
+            <dt>Click and drag on an element, to move it around.</dt>
+            <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
+            <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
+
+            <dt>Click on an empty space and drag to select multiple elements at once.</dt>
+            <dd>The elements highlighted <span style="color: green">green</span> will now move together.<br><br></dd>
+
             <div data-target="register">
-                <dt>While clicking on an element, press <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
-                <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
-                <dt>Click and drag on an element, to move it around.</dt>
-                <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
-                <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
-                
                 <dt>Double click on an empty area of the grid to create a new element.</dt>
                 <dd>A Panel is a line of tables.</dd>
                 <dd>A Lane is a rectangle with text.</dd>
                 <dd>A Group is a set of Panels put together with a title.</dd>
                 <dd>Togo creates a grid of exclusively to-go tables.<br><br></dd>
-    
-                <dt>Double click on an element to edit parts of it.</dt>
-                <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
             </div>
 
             <div data-target="handy">
-                <dt>Create the layout just by clicking.</dt>
-                <dd>Click on a blank space to create a seat with the parameters under <b>Select current shape</b>.</dd>
-                <dd>Click on a seat to edit its <b>table_seating</b> id.</dd>
-                <dd>Hold <kbd>Shift</kbd> and click to delete it.<br><br></dd>
-                
-                <dt>Place multiple by changing <label for="setSeatCount"><i># Seats</i></label></dt>
-                <dd>Press <kbd>Shift+1,2,3,...</kbd> to quickly change <label for="setSeatCount"><i># Seats</i></label><br><br></dd>
-
-                <dt>Change where the origin is by dragging the &#x2716;.</dt>
-                <dd>The origin is where (0, 0) is defined to be.</dd>
-                <dd>This only matters for generating the XML file.<br><br></dd>
+                <dt>Double click on an empty area of the grid to create a set of new seats.</dt>
+                <dd>Their shape will be dictated by <b>Select current shape</b>.</dd>
+                <dd>Press <kbd>Shift</kbd> and click on an empty area to create a single new seat.<br><br></dd>
             </div>
 
+            <dt>Double click on an element to edit parts of it.</dt>
+            <dd>Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
+
             <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
-            <dd>Change which names/IDs are used in a Panel or Group by double-clicking on them.<br><br></dd>
+            <dd data-target="register">Change which names/IDs are used in a Panel or Group by double-clicking on them.</dd>
+            <br>
 
             <dt>On <b>table_seating</b> names, the prefixes of the name should match the seat type.</dt>
             <dd>Names for tables should be in the format "T_" (e.g. T1, T10, etc.).</dd>
