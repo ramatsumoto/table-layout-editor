@@ -14,8 +14,6 @@ const State = {
     drawn: drawnRegister,
     cursorColor: 'black',
     shift: false,
-    origin: [100, 1000],
-    originClicked: false,
     clicked: new Set(),
     selector: new Rectangle(0, 0, 0, 0, true)
 }
@@ -122,8 +120,6 @@ function drawGrid() {
 
     if(State.mode == 'register') {
         drawPOSBounds();
-    } else {
-        // drawOrigin(...State.origin);
     }
 }
 
@@ -141,30 +137,6 @@ function drawCursor(x, y) {
     ctx.beginPath();
     ctx.ellipse(x, y, 3, 3, 0, 0, 7);
     ctx.fill();
-}
-
-function drawOrigin(x, y) {
-    ctx.save();
-    ctx.setLineDash([4, 3]);
-    ctx.strokeStyle = 'black';
-
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, main.height);
-    ctx.moveTo(0, y);
-    ctx.lineTo(main.width, y);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    ctx.lineWidth = 2;
-    ctx.moveTo(x - 5, y - 5);
-    ctx.lineTo(x + 5, y + 5);
-    ctx.moveTo(x - 5, y + 5);
-    ctx.lineTo(x + 5, y - 5);
-    ctx.stroke();
-
-    ctx.restore();
 }
 
 function frame() {

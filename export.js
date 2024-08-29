@@ -96,22 +96,25 @@ function exportJava(name, drawn) {
     return text;
 }
 
-function exportSeat(seat) {
+function exportSeat(seat, origin) {
     let name = Table.get(seat.id);
     if(name == '[N/A]') name = 'TABLE';
     return `      <tableGUIType TABLE_ID="${seat.tableID}">
          <name>${name}</name>
          <shape>${seat.shape}</shape>
-         <minx>${seat.x - State.origin[0]}</minx>
-         <miny>${seat.y - State.origin[1]}</miny>
-         <maxx>${seat.x + seat.w - State.origin[0]}</maxx>
-         <maxy>${seat.y + seat.h - State.origin[1]}</maxy>
+         <minx>${seat.x - origin[0]}</minx>
+         <miny>${seat.y - origin[1]}</miny>
+         <maxx>${seat.x + seat.w - origin[0]}</maxx>
+         <maxy>${seat.y + seat.h - origin[1]}</maxy>
       </tableGUIType>`
 }
 
 function readyXMLFile(name, drawn) {
     const filename = `tables_${name.trim().toLowerCase()}.xml`;
-    const seats = drawn.map(s => exportSeat(s));
+    const origin = [0, 0];
+    origin[0] = drawn.map(s => s.left).sort((a, b) => a - b)[0];
+
+    const seats = drawn.map(s => exportSeat(s, origin));
     const text = XMLTemplate.replace('{}', seats.join('\n'));
     const xml = new Blob([text], { type: 'text/xml' });
     const url = URL.createObjectURL(xml);

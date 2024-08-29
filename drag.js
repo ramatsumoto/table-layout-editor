@@ -63,11 +63,6 @@ main.addEventListener('mousemove', e => {
         State.selector.h = State.mouse[1] - State.selector.y;
     }
 
-    if(State.originClicked) {
-        State.origin = State.mouse.map(Util.round(5));
-        return;
-    }
-
     if(State.clicked.size == 0) return ;
 
     const [dx, dy] = [e.movementX, e.movementY];
@@ -114,7 +109,6 @@ main.addEventListener('mouseup', () => {
         unselectRectangle();
     }
     State.clicked.clear();
-    State.originClicked = false;
     
     for(const r of State.drawn) {
         if(r.isOverlapping(State.selector)) {
