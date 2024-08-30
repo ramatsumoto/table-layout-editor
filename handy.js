@@ -17,7 +17,7 @@ class Seat extends Rectangle {
             context[prop] = style[prop];
         }
 
-        const [x, y, w ,h] = [this.x, this.y, this.w, this.h].map(n => n * Rectangle.SCALE);
+        const [x, y, w ,h] = [this.x, this.y, this.w, this.h];
 
         if(this.shape == 0) {
             context.rect(x, y, w, h);

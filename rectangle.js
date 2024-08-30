@@ -1,5 +1,4 @@
 class Rectangle {
-    static SCALE = 1;
     static counter = 0;
 
     constructor(x, y, w, h, temporary = false) {
@@ -80,7 +79,7 @@ class Rectangle {
         for(const prop in style) {
             context[prop] = style[prop];
         }
-        const rectangle = [this.x, this.y, this.w, this.h].map(n => n * Rectangle.SCALE);
+        const rectangle = [this.x, this.y, this.w, this.h];
         context.fillRect(...rectangle);
         context.strokeRect(...rectangle);
 
@@ -149,7 +148,7 @@ class Rectangle {
             context.textBaseline = 'middle';
             context.fillStyle = 'black';
             context.font = '16px monospace';
-            context.fillText(distance, ...point(Math.min(Util.average(start, end), start + 100)), distance);
+            context.fillText(Math.round(distance), ...point(Math.min(Util.average(start, end), start + 100)), distance);
         }
 
     } 
@@ -204,7 +203,7 @@ class Rectangle {
                 context.strokeStyle = 'blue';
                 context.setLineDash([8, 8]);
 
-                const maxLength = Math.max(main.width, main.height);
+                const maxLength = Math.max(+main.dataset.width, +main.dataset.height);
                 if(0 < sameDist && sameDist <= threshold) {
                     const point = Util.axialPointPartial(!isVertical, other[edge]);
                     context.beginPath();
@@ -225,7 +224,7 @@ class Rectangle {
         }
     }
 
-    isOutOfBounds(maxWidth = main.width, maxHeight = main.height) {
+    isOutOfBounds(maxWidth = +main.dataset.width, maxHeight = +main.dataset.height) {
         return this.left < 0 || this.top < 0 || this.right > maxWidth || this.bottom > maxHeight;
     }
 
@@ -248,8 +247,8 @@ class Rectangle {
     }
 
     preventOOB() {
-        this.x = Math.min(Math.max(0, this.x), main.width - this.w);
-        this.y = Math.min(Math.max(0, this.y), main.height - this.h);
+        this.x = Math.min(Math.max(0, this.x), +main.dataset.width - this.w);
+        this.y = Math.min(Math.max(0, this.y), +main.dataset.height - this.h);
     }
 }
 
@@ -274,7 +273,7 @@ class Border extends Rectangle {
         return this.y;
     }
 
-    static MAX = new Border(main.width, main.height);
+    static MAX = new Border(+main.dataset.width, +main.dataset.height);
 }
 
 class SeatButton extends Rectangle {

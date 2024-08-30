@@ -59,7 +59,9 @@ main.addEventListener('mousedown', e => {
 });
 
 main.addEventListener('mousemove', e => {
-    State.mouse = [e.clientX - main.getBoundingClientRect().left, e.clientY - main.getBoundingClientRect().top];
+    const bcr = main.getBoundingClientRect();
+    State.mouse = [e.clientX - bcr.left, e.clientY - bcr.top].map(n => n / State.scale[State.mode]);
+
     if(e.buttons > 0 && State.clicked.size == 0) {
         State.selector.w = State.mouse[0] - State.selector.x;
         State.selector.h = State.mouse[1] - State.selector.y;
@@ -67,7 +69,7 @@ main.addEventListener('mousemove', e => {
 
     if(State.clicked.size == 0) return ;
 
-    const [dx, dy] = [e.movementX, e.movementY];
+    const [dx, dy] = [e.movementX, e.movementY].map(n => n / State.scale[State.mode]);
     const targets = State.getClicked();
     const others = State.drawn.filter(r => !targets.includes(r));
 
@@ -208,14 +210,14 @@ document.body.addEventListener('keydown', e => {
                     break;
                 case 'Enter':
                     const dblclick = new MouseEvent('dblclick');
-                    State.mouse = target.center;
+                    State.mouse = target.center.map(n => n * State.scale[State.mode]);
                     main.dispatchEvent(dblclick);
                     break;
             }
         }
         for(const target of targets) {
-            target.y = Math.min(Math.max(0, target.y), main.height);
-            target.x = Math.min(Math.max(0, target.x), main.width);
+            target.y = Math.min(Math.max(0, target.y), +main.dataset.height);
+            target.x = Math.min(Math.max(0, target.x), +main.dataset.width);
         }
     }
     if(State.mode == 'handy') {

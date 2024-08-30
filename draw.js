@@ -12,11 +12,14 @@ const State = {
     },
     mouse: [0, 0],
     drawn: drawnRegister,
-    cursorColor: 'black',
     shift: false,
     clicked: new Set(),
     selector: new Rectangle(0, 0, 0, 0, true),
     getClicked: () => State.drawn.filter(r => State.clicked.has(r.id)),
+    scale: {
+        register: 1,
+        handy: 0.8
+    },
     debugPoint: [0, 0]
 }
 
@@ -97,10 +100,11 @@ document.getElementById('setDimensions').addEventListener('input', updateOptions
 function drawGrid() {
     const step = 10;
     ctx.strokeStyle = 'lightgrey';
-    for(let i = 0; i < main.width; i += step) {
+    const [w, h] = [+main.dataset.width, +main.dataset.height];
+    for(let i = 0; i < w; i += step) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
-        ctx.lineTo(i, main.height);
+        ctx.lineTo(i, h);
         if(i % 100 == 0) {
             ctx.strokeStyle = 'grey';
         } else {
@@ -108,10 +112,10 @@ function drawGrid() {
         }
         ctx.stroke();
     }
-    for(let i = 0; i < main.height; i += step) {
+    for(let i = 0; i < h; i += step) {
         ctx.beginPath();
         ctx.moveTo(0, i);
-        ctx.lineTo(main.width, i);
+        ctx.lineTo(w, i);
         if(i % 100 == 0) {
             ctx.strokeStyle = 'grey';
         } else {
@@ -134,15 +138,8 @@ function drawPOSBounds() {
     ctx.restore();
 }
 
-function drawCursor(x, y) {
-    ctx.fillStyle = State.cursorColor;
-    ctx.beginPath();
-    ctx.ellipse(x, y, 3, 3, 0, 0, 7);
-    ctx.fill();
-}
-
 function frame() {
-    ctx.clearRect(0, 0, main.width, main.height);
+    ctx.clearRect(0, 0, +main.dataset.width, +main.dataset.height);
     drawGrid();
 
     for(const x of State.drawn) {
@@ -187,12 +184,12 @@ function frame() {
 
     State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });
 
-    ctx.save();
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.ellipse(State.debugPoint[0] + 2, State.debugPoint[1] + 2, 2, 2, 0, 0, 7);
-    ctx.fill();
-    ctx.restore();
+    // ctx.save();
+    // ctx.fillStyle = 'red';
+    // ctx.beginPath();
+    // ctx.ellipse(State.debugPoint[0] + 2, State.debugPoint[1] + 2, 2, 2, 0, 0, 7);
+    // ctx.fill();
+    // ctx.restore();
 
     window.requestAnimationFrame(frame);
 }
@@ -207,6 +204,7 @@ function switchCanvas() {
         document.querySelectorAll('[data-target="handy"]').forEach(Util.unhide);
         Util.hide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Register layout';
+        setScale(State.scale.handy);
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
@@ -214,8 +212,16 @@ function switchCanvas() {
         document.querySelectorAll('[data-target="handy"]').forEach(Util.hide);
         Util.unhide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Handy layout';
+        setScale(State.scale.register);
     }
 }
 
 switchCanvas();
 switchCanvas();
+
+function setScale(k) {
+    main.setAttribute('width', +main.dataset.width * k);
+    main.setAttribute('height', +main.dataset.height * k);
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    State.scale[State.mode] = k;
+}

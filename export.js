@@ -5,7 +5,7 @@ function getRGB(colorHex) {
 
 function exportPanel(panel) {
     const definition = `APPanel ${panel.name} = getTableRowPanel(parent, tables.subList(${panel.tableIDs[0] - 1}, ${panel.tableIDs[1]}), ${panel.isVertical ? 'SWT.VERTICAL' : 'SWT.HORIZONTAL'}, ${Options[panel.tableType].wConstant}, ${Options[panel.tableType].hConstant}, ${panel.margin.top}, ${panel.margin.bottom}, ${panel.margin.left}, ${panel.margin.right}, ${panel.tableType}SectionBackground);`;
-    const attachment = `setFormData(${panel.name}, new FormAttachment(0, ${panel.top}), null, new FormAttachment(0, ${panel.left}), null);`
+    const attachment = `setFormData(${panel.name}, new FormAttachment(0, ${~~panel.top}), null, new FormAttachment(0, ${~~panel.left}), null);`
     return {
         definition,
         attachment
@@ -14,7 +14,7 @@ function exportPanel(panel) {
 
 function exportLane(lane) {
     const definition = `APPanel ${lane.name} = getLanePanel(parent, ${lane.isVertical ? 'true' : 'false'}, "${lane.text}");`;
-    const attachment = `setFormData(${lane.name}, new FormAttachment(0, ${lane.top}), new FormAttachment(0, ${lane.bottom}), new FormAttachment(0, ${lane.left}), new FormAttachment(0, ${lane.right}));`;
+    const attachment = `setFormData(${lane.name}, new FormAttachment(0, ${~~lane.top}), new FormAttachment(0, ${~~lane.bottom}), new FormAttachment(0, ${~~lane.left}), new FormAttachment(0, ${~~lane.right}));`;
     return {
         definition,
         attachment
@@ -32,14 +32,14 @@ function exportGroup(group) {
     const panelDefinition = group.splitTableIDs().map(([start, end], i) => 
     `APPanel ${group.name}P${i + 1} = getTableRowPanel(${group.name}, tables.subList(${start - 1}, ${end}), SWT.VERTICAL, ${Options[group.tableType].wConstant}, ${Options[group.tableType].hConstant}, 0, 0, 0, 0, ${group.tableType}SectionBackground);`);
 
-    const attachment = `setFormData(${group.name}, new FormAttachment(0, ${group.top}), null, new FormAttachment(0, ${group.left}), null);`;
+    const attachment = `setFormData(${group.name}, new FormAttachment(0, ${~~group.top}), null, new FormAttachment(0, ${~~group.left}), null);`;
     const panelAttachment = group.panelCounts.map((count, i) => {
         const tempPanel = new Panel(0, 0, count, group.tableType, true, { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0});
         const indent = group.h - (tempPanel.h + Group.MARGIN * 2 + Group.TEXT_HEIGHT);
         const shouldIndent = (group.indent == 'left' && i == 0) || (group.indent == 'right' && i == group.panelCounts.length - 1);
         const top = `new FormAttachment(0, ${shouldIndent ? indent : 0})`;
         const left = i == 0 ? 'new FormAttachment(0, 0)' : `new FormAttachment(${group.name}P${i}, 0, SWT.RIGHT)`;
-        return `setFormData(${group.name}P${i + 1}, ${top}, null, ${left}, null);`
+        return `setFormData(${group.name}P${i + 1}, ${~~top}, null, ${~~left}, null);`
     });
 
     return {
@@ -52,7 +52,7 @@ function exportTogo(togo) {
     const definition = `APPanel togoPanel = new APPanel(parent, SWT.NORMAL);
 \t\ttogoPanel.setBackground(color);
 \t\tgetTogoPanel(togoPanel, ENTRANCE_TABLE_NUM, ${togo.numPerRow}, ${Options[togo.tableType].wConstant},  ${Options[togo.tableType].hConstant});`;
-    const attachment = `setFormData(togoPanel, new FormAttachment(0, ${togo.top}), null, new FormAttachment(0, ${togo.left}), null);`
+    const attachment = `setFormData(togoPanel, new FormAttachment(0, ${~~togo.top}), null, new FormAttachment(0, ${~~togo.left}), null);`
     return {
         definition,
         attachment
@@ -102,10 +102,10 @@ function exportSeat(seat, origin) {
     return `      <tableGUIType TABLE_ID="${seat.tableID}">
          <name>${name}</name>
          <shape>${seat.shape}</shape>
-         <minx>${seat.x - origin[0]}</minx>
-         <miny>${seat.y - origin[1]}</miny>
-         <maxx>${seat.x + seat.w - origin[0]}</maxx>
-         <maxy>${seat.y + seat.h - origin[1]}</maxy>
+         <minx>${~~seat.x - origin[0]}</minx>
+         <miny>${~~seat.y - origin[1]}</miny>
+         <maxx>${~~seat.x + ~~seat.w - origin[0]}</maxx>
+         <maxy>${~~seat.y + ~~seat.h - origin[1]}</maxy>
       </tableGUIType>`
 }
 
