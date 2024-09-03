@@ -76,5 +76,5 @@ document.getElementById('setSeatPreset').addEventListener('change', e => {
 }));
 
 function previewSeat(x, y) {
-    return new Seat(x, y, ...['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => +Util.value(id)), true);
+    return new Seat(x, y, ...['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => Elements.valueAsNum(id)), true);
 }

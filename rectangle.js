@@ -268,9 +268,9 @@ const Util = {
     // Use this to generate a function that creates points along a given axis
     axialPointPartial: (vertical, staticCoord) => vertical ?
         (y) => [staticCoord, y] : (x) => [x, staticCoord],
-    deleteChildren: (element) => {
-        while(element.hasChildNodes()) element.lastChild.remove();    
-    },
+    // deleteChildren: (element) => {
+    //     while(element.hasChildNodes()) element.lastChild.remove();    
+    // },
     get: (idOrElem) => {
         let e = idOrElem;
         if(typeof idOrElem == 'string') {
@@ -282,10 +282,10 @@ const Util = {
             return e;
         }
     },
-    hide: (idOrElem) => Util.get(idOrElem).classList.add('hidden'),
-    unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
-    value: (id) => document.getElementById(id).value,
-    fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input')),
+    // hide: (idOrElem) => Util.get(idOrElem).classList.add('hidden'),
+    // unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
+    // value: (id) => document.getElementById(id).value,
+    // fireInputEvent: (id) => document.getElementById(id).dispatchEvent(new InputEvent('input')),
     // round: (k) => n => Math.round(n / k) * k,
     arrEquals: (arr1, arr2) => arr1.every((x, i) => x == arr2[i]),
 }

@@ -178,7 +178,7 @@ function frame() {
 
     if(State.mode == 'handy' && State.shift) {
         const ids = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'];
-        const preview = new Seat(...State.mouse.map(Math2.roundTo(5)), ...ids.map(id => +Util.value(id)), true);
+        const preview = new Seat(...State.mouse.map(Math2.roundTo(5)), ...ids.map(id => Elements.valueAsNum(id)), true);
         if(!checkForOverlaps(preview)) {
             preview.draw(ctx);
         }
@@ -208,11 +208,11 @@ function setScale(k) {
 const zoomInput = document.getElementById('canvasZoom');
 document.getElementById('canvasZoomOut').addEventListener('click', e => {
     zoomInput.value -= 10;
-    Util.fireInputEvent(zoomInput.id);
+    Elements.fireInputEvent(zoomInput.id);
 });
 document.getElementById('canvasZoomIn').addEventListener('click', e => {
     zoomInput.value = +zoomInput.value + 10;
-    Util.fireInputEvent(zoomInput.id);
+    Elements.fireInputEvent(zoomInput.id);
 });
 zoomInput.addEventListener('input', e => {
     setScale(+e.target.value / 100);
@@ -222,18 +222,18 @@ function switchCanvas() {
     if(State.mode == 'register') {
         State.mode = 'handy'
         State.drawn = drawnHandy;
-        document.querySelectorAll('[data-target="register"]').forEach(Util.hide);
-        document.querySelectorAll('[data-target="handy"]').forEach(Util.unhide);
-        Util.hide('previewLayout');
+        document.querySelectorAll('[data-target="register"]').forEach(Elements.hide);
+        document.querySelectorAll('[data-target="handy"]').forEach(Elements.unhide);
+        Elements.hide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Register layout';
         setScale(State.scale.handy);
         zoomInput.value = State.scale.handy * 100;
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
-        document.querySelectorAll('[data-target="register"]').forEach(Util.unhide);
-        document.querySelectorAll('[data-target="handy"]').forEach(Util.hide);
-        Util.unhide('previewLayout');
+        document.querySelectorAll('[data-target="register"]').forEach(Elements.unhide);
+        document.querySelectorAll('[data-target="handy"]').forEach(Elements.hide);
+        Elements.unhide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Handy layout';
         setScale(State.scale.register);
         zoomInput.value = State.scale.register * 100;

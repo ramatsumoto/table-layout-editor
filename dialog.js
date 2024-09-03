@@ -6,13 +6,11 @@ function showDialog(type) {
 
     const [x, y] = [+dialog.dataset.x, +dialog.dataset.y];
 
-    for(const elem of dialog.children) {
-        elem.classList.add('hidden');
-    }
-    Util.unhide('dialogConfirm');
-    Util.unhide('dialogCancel');
-    Util.unhide('dialogDelete');
-    Util.unhide('dName');
+    [...dialog.children].forEach(Elements.hide);
+    Elements.unhide('dialogConfirm');
+    Elements.unhide('dialogCancel');
+    Elements.unhide('dialogDelete');
+    Elements.unhide('dName');
 
     let buttonEvents = {};
     if(type == 'panel') {
@@ -24,15 +22,15 @@ function showDialog(type) {
     } else if(type == 'togo') {
         buttonEvents = prepareTogoDialog();
     } else if(type == 'create') {
-        Util.hide('dialogDelete');
-        Util.hide('dName');
+        Elements.hide('dialogDelete');
+        Elements.hide('dName');
         buttonEvents = prepareCreateDialog(x, y);
     } else if(type == 'handy') {
-        Util.hide('dialogDelete');
-        Util.hide('dName');
+        Elements.hide('dialogDelete');
+        Elements.hide('dName');
         buttonEvents = prepareSeatDialog();
     } else if(type == 'seat') {
-        Util.hide('dName');
+        Elements.hide('dName');
         buttonEvents = prepareSeatEditDialog();
     }
 
@@ -56,9 +54,9 @@ function showDialog(type) {
 
 function preparePanelDialog() {
     const panel = getCurrentRectangle();
-    Util.unhide('dSeating');
-    Util.unhide('dOrientation');
-    Util.unhide('dMargins');
+    Elements.unhide('dSeating');
+    Elements.unhide('dOrientation');
+    Elements.unhide('dMargins');
 
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
@@ -90,7 +88,7 @@ function preparePanelDialog() {
     ]);
     [start.value, end.value] = panel.tableIDs;
     end.setAttribute('min', panel.tableIDs[1] - panel.tableIDs[0] + 1);
-    Util.fireInputEvent(start.id);
+    Elements.fireInputEvent(start.id);
 
     const confirm = () => {
         panel.name = document.getElementById('dName').value;
@@ -109,11 +107,11 @@ function prepareLaneDialog() {
     const lane = getCurrentRectangle();
 
     const ids = ['dName', 'dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
-    ids.forEach(Util.unhide);
+    ids.forEach(Elements.unhide);
     
     const [name, orientation, text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
-    Util.deleteChildren(widthMatch);
-    Util.deleteChildren(heightMatch);
+    widthMatch.replaceChildren();
+    heightMatch.replaceChildren();
     orientation.value = lane.isVertical ? 'vertical' : 'horizontal'; 
 
     name.value = lane.name;
@@ -176,7 +174,7 @@ function prepareGroupDialog() {
     const group = getCurrentRectangle();
 
     const ids = ['dName', 'dText', 'dIndent', 'dHeight', 'dHeightMatch', 'dSeating'];
-    ids.forEach(Util.unhide);
+    ids.forEach(Elements.unhide);
     const [name, text, indent, height, heightMatch, ] = ids.map(id => document.getElementById(id));
 
     const initial = {
@@ -189,7 +187,7 @@ function prepareGroupDialog() {
     text.value = initial.text;
     indent.value = initial.indent;
     height.value = initial.height;
-    Util.deleteChildren(heightMatch);
+    heightMatch.replaceChildren();
 
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
@@ -220,7 +218,7 @@ function prepareGroupDialog() {
         [indent, 'input', () => group.indent = indent.value],
         [height, 'input', () => group.setHeight(+height.value)]
     ]);
-    Util.fireInputEvent(start.id);
+    Elements.fireInputEvent(start.id);
 
     const confirm = () => {
         group.name = name.value;
@@ -238,8 +236,8 @@ function prepareGroupDialog() {
 function prepareTogoDialog() {
     const togo = getCurrentRectangle();
     const perRow = document.getElementById('dTogoRow');
-    Util.unhide('dTogoRow');
-    Util.unhide('dName');
+    Elements.unhide('dTogoRow');
+    Elements.unhide('dName');
 
     const initalNum = +perRow.value;
     document.getElementById('dName').value = togo.name;
@@ -260,8 +258,8 @@ function prepareTogoDialog() {
 }
 
 function prepareCreateDialog(x, y) {
-    Util.unhide('dCreateType');
-    Util.fireInputEvent('dCreateType');
+    Elements.unhide('dCreateType');
+    Elements.fireInputEvent('dCreateType');
 
     ['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight'].forEach(id => document.getElementById(id).value = 3);
 
@@ -273,62 +271,62 @@ function prepareCreateDialog(x, y) {
 }
 
 function createFromDialog(x, y) {
-    const type = Util.value('dCreateType');
+    const type = Elements.value('dCreateType');
 
     if(type == 'panel') {
-        Options[Util.value('dSeatType')].count += +Util.value('dSeatNum');
+        Options[Elements.value('dSeatType')].count += Elements.valueAsNum('dSeatNum');
         State.drawn.push(new Panel(
             x,
             y,
-            +Util.value('dSeatNum'),
-            Util.value('dSeatType'),
-            Util.value('dOrientation') == 'vertical',
+            Elements.valueAsNum('dSeatNum'),
+            Elements.value('dSeatType'),
+            Elements.value('dOrientation') == 'vertical',
             {
-                marginTop: +Util.value('dMarginTop'),
-                marginBottom: +Util.value('dMarginBottom'),
-                marginRight: +Util.value('dMarginRight'),
-                marginLeft: +Util.value('dMarginLeft'),
+                marginTop: Elements.valueAsNum('dMarginTop'),
+                marginBottom: Elements.valueAsNum('dMarginBottom'),
+                marginRight: Elements.valueAsNum('dMarginRight'),
+                marginLeft: Elements.valueAsNum('dMarginLeft'),
             }
         ));
     } else if(type == 'lane') {
         State.drawn.push(new Lane(
             x,
             y,
-            +Util.value('dWidth'),
-            +Util.value('dHeight'),
-            Util.value('dOrientation') == 'vertical',
-            Util.value('dText')
+            Elements.valueAsNum('dWidth'),
+            Elements.valueAsNum('dHeight'),
+            Elements.value('dOrientation') == 'vertical',
+            Elements.value('dText')
         ));
     } else if(type == 'group') {
-        const panelCounts = [+Util.value('dGroupPanel1'), +Util.value('dGroupPanel2')];
-        if(Util.value('dGroupPanels') == '1') panelCounts.pop();
+        const panelCounts = [Elements.valueAsNum('dGroupPanel1'), Elements.valueAsNum('dGroupPanel2')];
+        if(Elements.value('dGroupPanels') == '1') panelCounts.pop();
 
-        Options[Util.value('dSeatType')].count += Math2.sum(panelCounts);
+        Options[Elements.value('dSeatType')].count += Math2.sum(panelCounts);
         State.drawn.push(new Group(
             x,
             y,
-            Util.value('dText'),
-            Util.value('dSeatType'),
+            Elements.value('dText'),
+            Elements.value('dSeatType'),
             panelCounts,
             100,
-            Util.value('dIndent') == 'left'
+            Elements.value('dIndent') == 'left'
         ));
     } else if(type == 'togo') {
         State.drawn.push(new Togo(
             x,
             y,
-            +Util.value('dTogoRow'),
-            Util.value('dSeatType')
+            Elements.valueAsNum('dTogoRow'),
+            Elements.value('dSeatType')
         ));
     }
 }
 
 function prepareSeatDialog() {
-    Util.unhide('dSeat');
-    Util.fireInputEvent('dSeatRows');
+    Elements.unhide('dSeat');
+    Elements.fireInputEvent('dSeatRows');
 
     const [rows, cols, start, end] = ['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
-    const [w, h, shape] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => +Util.value(id));
+    const [w, h, shape] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => Elements.valueAsNum(id));
 
     const x = +dialog.dataset.x;
     const y = +dialog.dataset.y;
@@ -347,10 +345,10 @@ function prepareSeatDialog() {
 
 function prepareSeatEditDialog() {
     const seat = getCurrentRectangle();
-    Util.unhide('dSeatEdit');
+    Elements.unhide('dSeatEdit');
     const id = document.getElementById('dSeatIDChange');
     id.value = seat.tableID;
-    Util.fireInputEvent(id.id);
+    Elements.fireInputEvent(id.id);
 
     const confirm = () => {
         seat.tableID = +id.value;
@@ -371,8 +369,8 @@ function createTypeSelection(e) {
 
     const toUnhide = new Set(ids[type]);
     const toHide = new Set(Object.values(ids).flat()).difference(toUnhide);
-    toHide.forEach(Util.hide);
-    toUnhide.forEach(Util.unhide);
+    toHide.forEach(Elements.hide);
+    toUnhide.forEach(Elements.unhide);
 
     const seatType = document.getElementById('dSeatType');
     if(type == 'panel') {
@@ -422,9 +420,9 @@ function createGroupPanels(e) {
 
 function seatingNameList(panelCounts = [-1]) {
     const list = document.getElementById('dSeatingList');
-    Util.deleteChildren(list);
+    list.replaceChildren();
 
-    for(const name of Table.getRange(+Util.value('dSeatingStart'), +Util.value('dSeatingEnd'))) {
+    for(const name of Table.getRange(Elements.valueAsNum('dSeatingStart'), Elements.valueAsNum('dSeatingEnd'))) {
         const li = document.createElement('li');
         li.innerText = name;
         list.append(li);
@@ -510,7 +508,7 @@ function createMatrix(rows, cols, start, end) {
 
 function createSeatPreview() {
     const tr = [];
-    for(const row of createMatrix(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => +Util.value(id)))) {
+    for(const row of createMatrix(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => Elements.valueAsNum(id)))) {
         const cells = row.map(n => {
             const e = document.createElement('td');
             e.innerText = Table.get(n, true);
@@ -527,7 +525,7 @@ function createSeatPreview() {
 
 function updateSeatIDs(e) {
     const [start, end] = ['dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
-    const length = +Util.value('dSeatRows') * +Util.value('dSeatCols') - 1;
+    const length = Elements.valueAsNum('dSeatRows') * Elements.valueAsNum('dSeatCols') - 1;
     const ascending = +start.value < +end.value;
     const count = ascending ? length : -length;
 
