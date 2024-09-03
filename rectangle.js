@@ -1,4 +1,16 @@
 class Rectangle {
+    static Edges = ['top', 'bottom', 'left', 'right'];
+    static OppositeEdges = {
+        top: 'bottom',
+        bottom: 'top',
+        left: 'right',
+        right: 'left',
+    }
+
+    static opposite(edge) {
+        return Rectangle.OppositeEdges[edge];
+    }
+
     static counter = 0;
 
     constructor(x, y, w, h, temporary = false) {
@@ -124,7 +136,7 @@ class Rectangle {
         const nearest = this.getNearest(others);
 
         for(const [edge, other] of Object.entries(nearest)) {
-            const opposite = Util.oppositeEdges[edge];
+            const opposite = Rectangle.opposite(edge);
             const isVertical = edge == 'top' || edge == 'bottom';
 
             const perpendicularOverlap = isVertical ?
@@ -155,10 +167,10 @@ class Rectangle {
 
     getAligned(others, threshold = 0) {
         const res = {};
-        for(const edge of Util.edges) {
+        for(const edge of Rectangle.Edges) {
             res[edge] = others.filter(other => {
                 const sameEdge = this[edge] == other[edge];
-                const oppositeEdge = this[edge] == other[Util.oppositeEdges[edge]];
+                const oppositeEdge = this[edge] == other[Rectangle.opposite(edge)];
 
                 return (0 <= sameEdge && sameEdge <= threshold) || (0 <= oppositeEdge && oppositeEdge <= threshold);
             });
@@ -167,8 +179,8 @@ class Rectangle {
     }
 
     connectAligned(context, others) {
-        for(const edge of Util.edges) {
-            const aligned = others.filter(other => this[edge] == other[edge] || this[edge] == other[Util.oppositeEdges[edge]]);
+        for(const edge of Rectangle.Edges) {
+            const aligned = others.filter(other => this[edge] == other[edge] || this[edge] == other[Rectangle.opposite(edge)]);
             if(aligned.length == 0) continue;
             
             const isVertical = edge == 'top' || edge == 'bottom';
@@ -193,8 +205,8 @@ class Rectangle {
     }
 
     almostAligned(context, others, threshold = 10) {
-        for(const edge of Util.edges) {
-            const almost = others.map(r => [r, Math.abs(this[edge] - r[edge]), Math.abs(this[edge] - r[Util.oppositeEdges[edge]])])
+        for(const edge of Rectangle.Edges) {
+            const almost = others.map(r => [r, Math.abs(this[edge] - r[edge]), Math.abs(this[edge] - r[Rectangle.opposite(edge)])])
             
             const isVertical = edge == 'top' || edge == 'bottom';
 
@@ -212,7 +224,7 @@ class Rectangle {
                     context.stroke();
                 }
                 if(0 < oppositeDist && oppositeDist <= threshold) {
-                    const point = Util.axialPointPartial(!isVertical, other[Util.oppositeEdges[edge]]);
+                    const point = Util.axialPointPartial(!isVertical, other[Rectangle.opposite(edge)]);
                     context.beginPath();
                     context.moveTo(...point(0));
                     context.lineTo(...point(maxLength));
@@ -271,17 +283,17 @@ const Util = {
     // deleteChildren: (element) => {
     //     while(element.hasChildNodes()) element.lastChild.remove();    
     // },
-    get: (idOrElem) => {
-        let e = idOrElem;
-        if(typeof idOrElem == 'string') {
-            e = document.getElementById(idOrElem);
-        }
-        if(e.parentElement.tagName.toUpperCase() == 'LABEL') {
-            return e.parentElement;
-        } else {
-            return e;
-        }
-    },
+    // get: (idOrElem) => {
+    //     let e = idOrElem;
+    //     if(typeof idOrElem == 'string') {
+    //         e = document.getElementById(idOrElem);
+    //     }
+    //     if(e.parentElement.tagName.toUpperCase() == 'LABEL') {
+    //         return e.parentElement;
+    //     } else {
+    //         return e;
+    //     }
+    // },
     // hide: (idOrElem) => Util.get(idOrElem).classList.add('hidden'),
     // unhide: (idOrElem) => Util.get(idOrElem).classList.remove('hidden'),
     // value: (id) => document.getElementById(id).value,

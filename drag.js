@@ -94,8 +94,8 @@ main.addEventListener('mousemove', e => {
 
     if(e.shiftKey) return;
 
-    for(const edge of Util.edges) {
-        const almostAligned = others.map(r => [r, Math.abs(target[edge] - r[edge]), Math.abs(target[edge] - r[Util.oppositeEdges[edge]])]);
+    for(const edge of Rectangle.Edges) {
+        const almostAligned = others.map(r => [r, Math.abs(target[edge] - r[edge]), Math.abs(target[edge] - r[Rectangle.opposite(edge)])]);
         for(const [other, sameDist, oppositeDist] of almostAligned) {
             if(0 < sameDist && sameDist < 5) {
                 target.setEdge(edge, other[edge]);

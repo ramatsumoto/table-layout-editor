@@ -129,7 +129,7 @@ function prepareLaneDialog() {
     for(const [edge, nearest] of Object.entries(lane.getNearest(others))) {
         if(nearest == Border.MAX) continue;
 
-        const opposite = Util.oppositeEdges[edge];
+        const opposite = Rectangle.opposite(edge);
         if(lane[edge] - nearest[opposite] != 0) continue;
 
         const button = document.createElement('button');
@@ -198,7 +198,7 @@ function prepareGroupDialog() {
     for(const [edge, nearest] of Object.entries(group.getNearest(others))) {
         if(edge != 'left' && edge != 'right') continue;
 
-        const opposite = Util.oppositeEdges[edge];
+        const opposite = Rectangle.opposite(edge);
         if(group[edge] - nearest[opposite] != 0) continue;
 
         const button = document.createElement('button');
