@@ -303,7 +303,7 @@ function createFromDialog(x, y) {
         const panelCounts = [+Util.value('dGroupPanel1'), +Util.value('dGroupPanel2')];
         if(Util.value('dGroupPanels') == '1') panelCounts.pop();
 
-        Options[Util.value('dSeatType')].count += Util.sum(panelCounts);
+        Options[Util.value('dSeatType')].count += Math2.sum(panelCounts);
         State.drawn.push(new Group(
             x,
             y,
@@ -560,7 +560,7 @@ document.getElementById('dialogDelete').querySelector('button').addEventListener
     if(rect instanceof Panel) {
         Options[rect.tableType].count -= rect.numTables;
     } else if(rect instanceof Group) {
-        Options[rect.tableType].count -= Util.sum(rect.panelCounts);
+        Options[rect.tableType].count -= Math2.sum(rect.panelCounts);
     }
     deleteFromDrawn(rect.id);
     dialog.close();

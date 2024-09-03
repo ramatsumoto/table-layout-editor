@@ -44,7 +44,7 @@ main.addEventListener('mousedown', e => {
     [State.selector.x, State.selector.y] = State.mouse;
 
     if(e.shiftKey && State.mode == 'handy') {
-        const preview = previewSeat(...State.mouse.map(Util.round(5)));
+        const preview = previewSeat(...State.mouse.map(Math2.roundTo(5)));
         if(!checkForOverlaps(preview)) {
             const id = window.prompt('Set table_seating ID.', '1');
             const asNum = Number.parseInt(id);
@@ -138,8 +138,8 @@ main.addEventListener('dblclick', e => {
         if(clicked instanceof Seat) {
             showDialog('seat');
         } else if(clicked == undefined) {
-            dialog.dataset.x = Util.round(5)(State.mouse[0]);
-            dialog.dataset.y = Util.round(5)(State.mouse[1]);
+            dialog.dataset.x = Math2.roundTo(5)(State.mouse[0]);
+            dialog.dataset.y = Math2.roundTo(5)(State.mouse[1]);
             showDialog('handy');
         }
         return;
@@ -216,8 +216,8 @@ document.body.addEventListener('keydown', e => {
             }
         }
         for(const target of targets) {
-            target.y = Math.min(Math.max(0, target.y), +main.dataset.height);
-            target.x = Math.min(Math.max(0, target.x), +main.dataset.width);
+            target.y = Math2.clamp(0, target.y, +main.dataset.height);
+            target.x = Math2.clamp(0, target.x, +main.dataset.height);
         }
     }
     if(State.mode == 'handy') {

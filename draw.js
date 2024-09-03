@@ -4,6 +4,8 @@ const ctx = main.getContext("2d");
 const drawnRegister = [];
 const drawnHandy = [];
 
+Border.MAX = new Border(main.width, main.height);
+
 const State = {
     mode: 'register',
     posDimensions: {
@@ -176,7 +178,7 @@ function frame() {
 
     if(State.mode == 'handy' && State.shift) {
         const ids = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'];
-        const preview = new Seat(...State.mouse.map(Util.round(5)), ...ids.map(id => +Util.value(id)), true);
+        const preview = new Seat(...State.mouse.map(Math2.roundTo(5)), ...ids.map(id => +Util.value(id)), true);
         if(!checkForOverlaps(preview)) {
             preview.draw(ctx);
         }
