@@ -41,13 +41,27 @@
             padding: 3px;
             font-size: 10pt;
         }
+        .canvasButtons {
+            position: sticky;
+            left: 0;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
     <script src="./template.js"></script>
     <script src="./export.js"></script>
 </head>
 <body>
     <div style="width: 1000px; height: 800px; overflow: scroll; resize: both;" id="mainContainer">
-        <button id="canvasToggle" onclick="switchCanvas()"></button>
+        <div class="canvasButtons">
+            <button id="canvasToggle" onclick="switchCanvas()"></button>
+            <div>
+                <button id="canvasZoomOut">Zoom Out</button>
+                <input type="number" id="canvasZoom" class="long" min="10" max="1000" step="10" value="100">
+                <button id="canvasZoomIn">Zoom In</button>
+            </div>
+        </div>
         <canvas id="main" width="2000" height="2000" data-width="2000" data-height="2000"></canvas>
     </div>
     <div>

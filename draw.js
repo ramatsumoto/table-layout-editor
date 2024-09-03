@@ -196,6 +196,26 @@ function frame() {
 
 frame();
 
+function setScale(k) {
+    main.setAttribute('width', +main.dataset.width * k);
+    main.setAttribute('height', +main.dataset.height * k);
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    State.scale[State.mode] = k;
+}
+
+const zoomInput = document.getElementById('canvasZoom');
+document.getElementById('canvasZoomOut').addEventListener('click', e => {
+    zoomInput.value -= 10;
+    Util.fireInputEvent(zoomInput.id);
+});
+document.getElementById('canvasZoomIn').addEventListener('click', e => {
+    zoomInput.value = +zoomInput.value + 10;
+    Util.fireInputEvent(zoomInput.id);
+});
+zoomInput.addEventListener('input', e => {
+    setScale(+e.target.value / 100);
+});
+
 function switchCanvas() {
     if(State.mode == 'register') {
         State.mode = 'handy'
@@ -205,6 +225,7 @@ function switchCanvas() {
         Util.hide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Register layout';
         setScale(State.scale.handy);
+        zoomInput.value = State.scale.handy * 100;
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
@@ -213,15 +234,10 @@ function switchCanvas() {
         Util.unhide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Handy layout';
         setScale(State.scale.register);
+        zoomInput.value = State.scale.register * 100;
     }
 }
 
 switchCanvas();
 switchCanvas();
 
-function setScale(k) {
-    main.setAttribute('width', +main.dataset.width * k);
-    main.setAttribute('height', +main.dataset.height * k);
-    ctx.setTransform(k, 0, 0, k, 0, 0);
-    State.scale[State.mode] = k;
-}
