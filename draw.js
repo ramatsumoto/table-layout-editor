@@ -1,30 +1,54 @@
 const main = document.getElementById("main");
 const ctx = main.getContext("2d");
-
+/** @type {Rectangle[]} */
 const drawnRegister = [];
+/** @type {Rectangle[]} */
 const drawnHandy = [];
 
 Border.MAX = new Border(main.width, main.height);
 
+/**
+ * Object that manages the state of the program.
+ */
 const State = {
+    /** 
+     * Sets the mode of the program.
+     * @see {@link switchCanvas}
+     */
     mode: 'register',
+    /**
+     * Describes how the size of the POS Register program.
+     * 
+     * Used to draw to dotted bounds in `register` mode.
+     */
     posDimensions: {
         width: 942,
         height: 624
     },
+    /** The position of the mouse relative to the top left corner of canvas. */
     mouse: [0, 0],
+    /** The `Rectangle`s currently being drawn. @see {@link State.mode} */
     drawn: drawnRegister,
+    /** `true` if the shift key is being pressed. */
     shift: false,
+    /** @type {Set<number>} The set of IDs of rectangles that are clicked on/selected. */
     clicked: new Set(),
+    /** The `Rectangle` used as the blue selection rectangle thing for when you click and drag. */
     selector: new Rectangle(0, 0, 0, 0, true),
+    /** @returns {Rectangle[]} Gets the currently clicked Rectangles. */
     getClicked: () => State.drawn.filter(r => State.clicked.has(r.id)),
+    /** The scale/zoom factor of the canvas in the two modes. @see {@link setScale} */
     scale: {
         register: 1,
         handy: 0.8
     },
-    debugPoint: [0, 0]
 }
 
+/**
+ * Describes variables to be used for creating the .java class file.
+ * 
+ * Contains the dimensions, color, and count of each table type.
+ */
 const Options = {
     table: {
         width: 100,
@@ -60,6 +84,10 @@ const Options = {
     }
 }
 
+/**
+ * Deletes the `Rectangle` with the given `id`.
+ * @param {number} id The ID of the `Rectangle` to remove
+ */
 function deleteFromDrawn(id) {
     const index = State.drawn.findIndex(r => r.id == id);
     if(index >= 0) {
@@ -96,9 +124,9 @@ function updateOptions(e) {
 
     canvasHasChanged();
 }
-
 document.getElementById('setDimensions').addEventListener('input', updateOptions);
 
+/** Draws the background gridlines */
 function drawGrid() {
     const step = 10;
     ctx.strokeStyle = 'lightgrey';
@@ -131,6 +159,7 @@ function drawGrid() {
     }
 }
 
+/** Draws the rectangle describing the screen size of a POS register. @see {@link State.posDimensions} */
 function drawPOSBounds() {
     const dimensions = [942, 624];
     ctx.save();
@@ -140,16 +169,17 @@ function drawPOSBounds() {
     ctx.restore();
 }
 
+/** Draws everything to canvas. */
 function frame() {
     ctx.clearRect(0, 0, +main.dataset.width, +main.dataset.height);
     drawGrid();
 
-    for(const x of State.drawn) {
+    for(const rectangle of State.drawn) {
         let style = {};
-        if(x.selected) style = { strokeStyle: 'green' };
-        if(x.isOutOfBounds() || checkForOverlaps(x)) style = { strokeStyle: 'red', lineWidth: 2 };
+        if(rectangle.selected) style = { strokeStyle: 'green' };
+        if(rectangle.isOutOfBounds() || checkForOverlaps(rectangle)) style = { strokeStyle: 'red', lineWidth: 2 };
 
-        x.draw(ctx, style);
+        rectangle.draw(ctx, style);
     }
 
     if(State.clicked.size == 1) {
@@ -158,17 +188,20 @@ function frame() {
         clicked.connectAligned(ctx, others);
         clicked.connectNearest(ctx, others);
         clicked.almostAligned(ctx, others);
+
     } else if(State.clicked.size > 1) {
         const clicked = State.getClicked();
-        const x = clicked.sort((a, b) => a.left - b.left)[0].left;
-        const y = clicked.sort((a, b) => a.top - b.top)[0].top;
+        const x = Math2.min(clicked, rect => rect.left).left;
+        const y = Math2.min(clicked, rect => rect.top).top;
+        // Create the minimal rectangle containing all clicked rectangles.
         const bounding = new Rectangle(
             x,
             y,
-            clicked.sort((a, b) => b.right - a.right)[0].right - x,
-            clicked.sort((a, b) => b.bottom - a.bottom)[0].bottom - y,
+            Math2.max(clicked, rect => rect.right).right - x,
+            Math2.max(clicked, rect => rect.bottom).bottom - y,
             true
         );
+
         const others = State.drawn.filter(r => !State.clicked.has(r.id));
         bounding.draw(ctx, { fillStyle: 'rgba(0,0,0,0)', strokeStyle: 'darkgrey'});
         bounding.connectAligned(ctx, others);
@@ -178,7 +211,7 @@ function frame() {
 
     if(State.mode == 'handy' && State.shift) {
         const ids = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'];
-        const preview = new Seat(...State.mouse.map(Math2.roundTo(5)), ...ids.map(id => Elements.valueAsNum(id)), true);
+        const preview = new Seat(...State.mouse.map(Math2.roundTo(5)), ...ids.map(Elements.valueAsNum), true);
         if(!checkForOverlaps(preview)) {
             preview.draw(ctx);
         }
@@ -186,18 +219,12 @@ function frame() {
 
     State.selector.draw(ctx, { fillStyle: 'rgba(0, 100, 200, 0.3)', strokeStyle: 'rgba(0, 120, 255, 0.8)' });
 
-    // ctx.save();
-    // ctx.fillStyle = 'red';
-    // ctx.beginPath();
-    // ctx.ellipse(State.debugPoint[0] + 2, State.debugPoint[1] + 2, 2, 2, 0, 0, 7);
-    // ctx.fill();
-    // ctx.restore();
-
     window.requestAnimationFrame(frame);
 }
 
 frame();
 
+/** Changes the canvas scaling of the current mode. */
 function setScale(k) {
     main.setAttribute('width', +main.dataset.width * k);
     main.setAttribute('height', +main.dataset.height * k);
@@ -218,6 +245,7 @@ zoomInput.addEventListener('input', e => {
     setScale(+e.target.value / 100);
 });
 
+/** Switches the program mode between `register` and `handy`. */
 function switchCanvas() {
     if(State.mode == 'register') {
         State.mode = 'handy'

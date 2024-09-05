@@ -112,7 +112,7 @@ function exportSeat(seat, origin) {
 function readyXMLFile(name, drawn) {
     const filename = `tables_${name.trim().toLowerCase()}.xml`;
     const origin = [0, 0];
-    origin[0] = drawn.map(s => s.left).sort((a, b) => a - b)[0];
+    origin[0] = Math.min(...drawn.map(s => s.left));
 
     const seats = drawn.map(s => exportSeat(s, origin));
     const text = XMLTemplate.replace('{}', seats.join('\n'));

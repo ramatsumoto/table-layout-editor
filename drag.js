@@ -19,6 +19,14 @@ function unselectRectangle() {
     }
 }
 
+/**
+ * Expected behavior when mouse is clicked
+ *      The rectangle the mouse is currently over is clicked
+ *      If the clicked rectangle was also selected (green border)
+ *          then click on all selected rectangles.
+ *      If the clicked rectangle was not selected
+ *          then unselect all (other) rectangles.
+ */
 main.addEventListener('mousedown', e => {
     for(const rectangle of State.drawn.toReversed()) {
         const isClicked = rectangle.hitTest(...State.mouse);
@@ -58,6 +66,14 @@ main.addEventListener('mousedown', e => {
     }
 });
 
+/**
+ * Expected behavior when mouse moves:
+ *      Update {@link State.mouse}
+ *      If clicking and dragging, expand the selection rectangle to mouse position
+ *      If there are clicked rectangles, move all rectangles
+ *          If shift is pressed, ignore all collision
+ *          If multiple rectangles are clicked, move all of them at once
+ */
 main.addEventListener('mousemove', e => {
     const bcr = main.getBoundingClientRect();
     State.mouse = [e.clientX - bcr.left, e.clientY - bcr.top].map(n => n / State.scale[State.mode]);
@@ -74,9 +90,14 @@ main.addEventListener('mousemove', e => {
     const others = State.drawn.filter(r => !targets.includes(r));
 
     if(targets.length > 1) {
+        // When moving multiple rectangles at once, collision needs to be disabled
+        //  otherwise the rectangles will collide with each other and start changing
+        //  how far apart they are from each other.
         for(const t of targets) {
             t.move(dx, dy, true, true);
         }
+        // After all rectangles have moved without collision,
+        //  a collision test is performed on all selected rectangles, treated as a single unit.
         const overlappingUnselected = targets.some(r => others.some(other => r.isOverlapping(other)));
         if(overlappingUnselected || targets.some(r => r.isOutOfBounds())) {
             for(const t of targets) {
@@ -94,16 +115,23 @@ main.addEventListener('mousemove', e => {
 
     if(e.shiftKey) return;
 
+    // Snap to almost aligned edges.
+    const snappingThreshold = 5;
     for(const edge of Rectangle.Edges) {
         const almostAligned = others.map(r => [r, Math.abs(target[edge] - r[edge]), Math.abs(target[edge] - r[Rectangle.opposite(edge)])]);
         for(const [other, sameDist, oppositeDist] of almostAligned) {
-            if(0 < sameDist && sameDist < 5) {
+            if(0 < sameDist && sameDist < snappingThreshold) {
                 target.setEdge(edge, other[edge]);
             }
         }
     }
 });
 
+/**
+ * Expected behavior when mouse releases click:
+ *      If mouse is released over blank space, everything is unselected
+ *      Otherwise select everything the selection rectangle covers.
+ */
 main.addEventListener('mouseup', () => {
     const isOverClickedRectangle = State.getClicked().some(r => r.hitTest(...State.mouse));
 
@@ -122,12 +150,23 @@ main.addEventListener('mouseup', () => {
     State.selector.h = 0;
 
 });
+
+/**
+ * Expected behavior when mouse leaves the canvas:
+ *      All rectangles stop being clicked
+ *      The selection rectangle is reset/cleared
+ */
 main.addEventListener('mouseleave', () => {
     State.clicked.clear();
     State.selector.w = 0;
     State.selector.h = 0;
 });
 
+/**
+ * Expected behavior when double clicking:
+ *      Opens a dialog
+ *          This dialog depends on what was clicked as well as the mode.
+ */
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
     const clicked = State.drawn.toReversed().find(r => r.hitTest(...State.mouse));

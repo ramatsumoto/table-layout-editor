@@ -1,3 +1,10 @@
+/**
+ * The class to with its edges 'inverted'.
+ * 
+ * Used to describe the bounds of the canvas.
+ * 
+ * Should have no members besides `MAX`, which is created after the canvas is intialized.
+ */
 class Border extends Rectangle {
     constructor(maxW, maxH) {
         super(0, 0, maxW, maxH);
@@ -18,11 +25,23 @@ class Border extends Rectangle {
     get bottom() {
         return this.y;
     }
-
-    // static MAX = new Border(+main.dataset.width, +main.dataset.height);
 }
 
+/**
+ * A class representing individual seats in the Register layout.
+ * 
+ * Only for drawing purposes, and cannot be created by the user.
+ * 
+ * @see {@link Panel.draw}
+ * @see {@link Group.draw}
+ * @see {@link Togo.draw}
+ */
 class SeatButton extends Rectangle {
+    /**
+     * Set to `true` to emulate the font of the actual POS Registers.
+     * 
+     * Used for generating previews.
+     */
     static emulateFont = false;
 
     constructor(x, y, w, h) {
@@ -70,18 +89,21 @@ class SeatButton extends Rectangle {
     }
 }
 
+/**
+ * The class representing the Panel created by `getTableRowPanel` in the java file.
+ * 
+ * A single line of `SeatButtons`.
+ */
 class Panel extends Rectangle {
     static TABLE_SPACING = 10;
     static DEFAULT_MARGIN = 3
 
     constructor(x, y, numTables, tableType, isVertical, { marginTop, marginBottom, marginLeft, marginRight } = { marginTop: Panel.DEFAULT_MARGIN, marginBottom: Panel.DEFAULT_MARGIN, marginLeft: Panel.DEFAULT_MARGIN, marginRight: Panel.DEFAULT_MARGIN }) {
         super(x, y, 0, 0);
-        this.attachment = {
-            top: [-1, y],
-            left: [-1, x]
-        };
 
+        /** The number of tables/seats `this` will have. */
         this.numTables = numTables;
+        /** Describes the size of the individual `SeatButtons` as well the border color of `this`. */
         this.tableType = tableType;
         this.isVertical = isVertical;
         this.margin = {
@@ -90,11 +112,17 @@ class Panel extends Rectangle {
             left: marginLeft,
             right: marginRight
         };
+        /** The `table_seating` IDs of `this` panel's tables. @see {@link Table} */
         this.tableIDs = [1, this.numTables];
 
         this.calculateSize();
     }
 
+    /**
+     * Calculate the width and height of `this` based off of the given dimensions and spacing of the tables.
+     * @param {Object} param0 The width and height of the tables in `this`.
+     * @param {number} tableSpacing The spacing between each table.
+     */
     calculateSize({ width, height } = Options[this.tableType], tableSpacing = Panel.TABLE_SPACING) {
         this.w = 0;
         this.h = 0;
@@ -131,6 +159,9 @@ class Panel extends Rectangle {
     }
 }
 
+/**
+ * A rectangle with text in it.
+ */
 class Lane extends Rectangle {
     constructor(x, y, w, h, isVertical, text) {
         super(x, y, w, h);
@@ -163,29 +194,51 @@ class Lane extends Rectangle {
     }
 }
 
+/**
+ * A set of {@linkcode Panel}s grouped together, with a title at the top.
+ * 
+ * Used to emulate how counter areas are represented in the POS Register.
+ * 
+ * Can only be aligned vertically.
+ */
 class Group extends Rectangle {
     static MARGIN = 3;
     static TEXT_HEIGHT = 12 * 4/3; // 12pt font is this many pixels tall
+    /** The height inherent to `Group`s that are not created by {@linkcode Panel}s */
     static EXTRA_HEIGHT = Group.MARGIN * 2 + Group.TEXT_HEIGHT;
 
     constructor(x, y, text, tableType, panelCounts, defaultHeight, indentLeft) {
         super(x, y, 0, 0);
         this.text = text;
         this.tableType = tableType;
+        /** @type {number} The number of {@linkcode Panel}s contained in `this`. */
         this.panelCounts = panelCounts;
         this.w = Options[tableType].width * panelCounts.length + Group.MARGIN * 2;
+        /** Defines which panel should be vertically indented */
         this.indent = indentLeft ? 'left' : 'right';
+        /** The 'suggested' height. Not necessarily the actual height of `this`. */
         this.defaultHeight = defaultHeight;
         this.setHeight(this.defaultHeight);
+        /**
+         * The bounds of the `table_seating` IDs of the {@linkcode Panel}s of `this`.
+         * 
+         * @see {@link Panel.tableIDs}
+         */
         this.tableIDs = [1, Math2.sum(panelCounts)];
+        /** The {@linkcode Panel}s contained in `this`. */
         this.panels = this.panelCounts.map(n => new Panel(0, 0, n, tableType, true, { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }));
     }
 
-    // the necessary height to fit the largest Panel
+    /** The height required to fit the largest (longest) {@linkcode Panel}.  */
     get minHeight() {
         return Math.max(...this.panelCounts) * (Options[this.tableType].height + Panel.TABLE_SPACING) - Panel.TABLE_SPACING;
     }
 
+    /**
+     * Converts a pair of tableIDs to list of pairs of tableIDs, to be used for the {@linkcode Panel}s in `this`.
+     * @param {number[]} param0 {@link Group.tableIDs}
+     * @returns {number[][]} A list of tableIDs. See {@link Panel.tableIDs}
+     */
     splitTableIDs([start, end] = this.tableIDs) {
         const counts = this.panelCounts;
         return counts.map((_, i) => [
@@ -194,6 +247,14 @@ class Group extends Rectangle {
         ]);
     }
 
+    /**
+     * Changes the height of `this` to `height`, if possible.
+     * 
+     * If `height` would not accomodate for the Panels in `this`, the height will not change.
+     * 
+     * @see {@link Group.minHeight}
+     * @param {number} height The given height to set
+     */
     setHeight(height) {
         this.defaultHeight = height;
         this.h = Math.max(this.minHeight, this.defaultHeight);
@@ -228,6 +289,9 @@ class Group extends Rectangle {
     }
 }
 
+/**
+ * A block of To-go tables.
+ */
 class Togo extends Rectangle {
     static H_SPACING = 5;
     static V_SPACING = 5;
@@ -237,16 +301,25 @@ class Togo extends Rectangle {
     constructor(x, y, numPerRow, tableType = 'togo') {
         super(x, y, 0, 0);
 
+        /** The number of seats per row */
         this.numPerRow = numPerRow;
         this.tableType = tableType;
 
         this.calculateSize();
     }
 
+    /**
+     * Calculates the size of needed to fit all the togo tables.
+     * 
+     * The number of togo tables is dictated by how many rows of `table_seating` aren't used.
+     * 
+     * @see {@link Table}
+     * @see {@link Options}
+     */
     calculateSize() {
         const { width, height } = Options[this.tableType];
         const w = this.numPerRow * width + (this.numPerRow - 1) * Togo.H_SPACING + Togo.MARGIN * 2;
-        const unusedTableIDs = Table.length() - Options.table.count + Options.bar.count + Options.counter.count;
+        const unusedTableIDs = Table.length() - (Options.table.count + Options.bar.count + Options.counter.count);
         const rows = Math.ceil(Math.max(Togo.EXPECTED_COUNT, unusedTableIDs) / this.numPerRow);
         const h = rows * height + (rows - 1) * Togo.V_SPACING + Togo.MARGIN * 2;
 

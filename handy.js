@@ -1,3 +1,4 @@
+// The seats used for the Handy layout
 class Seat extends Rectangle {
     constructor(x, y, w, h, shape, temp = false) {
         super(x, y, w, h, temp);
@@ -76,5 +77,5 @@ document.getElementById('setSeatPreset').addEventListener('change', e => {
 }));
 
 function previewSeat(x, y) {
-    return new Seat(x, y, ...['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => Elements.valueAsNum(id)), true);
+    return new Seat(x, y, ...['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(Elements.valueAsNum), true);
 }
