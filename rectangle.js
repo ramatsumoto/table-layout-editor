@@ -90,7 +90,7 @@ class Rectangle {
      * @returns {number[]} The min and max x values in this form: `[min, max]`.
      */
     get hRange() {
-        return [this.left, this.right].toSorted((a, b) => a - b);
+        return [this.left, this.right].toSorted(Math2.sortBy().ascending);
     }
 
 
@@ -99,7 +99,7 @@ class Rectangle {
      * @return {number[]} The min and max y values in this form: `[min, max]`.
      */
     get vRange() {
-        return [this.top, this.bottom].toSorted((a, b) => a - b);
+        return [this.top, this.bottom].toSorted(Math2.sortBy().ascending);
     }
 
     /**
@@ -190,10 +190,10 @@ class Rectangle {
      */
     getNearest(others) {
         const near = {
-            top: Math2.min(others.filter(other => other.bottom <= this.top), rect => rect.bottom),
-            bottom: Math2.max(others.filter(other => other.top >= this.bottom), rect => rect.top),
-            left: Math2.min(others.filter(other => other.right <= this.left), rect => rect.right),
-            right: Math2.max(others.filter(other => other.left >= this.right), rect => rect.left)
+            top: others.filter(other => other.bottom <= this.top).toSorted(Math2.sortBy(rect => rect.bottom).descending),
+            bottom: others.filter(other => other.top >= this.bottom).toSorted(Math2.sortBy(rect => rect.top).ascending),
+            left: others.filter(other => other.right <= this.left).toSorted(Math2.sortBy(rect => rect.right).descending),
+            right: others.filter(other => other.left >= this.right).toSorted(Math2.sortBy(rect => rect.left).ascending)
         };
 
         const nearest = {

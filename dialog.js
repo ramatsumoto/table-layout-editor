@@ -61,7 +61,7 @@ function preparePanelDialog() {
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
     const orientation = document.getElementById('dOrientation');
-    const [mTop, mBottom, mLeft, mRight] = ['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight'].map(id => document.getElementById(id));
+    const [mTop, mBottom, mLeft, mRight] = Elements.getAll(['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight']);
     
     mTop.value = panel.margin.top;
     mBottom.value = panel.margin.bottom;
@@ -109,7 +109,7 @@ function prepareLaneDialog() {
     const ids = ['dName', 'dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
     ids.forEach(Elements.unhide);
     
-    const [name, orientation, text, width, widthMatch, height, heightMatch] = ids.map(id => document.getElementById(id));
+    const [name, orientation, text, width, widthMatch, height, heightMatch] = Elements.getAll(ids);
     widthMatch.replaceChildren();
     heightMatch.replaceChildren();
     orientation.value = lane.isVertical ? 'vertical' : 'horizontal'; 
@@ -175,7 +175,7 @@ function prepareGroupDialog() {
 
     const ids = ['dName', 'dText', 'dIndent', 'dHeight', 'dHeightMatch', 'dSeating'];
     ids.forEach(Elements.unhide);
-    const [name, text, indent, height, heightMatch, ] = ids.map(id => document.getElementById(id));
+    const [name, text, indent, height, heightMatch, ] = Elements.getAll(ids);
 
     const initial = {
         text: group.text,
@@ -254,7 +254,7 @@ function prepareTogoDialog() {
         togo.perRow = initalNum;
     }
 
-    return { cancel };
+    return { confirm, cancel };
 }
 
 function prepareCreateDialog(x, y) {
@@ -325,15 +325,15 @@ function prepareSeatDialog() {
     Elements.unhide('dSeat');
     Elements.fireInputEvent('dSeatRows');
 
-    const [rows, cols, start, end] = ['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
-    const [w, h, shape] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(id => Elements.valueAsNum(id));
+    const [rows, cols, start, end] = Elements.getAll(['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd']);
+    const [w, h, shape] = ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].map(Elements.valueAsNum);
 
     const x = +dialog.dataset.x;
     const y = +dialog.dataset.y;
     const confirm = () => {
         const seat = new Seat(x, y, w, h, shape, true);
         const seats = seat.multiply(+rows.value, +cols.value);
-        const ids = createMatrix(...[rows, cols, start, end].map(x => +x.value)).flat();
+        const ids = createMatrix(...[rows, cols, start, end].map(Elements.valueAsNum)).flat();
         for(const [i, s] of seats.entries()) {
             s.tableID = ids[i];
         }
@@ -348,233 +348,11 @@ function prepareSeatEditDialog() {
     Elements.unhide('dSeatEdit');
     const id = document.getElementById('dSeatIDChange');
     id.value = seat.tableID;
-    Elements.fireInputEvent(id.id);
+    Elements.fireInputEvent(id);
 
     const confirm = () => {
         seat.tableID = +id.value;
     }
 
     return { confirm };
-}
-
-function createTypeSelection(e) {
-    const type = e.target.value;
-
-    const ids = {
-        panel: ['dSeatType', 'dOrientation', 'dSeatNum', 'dMargins'],
-        lane: ['dText', 'dOrientation', 'dWidth', 'dHeight'],
-        group: ['dSeatType', 'dText', 'dGroup'],
-        togo: ['dSeatType', 'dTogoRow'],
-    };
-
-    const toUnhide = new Set(ids[type]);
-    const toHide = new Set(Object.values(ids).flat()).difference(toUnhide);
-    toHide.forEach(Elements.hide);
-    toUnhide.forEach(Elements.unhide);
-
-    const seatType = document.getElementById('dSeatType');
-    if(type == 'panel') {
-        seatType.value = 'table';
-        seatType.toggleAttribute('disabled', false);
-    }
-    if(type == 'lane') {
-        const width = document.getElementById('dWidth');
-        const height = document.getElementById('dHeight');
-        document.getElementById('dText').value = 'SUSHI LANE';
-        if(document.getElementById('dOrientation').value == 'vertical') {
-            width.value = 20;
-            height.value = 100;
-        } else {
-            width.value = 100;
-            height.value = 20;
-        }
-        manageEvents([
-            ['dOrientation', 'change', () => [width.value, height.value] = [height.value, width.value]]
-        ]);
-    } 
-    if(type == 'group') {
-        document.getElementById('dText').value = 'Sushi bar';
-        seatType.value = 'counter';
-        seatType.toggleAttribute('disabled', false);
-    }
-    if(type == 'togo') {
-        seatType.value = 'togo';
-        seatType.toggleAttribute('disabled', true);
-    }
-}
-
-function createGroupPanels(e) {
-    const panels = e.target.value;
-
-    const panel1 = document.getElementById('dGroupPanel1');
-    const panel2 = document.getElementById('dGroupPanel2');
-
-    if(panels == '1') {
-        panel1.toggleAttribute('disabled', false);
-        panel2.toggleAttribute('disabled', true);
-    } else {
-        panel1.toggleAttribute('disabled', false);
-        panel2.toggleAttribute('disabled', false);
-    }
-}
-
-function seatingNameList(panelCounts = [-1]) {
-    const list = document.getElementById('dSeatingList');
-    list.replaceChildren();
-
-    for(const name of Table.getRange(Elements.valueAsNum('dSeatingStart'), Elements.valueAsNum('dSeatingEnd'))) {
-        const li = document.createElement('li');
-        li.innerText = name;
-        list.append(li);
-
-        if(panelCounts[0] == list.querySelectorAll('li').length) {
-            list.append(document.createElement('br'));
-            panelCounts.shift();
-        }
-    }
-}
-
-function seatingLinks(e) {
-    const rect = getCurrentRectangle();
-    if(!rect || !(rect instanceof Panel || rect instanceof Group)) {
-        return;
-    }
-    const diff = rect.tableIDs[1] - rect.tableIDs[0];
-    
-    const start = document.getElementById('dSeatingStart');
-    const end = document.getElementById('dSeatingEnd');
-    
-    if(e.target == start) {
-        end.value = +start.value + diff;
-    } else {
-        start.value = +end.value - diff
-    }
-    rect.tableIDs = [+start.value, +end.value];
-}
-
-function getCurrentRectangle() {
-    return State.drawn.find(r => r.id == dialog.dataset.id);
-}
-
-function suggestedName() {
-    const rect = getCurrentRectangle();
-    if(!rect) return false;
-    
-    const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
-    let name = '';
-    let duplicateCount = 0;
-    let includeOne = false;
-
-    if(rect instanceof Panel) {
-        const tableNames = Table.getRange(...rect.tableIDs);
-        if(tableNames.includes('[N/A]')) {
-            name = 'panel' + (rect.isVertical ? 'V' : 'H');
-            includeOne = true;
-        } else {
-            name = `panel${tableNames[0]}to${tableNames.at(-1)}`;
-        }
-    } else if(rect instanceof Lane) {
-        name = 'lane' + (rect.isVertical ? 'V' : 'H');
-        includeOne = true;
-    } else if(rect instanceof Group) {
-        const type = rect.tableType;
-        name = type + 'Area';
-    } else if(rect instanceof Togo) {
-        name = 'togoPanel';
-    }
-
-    for(const other of State.drawn.filter(r => r != rect)) {
-        if(other.name.startsWith(name)) {
-            duplicateCount++;
-        }
-    }
-
-    if(duplicateCount == 0 && includeOne) {
-        name += 'One';
-    } else if(duplicateCount > 0) {
-        name += words.at(duplicateCount) ?? duplicateCount;
-    }
-
-    return name;
-}
-
-function createMatrix(rows, cols, start, end) {
-    const length = rows * cols;
-    const ascending = start < end;
-    const numbers = Array.from({ length }, (_, i) => ascending ? start + i : start - i);
-    const matrix = numbers.reduce((arrs, x) => arrs.at(-1).length < cols ? arrs.with(-1, [...arrs.at(-1), x]) : [...arrs, [x]], [[]]);
-    return matrix;
-}
-
-function createSeatPreview() {
-    const tr = [];
-    for(const row of createMatrix(...['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].map(id => Elements.valueAsNum(id)))) {
-        const cells = row.map(n => {
-            const e = document.createElement('td');
-            e.innerText = Table.get(n, true);
-            return e;
-        });
-        const r = document.createElement('tr');
-        r.append(...cells);
-        tr.push(r);
-    }
-    const tbody = document.createElement('tbody');
-    tbody.append(...tr);
-    document.getElementById('dSeatPreview').replaceChildren(tbody);
-}
-
-function updateSeatIDs(e) {
-    const [start, end] = ['dSeatIDStart', 'dSeatIDEnd'].map(id => document.getElementById(id));
-    const length = Elements.valueAsNum('dSeatRows') * Elements.valueAsNum('dSeatCols') - 1;
-    const ascending = +start.value < +end.value;
-    const count = ascending ? length : -length;
-
-    if(e.target == start) {
-        end.value = +start.value + count;
-    } else if(e.target == end) {
-        start.value = +end.value - count;
-    } else if(ascending) {
-        end.value = +start.value + count;
-    } else if(!ascending) {
-        start.value = +end.value - count;
-    }
-}
-
-['dSeatRows', 'dSeatCols', 'dSeatIDStart', 'dSeatIDEnd'].forEach(id => document.getElementById(id).addEventListener('input', e => {
-    updateSeatIDs(e);
-    createSeatPreview();
-}));
-document.getElementById('dSeatIDReverse').addEventListener('click', e => {
-    const [start, end] = [document.getElementById('dSeatIDStart'), document.getElementById('dSeatIDEnd')];
-    [start.value, end.value] = [end.value, start.value];
-    createSeatPreview();
-});
-document.getElementById('dSeatIDChange').addEventListener('input', e => {
-    document.querySelector('[for="dSeatIDChange"]').innerText = `\u21A6 ${Table.get(+e.target.value)}`;
-});
-
-document.getElementById('dialogDelete').querySelector('button').addEventListener('click', e => {
-    const rect = getCurrentRectangle();
-    if(rect instanceof Panel) {
-        Options[rect.tableType].count -= rect.numTables;
-    } else if(rect instanceof Group) {
-        Options[rect.tableType].count -= Math2.sum(rect.panelCounts);
-    }
-    deleteFromDrawn(rect.id);
-    dialog.close();
-});
-document.getElementById('dCreateType').addEventListener('input', createTypeSelection);
-document.getElementById('dGroupPanels').addEventListener('input', createGroupPanels);
-document.getElementById('dSeatingStart').addEventListener('input', seatingLinks);
-document.getElementById('dSeatingEnd').addEventListener('input', seatingLinks);
-document.getElementById('dNameFill').addEventListener('click', e => document.getElementById('dName').value = suggestedName());
-
-function manageEvents(eventTriples) {
-    for(const [elem, event, func] of eventTriples) {
-        if(elem instanceof HTMLElement) {
-            elem.addEventListener(event, func, { signal: dialogController.signal });
-        } else {
-            document.getElementById(elem).addEventListener(event, func, { signal: dialogController.signal });
-        }
-    }
 }

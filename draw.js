@@ -40,7 +40,7 @@ const State = {
     /** The scale/zoom factor of the canvas in the two modes. @see {@link setScale} */
     scale: {
         register: 1,
-        handy: 0.8
+        handy: 1
     },
 }
 
@@ -191,14 +191,14 @@ function frame() {
 
     } else if(State.clicked.size > 1) {
         const clicked = State.getClicked();
-        const x = Math2.min(clicked, rect => rect.left).left;
-        const y = Math2.min(clicked, rect => rect.top).top;
+        const x = Math.min(...clicked.map(rect => rect.left));
+        const y = Math.min(...clicked.map(rect => rect.top));
         // Create the minimal rectangle containing all clicked rectangles.
         const bounding = new Rectangle(
             x,
             y,
-            Math2.max(clicked, rect => rect.right).right - x,
-            Math2.max(clicked, rect => rect.bottom).bottom - y,
+            Math.max(...clicked.map(rect => rect.right)) - x,
+            Math.max(...clicked.map(rect => rect.bottom)) - y,
             true
         );
 

@@ -165,7 +165,7 @@ main.addEventListener('mouseleave', () => {
 /**
  * Expected behavior when double clicking:
  *      Opens a dialog
- *          This dialog depends on what was clicked as well as the mode.
+ *          This dialog depends on what was clicked as well as the mode (handy vs register).
  */
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
@@ -177,8 +177,7 @@ main.addEventListener('dblclick', e => {
         if(clicked instanceof Seat) {
             showDialog('seat');
         } else if(clicked == undefined) {
-            dialog.dataset.x = Math2.roundTo(5)(State.mouse[0]);
-            dialog.dataset.y = Math2.roundTo(5)(State.mouse[1]);
+            [dialog.dataset.x, dialog.dataset.y] = State.mouse.map(Math2.roundTo(5));
             showDialog('handy');
         }
         return;
@@ -194,14 +193,15 @@ main.addEventListener('dblclick', e => {
         } else if(clicked instanceof Togo) {
             showDialog('togo');
         } else if(clicked === undefined) {
-            dialog.dataset.x = Math.round(State.mouse[0]);
-            dialog.dataset.y = Math.round(State.mouse[1]);
+            [dialog.dataset.x, dialog.dataset.y] = State.mouse.map(Math2.roundTo(1));
             showDialog('create');
         }
     }
 });
 
 document.body.addEventListener('keydown', e => {
+    if(e.target.tagName == 'INPUT') return ;
+
     const selected = new Set(State.drawn.filter(r => r.selected).map(r => r.id));
     const clicked = selected.union(State.clicked);
 
