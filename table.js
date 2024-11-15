@@ -105,7 +105,7 @@ document.getElementById('tableSeatingAdd10').addEventListener('click', () => Arr
 document.getElementById('tableSeatingAddTogo').addEventListener('click', () => {
     for(let i = 1; i <= 20; i++) {
         Table.addRow();
-        Table.setRow(Table.length() - 20 + i, 'TOGO' + (i), true);
+        Table.setRow(Table.length(), 'TOGO' + i, true);
     }
 })
 document.getElementById('tableSeatingRemove').addEventListener('click', Table.removeLastRow);
