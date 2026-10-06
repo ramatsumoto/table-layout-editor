@@ -68,6 +68,17 @@ const Table = {
         tableSeatingHasChanged();
     },
     /**
+     * Reverses the names of the range of rows from `start` to `end` inclusive.
+     * @param {number} start The start of the range of rows to reverse
+     * @param {number} end The end of the range of rows to reverse
+     */
+    reverseRange: (start, end) => {
+        const range = Table.getRange(start, end);
+        for (const [i, name] of range.entries()) {
+            Table.setRow(end - i, name, false);
+        }
+    },
+    /**
      * Gets the length of the `table_seating` table.
      * @returns The length of `table_seating`. Should also be the highest/last id in the table.
      */
@@ -75,7 +86,7 @@ const Table = {
 }
 
 /**
- * Appends a new row to `#tableSeating` with the ID as `n`.
+ * Appends a new row to `#tableSeating` with the ID as `n` and name `prefix+n`.
  */
 function createRow(n, prefix='T') {
     const row = document.createElement('tr');
@@ -110,6 +121,35 @@ document.getElementById('tableSeatingAddTogo').addEventListener('click', () => {
 })
 document.getElementById('tableSeatingRemove').addEventListener('click', Table.removeLastRow);
 document.getElementById('tableSeatingRemove10').addEventListener('click', () => Array(10).fill().forEach(Table.removeLastRow));
+
+document.getElementById('tableSeatingReverse').addEventListener('click', () => {
+    let start = document.getElementById('tableSeatingReverseStart').valueAsNumber;
+    let end = document.getElementById('tableSeatingReverseEnd').valueAsNumber;
+
+    // Utilize highlighted range in fake table_seating, if possible
+    const selection = getSelection();
+    const selStart = selection.anchorNode;
+    const selEnd = selection.focusNode;
+    const table = document.getElementById('tableSeating');
+    if (table.contains(selStart) && table.contains(selEnd)) {
+        const rowStart = selStart.parentElement.closest('tr');
+        const rowEnd = selEnd.parentElement.closest('tr');
+
+        start = +rowStart.children[0].innerText;
+        end = +rowEnd.children[0].innerText;
+        console.log("Got range from highlighted text");
+    }
+    [start, end] = [start, end].toSorted((a, b) => a - b);
+
+    console.log({ start, end });
+
+    if (isNaN(start) || isNaN(end) || start < 1 || end < 1 || start > Table.length() || end > Table.length() || start >= end) {
+        return;
+    }
+
+    Table.reverseRange(start, end);
+    tableSeatingHasChanged();
+});
 
 document.getElementById('tableSeating').addEventListener('change', e => {
     tableSeatingHasChanged();

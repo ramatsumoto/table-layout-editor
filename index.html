@@ -67,7 +67,7 @@
         <canvas id="main" width="2000" height="2000" data-width="2000" data-height="2000"></canvas>
     </div>
     <div>
-        <strong>Fake table_seating</strong>
+        <strong title="Emulate the 'table_seating' table in the store database">Fake table_seating</strong>
         <br>
         <br>
         <datalist id="tableSeatingRowPrefixOptions">
@@ -81,12 +81,17 @@
         <button id="tableSeatingAdd10">Add 10</button>
         <br>
         <button id="tableSeatingAddTogo">Add 20 Togo Rows</button>
-        <br>
+        <hr>
         <button id="tableSeatingRemove">Remove Last Row</button>
         <br>
         <button id="tableSeatingRemove10">Remove Last 10 Rows</button>
+        <hr>
+        <span>Reverse names for rows:</span>
         <br>
+        <input type="number" id="tableSeatingReverseStart" min="1" max="99"> - <input type="number" id="tableSeatingReverseEnd" min="1" max="99">
         <br>
+        <button id="tableSeatingReverse">Reverse Rows</button>
+        <hr>
         <div style="max-height: 640px; overflow-y: scroll;">
             <table id="tableSeating">
                 <thead>
