@@ -34,7 +34,7 @@
         .grid {
             display: flex;
             flex-direction: column;
-            max-width: fit-content; 
+            max-width: fit-content;
             align-items: end;
         }
         #dSeatPreview td {
@@ -70,9 +70,15 @@
         <strong>Fake table_seating</strong>
         <br>
         <br>
-        <button id="tableSeatingAdd">Add Row</button>
+        <datalist id="tableSeatingRowPrefixOptions">
+            <option value="T">T</option>
+            <option value="C">C</option>
+            <option value="B">B</option>
+        </datalist>
+        <label>Prefix: <input id="tableSeatingRowPrefix" list="tableSeatingRowPrefixOptions" class="short" value="T"></label>
         <br>
-        <button id="tableSeatingAdd10">Add 10 Rows</button>
+        <button id="tableSeatingAdd">Add Row</button>
+        <button id="tableSeatingAdd10">Add 10</button>
         <br>
         <button id="tableSeatingAddTogo">Add 20 Togo Rows</button>
         <br>
@@ -221,7 +227,7 @@
             <dd>Names for counter seats should be "C_".</dd>
             <dd>Names for bar seats should be "B_".</dd>
             <dd>Names for togo tables should be "TOGO_".<br><br></dd>
-            
+
             <dt>Use the <button>Add 20 Togo Rows</button> button last.</dt>
             <dd>The Togo element will automatically fill itself with whatever rows/names were not used for other seats.</dd>
             <dd>Therefore, add the togo rows after you've created all the rows needed for the other elements.</dd>

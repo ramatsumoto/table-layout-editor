@@ -1,5 +1,5 @@
 // Object for representing `table_seating`.
-// This simply parses the `tableSeating` element. Meaning the HTML is the source of truth, not this object. 
+// This simply parses the `tableSeating` element. Meaning the HTML is the source of truth, not this object.
 /**
  * Object for handling the representation of `table_seating`.
  */
@@ -7,7 +7,7 @@ const Table = {
     addRow: () => {
         const body = document.querySelector('#tableSeating tbody');
         const n = body.children.length + 1; // Table IDs start at 1 not 0
-        body.append(createRow(n));
+        body.append(createRow(n, document.querySelector('#tableSeatingRowPrefix').value || 'T'));
         tableSeatingHasChanged();
     },
     removeLastRow: () => {
@@ -19,7 +19,7 @@ const Table = {
     },
     /**
      * Returns the `tableSeating` HTML table as an array.
-     * @returns 
+     * @returns
      */
     getData: () => [...document.querySelectorAll('#tableSeating tbody tr')].map(tr => ({
         id: +tr.children[0].innerText,
@@ -77,14 +77,14 @@ const Table = {
 /**
  * Appends a new row to `#tableSeating` with the ID as `n`.
  */
-function createRow(n) {
+function createRow(n, prefix='T') {
     const row = document.createElement('tr');
 
     const id = document.createElement('span');
     id.innerText = n;
 
     const name = document.createElement('input');
-    name.setAttribute('value', 'T' + n);
+    name.setAttribute('value', prefix + n);
     name.setAttribute('size', 10);
 
     const togo = document.createElement('input');
@@ -96,7 +96,7 @@ function createRow(n) {
         return cell;
     })
     row.append(...cells);
-    
+
     return row;
 }
 
