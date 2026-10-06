@@ -1,7 +1,7 @@
 /**
  * When a edit dialog (as opposed to the creation dialogs) is opened ({@linkcode showDialog})
  *      the ID of the `Rectangle` to be editted gets passed as a data attribute to the {@link dialog}.
- * 
+ *
  * This function returns the `Rectangle` who is currently being editted.
  * @returns {Rectangle} The `Rectangle` currently being editted by the open dialog.
  */
@@ -13,7 +13,7 @@ function getCurrentRectangle() {
 /**
  * Hides/shows and prepares elements based on the selected table type
  *  in the Register mode creation dialog.
- * 
+ *
  * To be called as an event attached to 'dCreateType'
  */
 function createTypeSelection(e) {
@@ -50,7 +50,7 @@ function createTypeSelection(e) {
         manageEvents([
             ['dOrientation', 'change', () => [width.value, height.value] = [height.value, width.value]]
         ]);
-    } 
+    }
     if(type == 'group') {
         document.getElementById('dText').value = 'Sushi bar';
         seatType.value = 'counter';
@@ -65,8 +65,8 @@ document.getElementById('dCreateType').addEventListener('input', createTypeSelec
 
 /**
  * For the creating {@linkcode Group}s in the Register mode creation dialog.
- * 
- * Disables/enables the panel seat count inputs depending on the input of 'dGroupPanels'. 
+ *
+ * Disables/enables the panel seat count inputs depending on the input of 'dGroupPanels'.
  */
 function createGroupPanels(e) {
     const panels = e.target.value;
@@ -86,10 +86,10 @@ document.getElementById('dGroupPanels').addEventListener('input', createGroupPan
 
 /**
  * Generates a list of names pulled from {@link Table}.
- * 
+ *
  * Uses the values of 'dSeatingStart' and 'dSeatingEnd'.
- * 
- * @param {number[]} panelCounts The list will have extra line breaks 
+ *
+ * @param {number[]} panelCounts The list will have extra line breaks
  *      where a panel would begin/end. This parameter should only be
  *      overwritten when creating a name list for a {@linkcode Group}
  */
@@ -111,7 +111,7 @@ function seatingNameList(panelCounts = [-1]) {
 
 /**
  * Links 'dSeatingStart' and 'dSeatingEnd' so they are always a specific interval apart.
- * 
+ *
  * The interval depends on the `tableIDs` of the {@linkcode Panel} or {@linkcode Group} is currently being editted.
  */
 function seatingLinks(e) {
@@ -120,10 +120,10 @@ function seatingLinks(e) {
         return;
     }
     const diff = rect.tableIDs[1] - rect.tableIDs[0];
-    
+
     const start = document.getElementById('dSeatingStart');
     const end = document.getElementById('dSeatingEnd');
-    
+
     if(e.target == start) {
         end.value = +start.value + diff;
     } else {
@@ -137,17 +137,17 @@ document.getElementById('dSeatingEnd').addEventListener('input', seatingLinks);
 
 /**
  * Suggests a name for a given `Rectangle`.
- * 
- * Names {@linkcode Lane}s based on their orientation, {@linkcode Group}s by their table type, 
+ *
+ * Names {@linkcode Lane}s based on their orientation, {@linkcode Group}s by their table type,
  *      and {@linkcode Panel}s based on their `table_seating` names if applicable.
- * 
+ *
  * Naming collisions are avoided by appending a number to the name.
  * @returns {string} The automatically created name for the `Rectangle` being editted.
  */
 function suggestedName() {
     const rect = getCurrentRectangle();
     if(!rect) return false;
-    
+
     const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
     let name = '';
     let duplicateCount = 0;
@@ -189,9 +189,9 @@ document.getElementById('dNameFill').addEventListener('click', e => document.get
 
 /**
  * Creates a matrix/2D array based on the given parameters.
- * 
+ *
  * Travelling horizontally, each element of the matrix will increment/decrement by one.
- * 
+ *
  * The elements will increment if `start < end`, and will decrement otherwise.
  * @param {number} rows The number of rows the matrix will have
  * @param {number} cols The number of columns the matrix will have
@@ -209,7 +209,7 @@ function createMatrix(rows, cols, start, end) {
 
 /**
  * For the Handy mode Seat creation dialog.
- * 
+ *
  * Creates a `<table>` to simulate how the {@linkcode Seat}s will be layed out
  *      based on the inputs of the dialog.
  */
@@ -232,9 +232,9 @@ function createSeatPreview() {
 
 /**
  * For the Handy mode Seat creation dialog.
- * 
+ *
  * Ensures that 'dSeatIDStart' and 'dSeatIDEnd' are updated together,
- *      and maintain a consistent interval as dictated by 
+ *      and maintain a consistent interval as dictated by
  *      'dSeatRows' and 'dSeatCols'.
  * @see {@link seatingLinks}
  */
@@ -276,9 +276,9 @@ document.getElementById('dSeatIDChange').addEventListener('input', e => {
  */
 function reduceTableCounts() {
     const rect = getCurrentRectangle();
-    if(rect instanceof Panel) {
+    if (rect instanceof Panel) {
         Options[rect.tableType].count -= rect.numTables;
-    } else {
+    } else if (rect instanceof Group) {
         Options[rect.tableType].count -= Math2.sum(rect.panelCounts);
     }
     deleteFromDrawn(rect.id);
@@ -288,9 +288,9 @@ document.getElementById('dialogDelete').querySelector('button').addEventListener
 
 /**
  * Takes a list of elements, event names, and event handlers add the associated event listener.
- * 
+ *
  * These listeners will automatically remove themselves the next time the {@link dialog} closes.
- * @param {any[][]} eventTriples A list of arrays in the form `[element, eventName, eventHandler]`. 
+ * @param {any[][]} eventTriples A list of arrays in the form `[element, eventName, eventHandler]`.
  */
 function manageEvents(eventTriples) {
     for(const [elem, event, func] of eventTriples) {
