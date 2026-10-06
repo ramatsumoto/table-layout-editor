@@ -1,9 +1,5 @@
-const javaTemplate = `/*
- * Created on May 21, 2004
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
+const javaTemplate = `// Generated [DATE]
+
 package com.acropoint.pos.table.gui.impl;
 
 import java.util.Vector;
@@ -32,7 +28,7 @@ import com.acropoint.pos.util.AppConst;
 
 /**
  * @author dfelty
- * 
+ *
  *         To change the template for this generated type comment go to
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
@@ -55,7 +51,7 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 
 	/**
 	 * This method initializes
-	 * 
+	 *
 	 */
 	public TablePanelImplKula[NAME](DynamicTablePanelScroll parent,
 			Vector<TableData> tables)
@@ -95,7 +91,7 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 		Color counterSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([counter color]));
 		Color barSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([bar color]));
 		Color togoSectionBackground = swtMainFrame.getInstance().getResourceManager().getColor(new RGB([togo color]));
-		
+
 {}
 
         this.pack();
@@ -103,8 +99,9 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 }`;
 
 const XMLTemplate = `<tableLayoutGUIType xmlns="http://www.acropoint.com/rest/domains/session_data">
+  <!-- Generated [DATE] -->
    <table class="java.util.ArrayList">
-   
+
 {}
 
    </table>

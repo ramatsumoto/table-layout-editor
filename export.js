@@ -29,7 +29,7 @@ function exportGroup(group) {
 \t\t${group.name}.setBackground(${group.tableType}SectionBackground);
 \t\tFontData ${group.name}FD = new FontData("Arial", 12, SWT.BOLD);
 \t\t${group.name}.setFont(swtMainFrame.getInstance().getResourceManager().getFont(${group.name}FD));`
-    const panelDefinition = group.splitTableIDs().map(([start, end], i) => 
+    const panelDefinition = group.splitTableIDs().map(([start, end], i) =>
     `APPanel ${group.name}P${i + 1} = getTableRowPanel(${group.name}, tables.subList(${start - 1}, ${end}), SWT.VERTICAL, ${Options[group.tableType].wConstant}, ${Options[group.tableType].hConstant}, 0, 0, 0, 0, ${group.tableType}SectionBackground);`);
 
     const attachment = `setFormData(${group.name}, new FormAttachment(0, ${~~group.top}), null, new FormAttachment(0, ${~~group.left}), null);`;
@@ -66,7 +66,7 @@ function exportJava(name, drawn) {
         } else if(rect instanceof Lane) {
             return exportLane(rect);
         } else if(rect instanceof Group) {
-            return exportGroup(rect); 
+            return exportGroup(rect);
         } else if(rect instanceof Togo) {
             return exportTogo(rect);
         } else {
@@ -76,6 +76,7 @@ function exportJava(name, drawn) {
 
     const text = javaTemplate
         .replace('{}', lines.join('\n'))
+        .replace('[DATE]', new Date().toISOString())
         .replaceAll('[NAME]', name.trim().toUpperCase())
         .replace('[table width]', Options.table.width)
         .replace('[table height]', Options.table.height)
@@ -92,7 +93,7 @@ function exportJava(name, drawn) {
         .replace('[counter color]', getRGB(Options.counter.color).join(', '))
         .replace('[bar color]', getRGB(Options.bar.color).join(', '))
         .replace('[togo color]', getRGB(Options.togo.color).join(', '));
-    
+
     return text;
 }
 
@@ -115,7 +116,7 @@ function readyXMLFile(name, drawn) {
     origin[0] = Math.min(...drawn.map(s => s.left));
 
     const seats = drawn.map(s => exportSeat(s, origin));
-    const text = XMLTemplate.replace('{}', seats.join('\n'));
+    const text = XMLTemplate.replace('{}', seats.join('\n')).replace('[DATE]', new Date().toISOString());
     const xml = new Blob([text], { type: 'text/xml' });
     const url = URL.createObjectURL(xml);
 
@@ -199,7 +200,7 @@ function tableSeatingHasChanged() {
 function createPreview(drawn) {
     const width = Math.max(942, ...drawn.map(r => r.right));
     const height = Math.max(624, ...drawn.map(r => r.bottom));
-    
+
     const canvas = new OffscreenCanvas(width, height);
     const context = canvas.getContext('2d');
 
