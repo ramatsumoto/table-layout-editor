@@ -1,11 +1,15 @@
 /**
  * The class to with its edges 'inverted'.
- * 
+ *
  * Used to describe the bounds of the canvas.
- * 
+ *
  * Should have no members besides `MAX`, which is created after the canvas is intialized.
  */
 class Border extends Rectangle {
+    static get className() {
+        return "Border";
+    }
+
     constructor(maxW, maxH) {
         super(0, 0, maxW, maxH);
     }
@@ -29,9 +33,9 @@ class Border extends Rectangle {
 
 /**
  * A class representing individual seats in the Register layout.
- * 
+ *
  * Only for drawing purposes, and cannot be created by the user.
- * 
+ *
  * @see {@link Panel.draw}
  * @see {@link Group.draw}
  * @see {@link Togo.draw}
@@ -39,10 +43,14 @@ class Border extends Rectangle {
 class SeatButton extends Rectangle {
     /**
      * Set to `true` to emulate the font of the actual POS Registers.
-     * 
+     *
      * Used for generating previews.
      */
     static emulateFont = false;
+
+    static get className() {
+        return "SeatButton";
+    }
 
     constructor(x, y, w, h) {
         super(x, y, w, h, true);
@@ -59,7 +67,7 @@ class SeatButton extends Rectangle {
 
         context.fillStyle = 'white';
         context.fill();
-        
+
         context.shadowColor = 'darkgray';
         context.shadowOffsetX = 1;
         context.shadowOffsetY = 1;
@@ -91,12 +99,16 @@ class SeatButton extends Rectangle {
 
 /**
  * The class representing the Panel created by `getTableRowPanel` in the java file.
- * 
+ *
  * A single line of `SeatButtons`.
  */
 class Panel extends Rectangle {
     static TABLE_SPACING = 10;
     static DEFAULT_MARGIN = 3
+
+    static get className() {
+        return "Panel";
+    }
 
     constructor(x, y, numTables, tableType, isVertical, { marginTop, marginBottom, marginLeft, marginRight } = { marginTop: Panel.DEFAULT_MARGIN, marginBottom: Panel.DEFAULT_MARGIN, marginLeft: Panel.DEFAULT_MARGIN, marginRight: Panel.DEFAULT_MARGIN }) {
         super(x, y, 0, 0);
@@ -136,7 +148,7 @@ class Panel extends Rectangle {
             this.w += (width + tableSpacing) * (this.numTables - 1);
         }
     }
-    
+
     draw(context, style = {}) {
         super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
 
@@ -163,6 +175,10 @@ class Panel extends Rectangle {
  * A rectangle with text in it.
  */
 class Lane extends Rectangle {
+    static get className() {
+        return "Lane";
+    }
+
     constructor(x, y, w, h, isVertical, text) {
         super(x, y, w, h);
         this.isVertical = isVertical;
@@ -196,9 +212,9 @@ class Lane extends Rectangle {
 
 /**
  * A set of {@linkcode Panel}s grouped together, with a title at the top.
- * 
+ *
  * Used to emulate how counter areas are represented in the POS Register.
- * 
+ *
  * Can only be aligned vertically.
  */
 class Group extends Rectangle {
@@ -206,6 +222,10 @@ class Group extends Rectangle {
     static TEXT_HEIGHT = 12 * 4/3; // 12pt font is this many pixels tall
     /** The height inherent to `Group`s that are not created by {@linkcode Panel}s */
     static EXTRA_HEIGHT = Group.MARGIN * 2 + Group.TEXT_HEIGHT;
+
+    static get className() {
+        return "Group";
+    }
 
     constructor(x, y, text, tableType, panelCounts, defaultHeight, indentLeft) {
         super(x, y, 0, 0);
@@ -221,7 +241,7 @@ class Group extends Rectangle {
         this.setHeight(this.defaultHeight);
         /**
          * The bounds of the `table_seating` IDs of the {@linkcode Panel}s of `this`.
-         * 
+         *
          * @see {@link Panel.tableIDs}
          */
         this.tableIDs = [1, Math2.sum(panelCounts)];
@@ -249,9 +269,9 @@ class Group extends Rectangle {
 
     /**
      * Changes the height of `this` to `height`, if possible.
-     * 
+     *
      * If `height` would not accomodate for the Panels in `this`, the height will not change.
-     * 
+     *
      * @see {@link Group.minHeight}
      * @param {number} height The given height to set
      */
@@ -263,7 +283,7 @@ class Group extends Rectangle {
 
     draw(context, style = {}) {
         super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
-        
+
         const canIndent = this.h - Group.EXTRA_HEIGHT == this.defaultHeight;
         const tableIDs = this.splitTableIDs(this.tableIDs);
         for(const [i, panel] of Object.entries(this.panels)) {
@@ -298,6 +318,10 @@ class Togo extends Rectangle {
     static MARGIN = 10;
     static EXPECTED_COUNT = 20;
 
+    static get className() {
+        return "Togo";
+    }
+
     constructor(x, y, numPerRow, tableType = 'togo') {
         super(x, y, 0, 0);
 
@@ -310,9 +334,9 @@ class Togo extends Rectangle {
 
     /**
      * Calculates the size of needed to fit all the togo tables.
-     * 
+     *
      * The number of togo tables is dictated by how many rows of `table_seating` aren't used.
-     * 
+     *
      * @see {@link Table}
      * @see {@link Options}
      */
@@ -333,7 +357,7 @@ class Togo extends Rectangle {
         const names = Table.getRange(otherTables + 1, otherTables + Math.max(Togo.EXPECTED_COUNT, count));
 
         const { width, height } = Options[this.tableType];
-        
+
         super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
 
         for(let i = 0; i < Math.max(Togo.EXPECTED_COUNT, count); i++) {

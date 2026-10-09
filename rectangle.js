@@ -1,6 +1,6 @@
 /**
  * The base class for all the elements drawn on to the canvas.
- * 
+ *
  * Establishes positioning and movement methods, as well as how to draw itself.
  */
 class Rectangle {
@@ -24,13 +24,18 @@ class Rectangle {
 
     static counter = 0;
 
+    /** To be overriden in subclasses to determine class membership during serialization */
+    static get className() {
+        return 'Rectangle';
+    }
+
     /**
      * Create a basic rectangle.
      * @param {number} x The x-coordinate of `this` rectangle's top left corner.
      * @param {number} y The y-coordinate of `this` rectangle's top left corner.
      * @param {number} w The width of `this` rectangle. How far it extends to the right.
      * @param {number} h The height of `this rectangle. How far it extends downards.
-     * @param {boolean} temporary Set to `true` to if `this` instance is not intended to persist. 
+     * @param {boolean} temporary Set to `true` to if `this` instance is not intended to persist.
      */
     constructor(x, y, w, h, temporary = false) {
         this.x = x;
@@ -149,7 +154,7 @@ class Rectangle {
 
     /**
      * Draws `this` rectangle to the given canvas `context`.
-     * 
+     *
      * Is to be overridden to add extra details for subclasses of `Rectangle`.
      * @param {CanvasRenderingContext2D} context The context of the canvas to draw onto
      * @param {Object} style An object defining the properties to be applied to `context`, such as its `fillStyle`, `shadowColor`, etc.
@@ -182,9 +187,9 @@ class Rectangle {
 
     /**
      * Gets the rectangle closest to each edge of `this` (see {@link Rectangle.Edges}).
-     * 
+     *
      * A rectangle must some horizontal or vertical overlap with `this` to be considered "near".
-     * 
+     *
      * @param {Rectangle[]} others The set of other `Rectangle`s to consider
      * @returns An object containing the `Rectangle` closest to each edge of `this`. If no such `Rectangle` exists, it instead returns `Border.MAX`.
      */
@@ -227,7 +232,7 @@ class Rectangle {
 
             const [start, end] = [this[edge], other[opposite]];
             const distance = Math.abs(start - end);
-            
+
             context.beginPath();
             context.strokeStyle = 'red';
             context.moveTo(...point(start));
@@ -243,12 +248,12 @@ class Rectangle {
             context.fillText(Math.round(distance), ...point(Math.min(Math2.average(start, end), start + 100)), distance);
         }
 
-    } 
+    }
 
     /**
      * Draws a solid line between any edge of `this` that shares the same value as another `Rectangle`.
-     * 
-     * If `this.left() == other.left()` or `this.left() == other.right()`, then `this` and `other` are 
+     *
+     * If `this.left() == other.left()` or `this.left() == other.right()`, then `this` and `other` are
      * considered to be 'aligned'.
      * @param {CanvasRenderingContext2D} context The canvas context to draw to
      * @param {Rectangle[]} others The set of other `Rectangles` to consider and draw to
@@ -257,12 +262,12 @@ class Rectangle {
         for(const edge of Rectangle.Edges) {
             const aligned = others.filter(other => this[edge] == other[edge] || this[edge] == other[Rectangle.opposite(edge)]);
             if(aligned.length == 0) continue;
-            
+
             const isVertical = edge == 'top' || edge == 'bottom';
             const sharedCoord = this[edge];
 
             const point = Util.axialPointPartial(!isVertical, sharedCoord);
-            
+
             aligned.push(this);
             const ranges = isVertical ? aligned.map(r => r.hRange) : aligned.map(r => r.vRange);
             const min = Math.min(...ranges.map(range => range[0]));
@@ -289,7 +294,7 @@ class Rectangle {
     almostAligned(context, others, threshold = 10) {
         for(const edge of Rectangle.Edges) {
             const almost = others.map(r => [r, Math.abs(this[edge] - r[edge]), Math.abs(this[edge] - r[Rectangle.opposite(edge)])])
-            
+
             const isVertical = edge == 'top' || edge == 'bottom';
 
             for(const [other, sameDist, oppositeDist] of almost) {
@@ -329,7 +334,7 @@ class Rectangle {
     }
 
     /**
-     * Moves `this` by `(dx, dy)`. If the movement would lead to `this` overlapping 
+     * Moves `this` by `(dx, dy)`. If the movement would lead to `this` overlapping
      * with another `Rectangle` or being out of bounds, then no movement will happen.
      * @param {number} dx The change in x value
      * @param {number} dy The change in y value
@@ -380,7 +385,7 @@ const Util = {
     axialPointPartial: (vertical, staticCoord) => vertical ?
         (y) => [staticCoord, y] : (x) => [x, staticCoord],
     // deleteChildren: (element) => {
-    //     while(element.hasChildNodes()) element.lastChild.remove();    
+    //     while(element.hasChildNodes()) element.lastChild.remove();
     // },
     // get: (idOrElem) => {
     //     let e = idOrElem;
