@@ -6,8 +6,14 @@
 const Table = {
     addRow: () => {
         const body = document.querySelector('#tableSeating tbody');
-        const n = body.children.length + 1; // Table IDs start at 1 not 0
-        body.append(createRow(n, document.querySelector('#tableSeatingRowPrefix').value || 'T'));
+        const prefix = document.querySelector("#tableSeatingRowPrefix").value || 'T'
+        if (!body) { // Table is empty
+            document.getElementById("tableSeating").append(document.createElement("tbody"));
+            document.querySelector('#tableSeating tbody').append(createRow(1, prefix));
+        } else {
+            const n = (body?.children.length ?? 0) + 1; // Table IDs start at 1 not 0
+            body.append(createRow(n, prefix));
+        }
         tableSeatingHasChanged();
     },
     removeLastRow: () => {
