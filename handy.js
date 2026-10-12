@@ -1,5 +1,9 @@
 // The seats used for the Handy layout
 class Seat extends Rectangle {
+    get className() {
+        return 'Seat'
+    }
+
     constructor(x, y, w, h, shape, temp = false) {
         super(x, y, w, h, temp);
         this.shape = shape;
@@ -13,7 +17,7 @@ class Seat extends Rectangle {
         context.fillStyle = 'white';
         context.strokeStyle = this.selected ? 'green' : 'black';
         context.strokeWidth = 2;
-        
+
         for(const prop in style) {
             context[prop] = style[prop];
         }

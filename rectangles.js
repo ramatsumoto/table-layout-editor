@@ -6,7 +6,7 @@
  * Should have no members besides `MAX`, which is created after the canvas is intialized.
  */
 class Border extends Rectangle {
-    static get className() {
+    get className() {
         return "Border";
     }
 
@@ -48,7 +48,7 @@ class SeatButton extends Rectangle {
      */
     static emulateFont = false;
 
-    static get className() {
+    get className() {
         return "SeatButton";
     }
 
@@ -106,7 +106,7 @@ class Panel extends Rectangle {
     static TABLE_SPACING = 10;
     static DEFAULT_MARGIN = 3
 
-    static get className() {
+    get className() {
         return "Panel";
     }
 
@@ -175,7 +175,7 @@ class Panel extends Rectangle {
  * A rectangle with text in it.
  */
 class Lane extends Rectangle {
-    static get className() {
+    get className() {
         return "Lane";
     }
 
@@ -223,7 +223,7 @@ class Group extends Rectangle {
     /** The height inherent to `Group`s that are not created by {@linkcode Panel}s */
     static EXTRA_HEIGHT = Group.MARGIN * 2 + Group.TEXT_HEIGHT;
 
-    static get className() {
+    get className() {
         return "Group";
     }
 
@@ -318,7 +318,7 @@ class Togo extends Rectangle {
     static MARGIN = 10;
     static EXPECTED_COUNT = 20;
 
-    static get className() {
+    get className() {
         return "Togo";
     }
 

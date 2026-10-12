@@ -25,7 +25,7 @@ class Rectangle {
     static counter = 0;
 
     /** To be overriden in subclasses to determine class membership during serialization */
-    static get className() {
+    get className() {
         return 'Rectangle';
     }
 
@@ -365,6 +365,50 @@ class Rectangle {
     preventOOB() {
         this.x = Math2.clamp(0, this.x, +main.dataset.width - this.w);
         this.y = Math2.clamp(0, this.y, +main.dataset.height - this.h);
+    }
+
+    /**
+     * Recursively serializes this rectangle
+     */
+    toJSON() {
+        const data = {};
+
+        for (const [k, v] of Object.entries(this)) {
+            data[k] = Rectangle.serialize(v);
+        }
+
+        return {
+            __type: this.className,
+            data
+        };
+    }
+
+    /**
+     * Helper method for recursive serialization
+     * @param {Any} value
+     */
+    static serialize(value) {
+        if (value instanceof Rectangle) {
+            return value.toJSON();
+        }
+
+        // Array => serialize each entry
+        if (Array.isArray(value)) {
+            return value.map(x => Rectangle.serialize(x));
+        }
+
+        // Object => serialize per value
+        if (value && typeof value == 'object' && value.constructor == Object) {
+            const obj = {};
+            for (const [k, v] of Object.entries(value)) {
+                console.log(value);
+                obj[k] = Rectangle.serialize(v);
+            }
+            return obj;
+        }
+
+        // Primitives
+        return value;
     }
 }
 
