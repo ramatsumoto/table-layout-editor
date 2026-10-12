@@ -1,9 +1,5 @@
-function getAllRectangles() {
-    return ;
-}
 const Serialize = {
     tableSeating: () => Table.getData(),
-    rectangles: () => getAllRectangles().map(r => r.toJSON()),
     registry: {
         "Rectangle": Rectangle,
         "Panel": Panel,
@@ -17,7 +13,9 @@ const Serialize = {
     serialize: () => JSON.stringify({
         tableSeating: Table.getData(),
         rectangles: drawnRegister.concat(drawnHandy).map(r => r.toJSON()),
-        options: Options
+        options: Options,
+        storeCode: Elements.get('storeCode').value,
+        timestamp: new Date().toLocaleString(),
     }),
     deserialize: (json) => {
         const parsed = JSON.parse(json);
@@ -53,11 +51,15 @@ const Serialize = {
         if (parsed.options) {
             Object.assign(Options, parsed.options);
         }
+
+        if (parsed.storeCode) {
+            Elements.get('storeCode').value = parsed.storeCode;
+        }
     },
     deserializeRectangle: (obj) => {
         const { __type, data } = obj;
         const Target = Serialize.registry?.[__type];
-        console.log(obj, __type);
+        console.log(obj);
 
         const instance = Object.create(Target?.prototype || null);
 
@@ -74,6 +76,34 @@ const Serialize = {
         if (Array.isArray(value)) {
             return value.map(x => Serialize.deserializeHelper(x));
         }
-        return value;
+        return value; // Primitives need no processing
+    },
+    saveProgress: () => {
+        const state = Serialize.serialize();
+        const now = new Date();
+
+        localStorage.setItem("progress", state);
+
+        const link = document.getElementById('saveTimestamp');
+        link.innerText = now.toLocaleString();
+        link.classList.remove('unsavedChanges');
+    },
+    loadProgress: () => {
+        const save = localStorage.getItem("progress");
+        if (!save) return;
+
+        console.log("Loading progress");
+        Serialize.deserialize(save);
+        document.getElementById('saveTimestamp').innerText = JSON.parse(save)?.timestamp ?? 'Never';
+        document.getElementById('saveTimestamp').classList.remove('unsavedChanges');
+    },
+    initAutoSaver: (waitMs) => {
+        let timeoutId = null;
+        return () => {
+            window.clearTimeout(timeoutId);
+            timeoutId = window.setTimeout(() => {
+                Serialize.saveProgress();
+            }, waitMs);
+        }
     }
 }

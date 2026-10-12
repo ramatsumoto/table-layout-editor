@@ -401,7 +401,6 @@ class Rectangle {
         if (value && typeof value == 'object' && value.constructor == Object) {
             const obj = {};
             for (const [k, v] of Object.entries(value)) {
-                console.log(value);
                 obj[k] = Rectangle.serialize(v);
             }
             return obj;

@@ -11,14 +11,14 @@ Border.MAX = new Border(main.width, main.height);
  * Object that manages the state of the program.
  */
 const State = {
-    /** 
+    /**
      * Sets the mode of the program.
      * @see {@link switchCanvas}
      */
     mode: 'register',
     /**
      * Describes how the size of the POS Register program.
-     * 
+     *
      * Used to draw to dotted bounds in `register` mode.
      */
     posDimensions: {
@@ -46,7 +46,7 @@ const State = {
 
 /**
  * Describes variables to be used for creating the .java class file.
- * 
+ *
  * Contains the dimensions, color, and count of each table type.
  */
 const Options = {
@@ -81,7 +81,8 @@ const Options = {
         hConstant: 'TOGO_BUTTON_HEIGHT',
         color: '#F5FAF5',
         count: 0
-    }
+    },
+    storeCode: 'test'
 }
 
 /**
@@ -125,6 +126,13 @@ function updateOptions(e) {
     canvasHasChanged();
 }
 document.getElementById('setDimensions').addEventListener('input', updateOptions);
+document.getElementById('storeCode').addEventListener('input', e => {
+    Options.storeCode = e.target.value;
+    document.getElementById('saveTimestamp').classList.add('unsavedChanges');
+    try {
+        triggerSave();
+    } catch (ignored) { };
+});
 
 /** Draws the background gridlines */
 function drawGrid() {
@@ -270,4 +278,3 @@ function switchCanvas() {
 
 switchCanvas();
 switchCanvas();
-

@@ -189,11 +189,21 @@ function canvasHasChanged() {
     } else if(State.mode == 'handy') {
         document.getElementById('downloadXML').removeAttribute('href');
     }
+
+    document.getElementById('saveTimestamp').classList.add('unsavedChanges');
+    try {
+        triggerSave();
+    } catch (ignored) { };
 }
 
 function tableSeatingHasChanged() {
     document.getElementById('downloadSQL').removeAttribute('href');
     document.getElementById('downloadConflictSQL').removeAttribute('href');
+
+    document.getElementById('saveTimestamp').classList.add('unsavedChanges');
+    try {
+        triggerSave();
+    } catch (ignored) { };
 }
 
 
