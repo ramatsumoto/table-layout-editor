@@ -74,6 +74,8 @@ document.getElementById('setSeatPreset').addEventListener('change', e => {
     document.getElementById('setSeatWidth').value = w.value;
     document.getElementById('setSeatHeight').value = h.value;
     document.getElementById('setSeatShape').value = shape;
+
+    updateOptions();
 });
 
 ['setSeatWidth', 'setSeatHeight', 'setSeatShape'].forEach(id => document.getElementById(id).addEventListener('input', e => {

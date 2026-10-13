@@ -50,37 +50,59 @@ const State = {
  * Contains the dimensions, color, and count of each table type.
  */
 const Options = {
-    table: {
-        width: 100,
-        height: 60,
-        wConstant: 'TABLE_BUTTON_WIDTH',
-        hConstant: 'TABLE_BUTTON_HEIGHT',
-        color: '#ffa500',
-        count: 0
+    register: {
+        table: {
+            width: 100,
+            height: 60,
+            wConstant: 'TABLE_BUTTON_WIDTH',
+            hConstant: 'TABLE_BUTTON_HEIGHT',
+            color: '#ffa500',
+            count: 0
+        },
+        counter: {
+            width: 90,
+            height: 50,
+            wConstant: 'COUNTER_BUTTON_WIDTH',
+            hConstant: 'COUNTER_BUTTON_HEIGHT',
+            color: '#ffff00',
+            count: 0
+        },
+        bar: {
+            width: 90,
+            height: 53,
+            wConstant: 'BAR_BUTTON_WIDTH',
+            hConstant: 'BAR_BUTTON_HEIGHT',
+            color: '#008000',
+            count: 0
+        },
+        togo: {
+            width: 90,
+            height: 50,
+            wConstant: 'TOGO_BUTTON_WIDTH',
+            hConstant: 'TOGO_BUTTON_HEIGHT',
+            color: '#F5FAF5',
+            count: 0
+        },
     },
-    counter: {
-        width: 90,
-        height: 50,
-        wConstant: 'COUNTER_BUTTON_WIDTH',
-        hConstant: 'COUNTER_BUTTON_HEIGHT',
-        color: '#ffff00',
-        count: 0
-    },
-    bar: {
-        width: 90,
-        height: 53,
-        wConstant: 'BAR_BUTTON_WIDTH',
-        hConstant: 'BAR_BUTTON_HEIGHT',
-        color: '#008000',
-        count: 0
-    },
-    togo: {
-        width: 90,
-        height: 50,
-        wConstant: 'TOGO_BUTTON_WIDTH',
-        hConstant: 'TOGO_BUTTON_HEIGHT',
-        color: '#F5FAF5',
-        count: 0
+    handy: {
+        table: {
+            width: 130,
+            height: 100
+        },
+        counter: {
+            width: 80,
+            height: 70
+        },
+        togo: {
+            width: 100,
+            height: 100
+        },
+        used: {
+            width: 130,
+            height: 100,
+            shape: 0,
+            preset: 'table' // Can be empty
+        }
     },
     storeCode: 'test'
 }
@@ -98,17 +120,19 @@ function deleteFromDrawn(id) {
 
 function updateOptions(e) {
     const list = document.getElementById('setDimensions');
-    for(const input of list.querySelectorAll('input')) {
+    for(const input of list.querySelectorAll('input, select')) {
         const tableType = input.dataset.type;
         const dimension = input.dataset.dimension;
+        const target = input.dataset.target; // Register or Handy
 
-        if(tableType && dimension && input.dataset.target == 'register') {
-            if(dimension == 'color') {
-                Options[tableType][dimension] = input.value;
+        if(tableType && dimension && target) {
+            if(dimension == 'width' || dimension == 'height') {
+                Options[target][tableType][dimension] = +input.value;
             } else {
-                Options[tableType][dimension] = +input.value;
+                Options[target][tableType][dimension] = input.value;
             }
         }
+
     }
 
     for(const rect of State.drawn) {

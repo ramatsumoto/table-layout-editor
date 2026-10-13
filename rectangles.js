@@ -135,7 +135,7 @@ class Panel extends Rectangle {
      * @param {Object} param0 The width and height of the tables in `this`.
      * @param {number} tableSpacing The spacing between each table.
      */
-    calculateSize({ width, height } = Options[this.tableType], tableSpacing = Panel.TABLE_SPACING) {
+    calculateSize({ width, height } = Options.register[this.tableType], tableSpacing = Panel.TABLE_SPACING) {
         this.w = 0;
         this.h = 0;
 
@@ -150,9 +150,9 @@ class Panel extends Rectangle {
     }
 
     draw(context, style = {}) {
-        super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
+        super.draw(context, { fillStyle: Options.register[this.tableType].color, ...style });
 
-        const { width, height } = Options[this.tableType]
+        const { width, height } = Options.register[this.tableType]
         const table = new SeatButton(this.x, this.y, width, height);
         table.x += this.margin.left;
         table.y += this.margin.top;
@@ -233,7 +233,7 @@ class Group extends Rectangle {
         this.tableType = tableType;
         /** @type {number} The number of {@linkcode Panel}s contained in `this`. */
         this.panelCounts = panelCounts;
-        this.w = Options[tableType].width * panelCounts.length + Group.MARGIN * 2;
+        this.w = Options.register[tableType].width * panelCounts.length + Group.MARGIN * 2;
         /** Defines which panel should be vertically indented */
         this.indent = indentLeft ? 'left' : 'right';
         /** The 'suggested' height. Not necessarily the actual height of `this`. */
@@ -251,7 +251,7 @@ class Group extends Rectangle {
 
     /** The height required to fit the largest (longest) {@linkcode Panel}.  */
     get minHeight() {
-        return Math.max(...this.panelCounts) * (Options[this.tableType].height + Panel.TABLE_SPACING) - Panel.TABLE_SPACING;
+        return Math.max(...this.panelCounts) * (Options.register[this.tableType].height + Panel.TABLE_SPACING) - Panel.TABLE_SPACING;
     }
 
     /**
@@ -282,12 +282,12 @@ class Group extends Rectangle {
     }
 
     draw(context, style = {}) {
-        super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
+        super.draw(context, { fillStyle: Options.register[this.tableType].color, ...style });
 
         const canIndent = this.h - Group.EXTRA_HEIGHT == this.defaultHeight;
         const tableIDs = this.splitTableIDs(this.tableIDs);
         for(const [i, panel] of Object.entries(this.panels)) {
-            panel.x = this.x + Options[this.tableType].width * i + Group.MARGIN;
+            panel.x = this.x + Options.register[this.tableType].width * i + Group.MARGIN;
             panel.y = this.y + Group.TEXT_HEIGHT + Group.MARGIN;
             panel.tableIDs = tableIDs[i];
 
@@ -341,9 +341,9 @@ class Togo extends Rectangle {
      * @see {@link Options}
      */
     calculateSize() {
-        const { width, height } = Options[this.tableType];
+        const { width, height } = Options.register[this.tableType];
         const w = this.numPerRow * width + (this.numPerRow - 1) * Togo.H_SPACING + Togo.MARGIN * 2;
-        const unusedTableIDs = Table.length() - (Options.table.count + Options.bar.count + Options.counter.count);
+        const unusedTableIDs = Table.length() - (Options.register.table.count + Options.register.bar.count + Options.register.counter.count);
         const rows = Math.ceil(Math.max(Togo.EXPECTED_COUNT, unusedTableIDs) / this.numPerRow);
         const h = rows * height + (rows - 1) * Togo.V_SPACING + Togo.MARGIN * 2;
 
@@ -352,13 +352,13 @@ class Togo extends Rectangle {
     }
 
     draw(context, style = {}) {
-        const otherTables = Options.table.count + Options.bar.count + Options.counter.count;
+        const otherTables = Options.register.table.count + Options.register.bar.count + Options.register.counter.count;
         const count = Table.length() - otherTables;
         const names = Table.getRange(otherTables + 1, otherTables + Math.max(Togo.EXPECTED_COUNT, count));
 
-        const { width, height } = Options[this.tableType];
+        const { width, height } = Options.register[this.tableType];
 
-        super.draw(context, { fillStyle: Options[this.tableType].color, ...style });
+        super.draw(context, { fillStyle: Options.register[this.tableType].color, ...style });
 
         for(let i = 0; i < Math.max(Togo.EXPECTED_COUNT, count); i++) {
             const x = this.x + (i % this.numPerRow) * (width + Togo.H_SPACING) + Togo.MARGIN;

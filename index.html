@@ -159,6 +159,21 @@
                 </dd>
             </div>
             <div data-target="handy">
+                <div data-target="handy">
+                    <label>Use preset: <select id="setSeatPreset" data-type="used" data-dimension="preset" data-target="handy">
+                        <option value="table">Table</option>
+                        <option value="counter">Counter</option>
+                        <option value="togo">Togo</option>
+                    </select><br></label>
+                    <br>
+                    <label>Width: <input type="number" class="long" value="130" id="setSeatWidth" data-type="used" data-dimension="width" data-target="handy"><br></label>
+                    <label>Height: <input type="number" class="long" value="100" id="setSeatHeight" data-type="used" data-dimension="height" data-target="handy"><br></label>
+                    <label>Shape: <select id="setSeatShape" data-type="used" data-dimension="shape" data-target="handy">
+                        <option value="0">Rectangular</option>
+                        <option value="1">Circular</option>
+                    </select></label>
+                </div>
+                <br>
                 <dt><b>Presets</b></dt>
                 <dt>Table &#x25ad;</dt>
                 <dd>
@@ -183,22 +198,6 @@
                 </dd>
             </div>
         </dl>
-        <div data-target="handy">
-            <b>Select current shape</b>
-            <br>
-            <label>Use preset: <select id="setSeatPreset">
-                <option value="table">Table</option>
-                <option value="counter">Counter</option>
-                <option value="togo">Togo</option>
-            </select><br></label>
-            <br>
-            <label>Width: <input type="number" class="long" value="130" id="setSeatWidth"><br></label>
-            <label>Height: <input type="number" class="long" value="100" id="setSeatHeight"><br></label>
-            <label>Shape: <select id="setSeatShape">
-                <option value="0">Rectangular</option>
-                <option value="1">Circular</option>
-            </select></label>
-        </div>
         <hr>
         <p><strong>Download/Export</strong></p>
         <label>Store Code: <input id="storeCode" value="test" class="short"></label>
@@ -235,7 +234,8 @@
 
             <div data-target="handy">
                 <dt>Double click on an empty area of the grid to create a set of new seats.</dt>
-                <dd>Their shape will be dictated by <b>Select current shape</b>.</dd>
+                <dd>Their shape will be dictated by <b>Set width/height</b>.</dd>
+                <dd>The <b>Presets</b> do not affect the shape/size of placed seats, and are just used to differentiate the different kind of seats.</dd>
                 <dd>Press <kbd>Shift</kbd> and click on an empty area to create a single new seat.<br><br></dd>
             </div>
 

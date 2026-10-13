@@ -4,7 +4,7 @@ function getRGB(colorHex) {
 }
 
 function exportPanel(panel) {
-    const definition = `APPanel ${panel.name} = getTableRowPanel(parent, tables.subList(${panel.tableIDs[0] - 1}, ${panel.tableIDs[1]}), ${panel.isVertical ? 'SWT.VERTICAL' : 'SWT.HORIZONTAL'}, ${Options[panel.tableType].wConstant}, ${Options[panel.tableType].hConstant}, ${panel.margin.top}, ${panel.margin.bottom}, ${panel.margin.left}, ${panel.margin.right}, ${panel.tableType}SectionBackground);`;
+    const definition = `APPanel ${panel.name} = getTableRowPanel(parent, tables.subList(${panel.tableIDs[0] - 1}, ${panel.tableIDs[1]}), ${panel.isVertical ? 'SWT.VERTICAL' : 'SWT.HORIZONTAL'}, ${Options.register[panel.tableType].wConstant}, ${Options.register[panel.tableType].hConstant}, ${panel.margin.top}, ${panel.margin.bottom}, ${panel.margin.left}, ${panel.margin.right}, ${panel.tableType}SectionBackground);`;
     const attachment = `setFormData(${panel.name}, new FormAttachment(0, ${~~panel.top}), null, new FormAttachment(0, ${~~panel.left}), null);`
     return {
         definition,
@@ -30,7 +30,7 @@ function exportGroup(group) {
 \t\tFontData ${group.name}FD = new FontData("Arial", 12, SWT.BOLD);
 \t\t${group.name}.setFont(swtMainFrame.getInstance().getResourceManager().getFont(${group.name}FD));`
     const panelDefinition = group.splitTableIDs().map(([start, end], i) =>
-    `APPanel ${group.name}P${i + 1} = getTableRowPanel(${group.name}, tables.subList(${start - 1}, ${end}), SWT.VERTICAL, ${Options[group.tableType].wConstant}, ${Options[group.tableType].hConstant}, 0, 0, 0, 0, ${group.tableType}SectionBackground);`);
+    `APPanel ${group.name}P${i + 1} = getTableRowPanel(${group.name}, tables.subList(${start - 1}, ${end}), SWT.VERTICAL, ${Options.register[group.tableType].wConstant}, ${Options.register[group.tableType].hConstant}, 0, 0, 0, 0, ${group.tableType}SectionBackground);`);
 
     const attachment = `setFormData(${group.name}, new FormAttachment(0, ${~~group.top}), null, new FormAttachment(0, ${~~group.left}), null);`;
     const panelAttachment = group.panelCounts.map((count, i) => {
@@ -51,7 +51,7 @@ function exportGroup(group) {
 function exportTogo(togo) {
     const definition = `APPanel togoPanel = new APPanel(parent, SWT.NORMAL);
 \t\ttogoPanel.setBackground(color);
-\t\tgetTogoPanel(togoPanel, ENTRANCE_TABLE_NUM, ${togo.numPerRow}, ${Options[togo.tableType].wConstant},  ${Options[togo.tableType].hConstant});`;
+\t\tgetTogoPanel(togoPanel, ENTRANCE_TABLE_NUM, ${togo.numPerRow}, ${Options.register[togo.tableType].wConstant},  ${Options.register[togo.tableType].hConstant});`;
     const attachment = `setFormData(togoPanel, new FormAttachment(0, ${~~togo.top}), null, new FormAttachment(0, ${~~togo.left}), null);`
     return {
         definition,
@@ -78,21 +78,21 @@ function exportJava(name, drawn) {
         .replace('{}', lines.join('\n'))
         .replace('[DATE]', new Date().toISOString())
         .replaceAll('[NAME]', name.trim().toUpperCase())
-        .replace('[table width]', Options.table.width)
-        .replace('[table height]', Options.table.height)
-        .replace('[counter width]', Options.counter.width)
-        .replace('[counter height]', Options.counter.height)
-        .replace('[bar width]', Options.bar.width)
-        .replace('[bar height]', Options.bar.height)
-        .replace('[togo width]', Options.togo.width)
-        .replace('[togo height]', Options.togo.height)
-        .replace('[table count]', Options.table.count)
-        .replace('[counter count]', Options.counter.count)
-        .replace('[bar count]', Options.bar.count)
-        .replace('[table color]', getRGB(Options.table.color).join(', '))
-        .replace('[counter color]', getRGB(Options.counter.color).join(', '))
-        .replace('[bar color]', getRGB(Options.bar.color).join(', '))
-        .replace('[togo color]', getRGB(Options.togo.color).join(', '));
+        .replace('[table width]', Options.register.table.width)
+        .replace('[table height]', Options.register.table.height)
+        .replace('[counter width]', Options.register.counter.width)
+        .replace('[counter height]', Options.register.counter.height)
+        .replace('[bar width]', Options.register.bar.width)
+        .replace('[bar height]', Options.register.bar.height)
+        .replace('[togo width]', Options.register.togo.width)
+        .replace('[togo height]', Options.register.togo.height)
+        .replace('[table count]', Options.register.table.count)
+        .replace('[counter count]', Options.register.counter.count)
+        .replace('[bar count]', Options.register.bar.count)
+        .replace('[table color]', getRGB(Options.register.table.color).join(', '))
+        .replace('[counter color]', getRGB(Options.register.counter.color).join(', '))
+        .replace('[bar color]', getRGB(Options.register.bar.color).join(', '))
+        .replace('[togo color]', getRGB(Options.register.togo.color).join(', '));
 
     return text;
 }
