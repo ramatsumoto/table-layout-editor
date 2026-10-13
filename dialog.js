@@ -62,12 +62,12 @@ function preparePanelDialog() {
     const end = document.getElementById('dSeatingEnd');
     const orientation = document.getElementById('dOrientation');
     const [mTop, mBottom, mLeft, mRight] = Elements.getAll(['dMarginTop', 'dMarginBottom', 'dMarginLeft', 'dMarginRight']);
-    
+
     mTop.value = panel.margin.top;
     mBottom.value = panel.margin.bottom;
     mLeft.value = panel.margin.left;
     mRight.value = panel.margin.right;
-    
+
     const initial = {
         isVertical: panel.isVertical,
         tableIDs: [...panel.tableIDs],
@@ -108,11 +108,11 @@ function prepareLaneDialog() {
 
     const ids = ['dName', 'dOrientation', 'dText', 'dWidth', 'dWidthMatch', 'dHeight', 'dHeightMatch'];
     ids.forEach(Elements.unhide);
-    
+
     const [name, orientation, text, width, widthMatch, height, heightMatch] = Elements.getAll(ids);
     widthMatch.replaceChildren();
     heightMatch.replaceChildren();
-    orientation.value = lane.isVertical ? 'vertical' : 'horizontal'; 
+    orientation.value = lane.isVertical ? 'vertical' : 'horizontal';
 
     name.value = lane.name;
     text.value = lane.text;
@@ -274,7 +274,7 @@ function createFromDialog(x, y) {
     const type = Elements.value('dCreateType');
 
     if(type == 'panel') {
-        Options[Elements.value('dSeatType')].count += Elements.valueAsNum('dSeatNum');
+        Options.register[Elements.value('dSeatType')].count += Elements.valueAsNum('dSeatNum');
         State.drawn.push(new Panel(
             x,
             y,
@@ -301,7 +301,7 @@ function createFromDialog(x, y) {
         const panelCounts = [Elements.valueAsNum('dGroupPanel1'), Elements.valueAsNum('dGroupPanel2')];
         if(Elements.value('dGroupPanels') == '1') panelCounts.pop();
 
-        Options[Elements.value('dSeatType')].count += Math2.sum(panelCounts);
+        Options.register[Elements.value('dSeatType')].count += Math2.sum(panelCounts);
         State.drawn.push(new Group(
             x,
             y,

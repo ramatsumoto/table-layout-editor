@@ -118,7 +118,8 @@ function deleteFromDrawn(id) {
     }
 }
 
-function updateOptions(e) {
+/** Updates {@linkcode Options} to reflect the values of the HTML fields */
+function updateOptions() {
     const list = document.getElementById('setDimensions');
     for(const input of list.querySelectorAll('input, select')) {
         const tableType = input.dataset.type;
@@ -149,13 +150,59 @@ function updateOptions(e) {
 
     canvasHasChanged();
 }
+/** Writes out the information contained in {@linkcode Options} to the corresponding HTML fields */
+function syncFromOptions() {
+    const list = document.getElementById('setDimensions');
+    for(const input of list.querySelectorAll('input, select')) {
+        const tableType = input.dataset.type;
+        const dimension = input.dataset.dimension;
+        const target = input.dataset.target; // Register or Handy
+
+        const value = Options[target][tableType][dimension];
+        if (!value) continue;
+
+        input.value = value;
+    }
+
+    for(const rect of State.drawn) {
+        if(rect instanceof Panel) {
+            rect.calculateSize();
+        }
+        if(rect instanceof Group) {
+            rect.setHeight(rect.defaultHeight);
+        }
+        if(rect instanceof Togo) {
+            rect.calculateSize();
+        }
+    }
+
+    canvasHasChanged();
+}
+
 document.getElementById('setDimensions').addEventListener('input', updateOptions);
 document.getElementById('storeCode').addEventListener('input', e => {
     Options.storeCode = e.target.value;
-    document.getElementById('saveTimestamp').classList.add('unsavedChanges');
+
+    unsavedChanges();
     try {
         triggerSave();
     } catch (ignored) { };
+});
+document.getElementById('resetRegisterOptions').addEventListener('click', () => {
+    for (const input of document.querySelectorAll('#setDimensions input')) {
+        if (input.dataset.target == 'register') {
+            input.value = input.getAttribute('value');
+        }
+    }
+    updateOptions();
+});
+document.getElementById('resetHandyOptions').addEventListener('click', () => {
+    for (const input of document.querySelectorAll('#setDimensions input, #setDimensions select')) {
+        if (input.dataset.target == 'handy') {
+            input.value = input.getAttribute('value');
+        }
+    }
+    updateOptions();
 });
 
 /** Draws the background gridlines */

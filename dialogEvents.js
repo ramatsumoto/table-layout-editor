@@ -277,9 +277,9 @@ document.getElementById('dSeatIDChange').addEventListener('input', e => {
 function reduceTableCounts() {
     const rect = getCurrentRectangle();
     if (rect instanceof Panel) {
-        Options[rect.tableType].count -= rect.numTables;
+        Options.register[rect.tableType].count -= rect.numTables;
     } else if (rect instanceof Group) {
-        Options[rect.tableType].count -= Math2.sum(rect.panelCounts);
+        Options.register[rect.tableType].count -= Math2.sum(rect.panelCounts);
     }
     deleteFromDrawn(rect.id);
     dialog.close();

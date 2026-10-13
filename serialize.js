@@ -50,6 +50,7 @@ const Serialize = {
 
         if (parsed.options) {
             Object.assign(Options, parsed.options);
+            syncFromOptions();
         }
 
         if (parsed.storeCode) {
