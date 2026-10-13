@@ -48,6 +48,13 @@
             display: flex;
             justify-content: space-between;
         }
+        .canvasFooter {
+            position: sticky;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+        }
         a.unsavedChanges {
             font-style: oblique;
         }
@@ -62,18 +69,22 @@
         <div class="canvasHeader">
             <button id="canvasToggle" onclick="switchCanvas()"></button>
             <div>
-                <a id="clearState" title="Reset page to initial state">❌</a>
-                Last saved:
-                <a id="saveTimestamp">Never</a>
-                <a id="saveDownload" title="Download current progress">⬇️</a>
-            </div>
-            <div>
                 <button id="canvasZoomOut">Zoom Out</button>
                 <input type="number" id="canvasZoom" class="long" min="10" max="1000" step="10" value="100">
                 <button id="canvasZoomIn">Zoom In</button>
             </div>
         </div>
         <canvas id="main" width="2000" height="2000" data-width="2000" data-height="2000"></canvas>
+        <div class="canvasFooter">
+            <div>
+                <button id="clearState" title="Reset editor to initial state"><strong>RESET</strong></button>
+            </div>
+            <span>Last saved: <a id="saveTimestamp">Never</a></span>
+            <div>
+                <button id="saveDownload" disabled>Save to file</button>
+                <a id="saveDownloadLink" hidden></a>
+            </div>
+        </div>
     </div>
     <div>
         <strong title="Emulate the 'table_seating' table in the store database">Fake table_seating</strong>
@@ -363,9 +374,6 @@
     <script src="./dialog.js"></script>
     <script src="./dialogEvents.js"></script>
     <script src="./serialize.js"></script>
-    <script>
-        Serialize.loadProgress();
-        const triggerSave = Serialize.initAutoSaver(1500);
-    </script>
+    <script src="./drop.js"></script>
 </body>
 </html>
