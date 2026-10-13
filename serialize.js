@@ -34,6 +34,7 @@ const Serialize = {
             for (const rectObj of parsed.rectangles) {
                 const rectangle = Serialize.deserializeRectangle(rectObj);
                 rectangle.selected = false;
+                rectangle.clicked = false;
 
                 const className = rectangle.className;
                 if (Serialize.handyClasses.includes(className)) {
@@ -80,12 +81,12 @@ const Serialize = {
         return value; // Primitives need no processing
     },
     prepareDownload: (text) => {
-        const date = new Date().toISOString().split('T')[0];
+        const date = new Date().toLocaleDateString('sv', {timeZone: 'America/Los_Angeles'});
 
         const blob = new Blob([text], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.getElementById('saveDownloadLink');
-        link.setAttribute('download', `table-layout-save_${Options.storeCode.toLowerCase()}_${date}.json`);
+        link.setAttribute('download', `table-layout_${Options.storeCode.toUpperCase()}_${date}.json`);
         link.setAttribute('href', url);
         document.getElementById('saveDownload').removeAttribute('disabled');
     },
@@ -117,13 +118,20 @@ const Serialize = {
     initAutoSaver: (waitMs) => {
         let timeoutId = null;
         return () => {
+            console.log(`Saving in ${waitMs} ms`);
             window.clearTimeout(timeoutId);
             timeoutId = window.setTimeout(() => {
+                console.log('Saved');
                 Serialize.saveProgress();
             }, waitMs);
         }
     },
     loadFromFile: (file) => {
+        if (file.type != 'application/json') {
+            console.log('File must be a .json');
+            return;
+        }
+
         console.log(`Loading file "${file.name}"`);
         const reader = new FileReader();
         reader.onload = e => {
@@ -134,32 +142,92 @@ const Serialize = {
 }
 
 Serialize.loadProgress();
-const triggerSave = Serialize.initAutoSaver(1500);
+const triggerSave = Serialize.initAutoSaver(1200);
+
+function resetEditor() {
+    Serialize.clearProgress();
+
+    document.querySelector("#tableSeating tbody").replaceChildren();
+    drawnHandy.length = 0;
+    drawnRegister.length = 0;
+
+    Rectangle.counter = 0;
+    for (const input of document.querySelectorAll('input')) {
+        input.value = input.getAttribute('value');
+    }
+    setScale(1);
+
+    Elements.get("saveTimestamp").innerText = 'Never';
+    Elements.get("saveDownload").toggleAttribute("disabled", true);
+    Elements.get("saveDownloadLink").removeAttribute("href");
+}
 
 Elements.get("clearState").addEventListener('click', e => {
     if (confirm('Reset editor? (Cannot be undone)')) {
-        Serialize.clearProgress();
-
-        Elements.get('tableSeating').replaceChildren();
-        drawnHandy.length = 0;
-        drawnRegister.length = 0;
-
-        Rectangle.counter = 0;
-        for (const input of document.querySelectorAll('input')) {
-            input.value = input.getAttribute('value');
-        }
-        setScale(1);
-
-        Elements.get("saveTimestamp").innerText = 'Never';
-        Elements.get("saveDownload").toggleAttribute("disabled", true);
-        Elements.get("saveDownloadLink").removeAttribute("href");
+        resetEditor();
     }
 });
 Elements.get("saveDownload").addEventListener('click', () => {
     Elements.get("saveDownloadLink").click();
 });
+Elements.get("loadSave").addEventListener('click', () => {
+    Elements.get("loadFileSelector").click();
+});
+Elements.get("loadFileSelector").addEventListener('input', e => {
+    load(e.target.files[0]);
+});
+
+/** Triggers visual changes to indicate that there are unsaved changes */
 function unsavedChanges() {
     document.getElementById('saveTimestamp').classList.add('unsavedChanges');
     document.getElementById('saveDownload').toggleAttribute('disabled', true);
     document.getElementById('saveDownloadLink').removeAttribute('href');
+}
+/** Loads editor state from a JSON save file */
+function load(saveFile) {
+    if (!saveFile) return;
+
+    if (saveFile.type != 'application/json') return;
+
+    if (confirm(`Load file ${saveFile.name}?\n(Will overwrite current work)`)) {
+        resetEditor();
+        Serialize.loadFromFile(saveFile);
+    }
+}
+
+{
+    const target = document.getElementById('mainContainer');
+
+    target.addEventListener('dragover', e => e.preventDefault());
+    target.addEventListener('dragstart', e => {
+        console.log('dragstart');
+        target.classList.add('dragover');
+    });
+    target.addEventListener('dragenter', e => {
+        console.log('dragenter');
+        target.classList.add('dragover');
+    });
+    target.addEventListener('dragover', e => {
+        console.log('dragover');
+        target.classList.add('dragover');
+    });
+    target.addEventListener('dragleave', e => {
+        console.log('dragleave');
+        target.classList.remove('dragover');
+    });
+    target.addEventListener('dragend', e => {
+        console.log('dragend');
+        target.classList.remove('dragover');
+    });
+    target.addEventListener('drop', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        target.classList.remove('dragover');
+
+        const dt = e.dataTransfer;
+        const file = dt.files?.[0];
+
+        load(file);
+    }, false);
 }

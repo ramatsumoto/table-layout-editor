@@ -58,6 +58,19 @@
         a.unsavedChanges {
             font-style: oblique;
         }
+        .dragover canvas {
+            filter: brightness(0.9) blur(1px);
+        }
+        .dragover:after {
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            content: "Drop to load file";
+            font-size: 200%;
+            filter: none;
+            pointer-events: none;
+        }
     </style>
     <script src="./template.js"></script>
     <script src="./export.js"></script>
@@ -65,7 +78,7 @@
     <script src="./elements.js"></script>
 </head>
 <body>
-    <div style="width: 1000px; height: 800px; overflow: scroll; resize: both;" id="mainContainer">
+    <div style="width: 1000px; height: 800px; overflow: scroll; resize: both; position: relative;" id="mainContainer">
         <div class="canvasHeader">
             <button id="canvasToggle" onclick="switchCanvas()"></button>
             <div>
@@ -83,6 +96,8 @@
             <div>
                 <button id="saveDownload" disabled>Save to file</button>
                 <a id="saveDownloadLink" hidden></a>
+                <button id="loadSave">Load from file</button>
+                <input type="file" accept=".json" id="loadFileSelector" hidden>
             </div>
         </div>
     </div>
@@ -380,6 +395,5 @@
     <script src="./dialog.js"></script>
     <script src="./dialogEvents.js"></script>
     <script src="./serialize.js"></script>
-    <script src="./drop.js"></script>
 </body>
 </html>
