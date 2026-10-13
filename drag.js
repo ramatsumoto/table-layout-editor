@@ -104,6 +104,7 @@ main.addEventListener('mousemove', e => {
                 t.move(-dx, -dy, true);
             }
         }
+        canvasHasChanged();
         return;
     }
 
@@ -139,7 +140,7 @@ main.addEventListener('mouseup', () => {
         unselectRectangle();
     }
     State.clicked.clear();
-    
+
     for(const r of State.drawn) {
         if(r.isOverlapping(State.selector)) {
             r.selected = true;
@@ -170,7 +171,7 @@ main.addEventListener('mouseleave', () => {
 main.addEventListener('dblclick', e => {
     window.getSelection().removeAllRanges?.();
     const clicked = State.drawn.toReversed().find(r => r.hitTest(...State.mouse));
-    
+
     dialog.dataset.id = clicked?.id ?? -1;
 
     if(State.mode == 'handy') {
