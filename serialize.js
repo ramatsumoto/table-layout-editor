@@ -89,6 +89,7 @@ const Serialize = {
         link.setAttribute('download', `table-layout_${Options.storeCode.toUpperCase()}_${date}.json`);
         link.setAttribute('href', url);
         document.getElementById('saveDownload').removeAttribute('disabled');
+        document.getElementById('saveDownload').innerText = 'Download save file';
     },
     saveProgress: () => {
         const state = Serialize.serialize();
@@ -149,6 +150,9 @@ function resetEditor() {
 
     document.querySelector("#tableSeating tbody").replaceChildren();
     drawnHandy.length = 0;
+    for (const tableType in Options.register) {
+        Options.register[tableType].count = 0;
+    }
     drawnRegister.length = 0;
 
     Rectangle.counter = 0;
@@ -166,8 +170,29 @@ function resetEditor() {
 }
 
 Elements.get("clearState").addEventListener('click', e => {
-    if (confirm('Reset editor? (Cannot be undone)')) {
+    if (confirm('Reset editor, including table_seating and table dimensions? (Cannot be undone)')) {
         resetEditor();
+    }
+});
+Elements.get("clearCanvas").addEventListener('click', e => {
+    const opposite = {
+        register: 'Handy',
+        handy: 'Register'
+    }[State.mode];
+    if (!opposite) {
+        console.error(`Invalid layout mode ${State.mode}. Could not clear canvas.`);
+        return;
+    }
+
+    if (confirm(`Remove all tables from the ${State.mode} layout? (${opposite} will stay unchanged)`)) {
+        console.log(`Clearing ${State.mode} rectangles`);
+        State.drawn.length = 0;
+
+        if (State.mode == 'register') {
+            for (const tableType in Options.register) {
+                Options.register[tableType].count = 0;
+            }
+        }
     }
 });
 Elements.get("saveDownload").addEventListener('click', () => {
@@ -183,6 +208,7 @@ Elements.get("loadFileSelector").addEventListener('input', e => {
 /** Triggers visual changes to indicate that there are unsaved changes */
 function unsavedChanges() {
     document.getElementById('saveTimestamp').classList.add('unsavedChanges');
+    document.getElementById('saveDownload').innerText = 'Saving...';
     document.getElementById('saveDownload').toggleAttribute('disabled', true);
     document.getElementById('saveDownloadLink').removeAttribute('href');
 }

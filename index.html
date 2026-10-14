@@ -22,11 +22,12 @@
         <canvas id="main" width="2000" height="2000" data-width="2000" data-height="2000"></canvas>
         <div class="canvasFooter">
             <div>
-                <button id="clearState" title="Reset editor to initial state"><strong>RESET</strong></button>
+                <button id="clearState" title="Reset editor to initial state"><strong>RESET ALL</strong></button>
+                <button id="clearCanvas">Clear editor</button>
             </div>
             <span>Last saved: <a id="saveTimestamp">Never</a></span>
             <div>
-                <button id="saveDownload" disabled>Save to file</button>
+                <button id="saveDownload" disabled>Download save file</button>
                 <a id="saveDownloadLink" hidden></a>
                 <button id="loadSave">Load from file</button>
                 <input type="file" accept=".json" id="loadFileSelector" hidden>
