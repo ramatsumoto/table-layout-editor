@@ -97,7 +97,9 @@ function seatingNameList(panelCounts = [-1]) {
     const list = document.getElementById('dSeatingList');
     list.replaceChildren();
 
-    for(const name of Table.getRange(Elements.valueAsNum('dSeatingStart'), Elements.valueAsNum('dSeatingEnd'))) {
+    const start = Elements.valueAsNum('dSeatingStart');
+    const end = Elements.valueAsNum('dSeatingEnd');
+    for(const name of Table.getRange(start, end)) {
         const li = document.createElement('li');
         li.innerText = name;
         list.append(li);
@@ -284,7 +286,7 @@ function reduceTableCounts() {
     deleteFromDrawn(rect.id);
     dialog.close();
 }
-document.getElementById('dialogDelete').querySelector('button').addEventListener('click', reduceTableCounts);
+document.getElementById('dialogDelete').addEventListener('click', reduceTableCounts);
 
 /**
  * Takes a list of elements, event names, and event handlers add the associated event listener.
