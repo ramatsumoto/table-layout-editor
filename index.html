@@ -47,6 +47,7 @@
             top: 0;
             display: flex;
             justify-content: space-between;
+            z-index: 2;
         }
         .canvasFooter {
             position: sticky;
@@ -54,18 +55,19 @@
             bottom: 0;
             display: flex;
             justify-content: space-between;
+            z-index: 2;
         }
         a.unsavedChanges {
             font-style: oblique;
         }
         #loadFileText {
             position: sticky;
-            top: 35%;
+            top: 45%;
             left: 50%;
             width: 0;
             height: 0;
             overflow: visible;
-            backdrop-filter: brightness(0.9) blur(1px);
+            z-index: 3;
         }
         #loadFileText span {
             transform: translate(-50%, -50%);
@@ -76,7 +78,8 @@
             width: max-content;
         }
         #loadFileText:not([hidden]) ~ canvas {
-            filter: brightness(0.9) blur(1px);
+            filter: brightness(0.9) blur(2px);
+            z-index: 1;
         }
     </style>
     <script src="./template.js"></script>
