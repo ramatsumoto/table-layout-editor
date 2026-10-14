@@ -160,6 +160,9 @@ function resetEditor() {
     Elements.get("saveTimestamp").innerText = 'Never';
     Elements.get("saveDownload").toggleAttribute("disabled", true);
     Elements.get("saveDownloadLink").removeAttribute("href");
+
+    Elements.get("mainContainer").style.setProperty('width', '1000px');
+    Elements.get("mainContainer").style.setProperty('height', '800px');
 }
 
 Elements.get("clearState").addEventListener('click', e => {
@@ -195,35 +198,51 @@ function load(saveFile) {
     }
 }
 
-{
+document.body.addEventListener('keydown', e => {
+    if (e.defaultPrevented) return;
+
+    if (e.ctrlKey || e.metaKey) {
+        if (e.key == 's') {
+            e.preventDefault();
+            Serialize.saveProgress();
+            Elements.get("saveDownloadLink").click();
+        } else if (e.key == 'o') {
+            e.preventDefault();
+            Elements.get('loadFileSelector').click();
+        }
+    }
+});
+
+{ // Add events for drag/drop loading
     const target = document.getElementById('mainContainer');
+    const text = document.getElementById('loadFileText');
 
     target.addEventListener('dragover', e => e.preventDefault());
     target.addEventListener('dragstart', e => {
         console.log('dragstart');
-        target.classList.add('dragover');
+        Elements.unhide('loadFileText');
     });
     target.addEventListener('dragenter', e => {
         console.log('dragenter');
-        target.classList.add('dragover');
+        Elements.unhide('loadFileText');
     });
     target.addEventListener('dragover', e => {
         console.log('dragover');
-        target.classList.add('dragover');
+        Elements.unhide('loadFileText');
     });
     target.addEventListener('dragleave', e => {
         console.log('dragleave');
-        target.classList.remove('dragover');
+        Elements.hide('loadFileText');
     });
     target.addEventListener('dragend', e => {
         console.log('dragend');
-        target.classList.remove('dragover');
+        Elements.hide('loadFileText');
     });
     target.addEventListener('drop', e => {
         e.preventDefault();
         e.stopPropagation();
 
-        target.classList.remove('dragover');
+        Elements.hide('loadFileText');
 
         const dt = e.dataTransfer;
         const file = dt.files?.[0];

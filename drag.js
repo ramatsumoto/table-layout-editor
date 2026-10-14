@@ -201,25 +201,32 @@ main.addEventListener('dblclick', e => {
 });
 
 document.body.addEventListener('keydown', e => {
-    if(e.target.tagName == 'INPUT') return ;
+    if (e.target.tagName == 'INPUT') return;
 
     const selected = new Set(State.drawn.filter(r => r.selected).map(r => r.id));
     const clicked = selected.union(State.clicked);
 
     if(clicked.size > 0) {
         const targets = [...clicked].map(id => State.drawn.find(r => r.id == id));
-        if('wasdWASD'.includes(e.key)) canvasHasChanged();
+        if ('wasdWASD'.concat('ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight').includes(e.key)) {
+            e.preventDefault();
+            canvasHasChanged();
+        }
 
-        switch(e.key) {
+        switch (e.key) {
+            case 'ArrowUp':
             case 'w':
                 targets.forEach(t => t.move(0, -1, true));
                 break;
+            case 'ArrowLeft':
             case 'a':
                 targets.forEach(t => t.move(-1, 0, true));
                 break;
+            case 'ArrowDown':
             case 's':
                 targets.forEach(t => t.move(0, 1, true));
                 break;
+            case 'ArrowRight':
             case 'd':
                 targets.forEach(t => t.move(1, 0, true));
                 break;

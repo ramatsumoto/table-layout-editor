@@ -58,18 +58,25 @@
         a.unsavedChanges {
             font-style: oblique;
         }
-        .dragover canvas {
-            filter: brightness(0.9) blur(1px);
-        }
-        .dragover:after {
-            position: fixed;
+        #loadFileText {
+            position: sticky;
             top: 35%;
             left: 50%;
+            width: 0;
+            height: 0;
+            overflow: visible;
+            backdrop-filter: brightness(0.9) blur(1px);
+        }
+        #loadFileText span {
             transform: translate(-50%, -50%);
-            content: "Drop to load file";
             font-size: 200%;
             filter: none;
             pointer-events: none;
+            display: block;
+            width: max-content;
+        }
+        #loadFileText:not([hidden]) ~ canvas {
+            filter: brightness(0.9) blur(1px);
         }
     </style>
     <script src="./template.js"></script>
@@ -79,6 +86,7 @@
 </head>
 <body>
     <div style="width: 1000px; height: 800px; overflow: scroll; resize: both; position: relative;" id="mainContainer">
+        <div id="loadFileText" hidden><span>Drop to load file</span></div>
         <div class="canvasHeader">
             <button id="canvasToggle" onclick="switchCanvas()"></button>
             <div>
