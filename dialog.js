@@ -10,6 +10,7 @@ function showDialog(type) {
     Elements.unhide('dialogConfirm');
     Elements.unhide('dialogCancel');
     Elements.unhide('dialogDelete');
+    Elements.unhide('dButtonRow');
     Elements.unhide('dName');
 
     let buttonEvents = {};
@@ -34,19 +35,23 @@ function showDialog(type) {
         buttonEvents = prepareSeatEditDialog();
     }
 
+    let canCancel = true;
     const confirm = () => {
         buttonEvents.confirm?.();
+        canCancel = false;
         canvasHasChanged();
         dialog.close();
     }
-    const cancel = () => {
-        buttonEvents.cancel?.();
-        dialog.close();
+    const close = () => {
+        if (canCancel) {
+            buttonEvents.cancel?.();
+        }
+        dialogController.abort();
     }
     manageEvents([
         ['dialogConfirm', 'click', confirm],
-        ['dialogCancel', 'click', cancel],
-        [dialog, 'close', () => dialogController.abort()]
+        ['dialogCancel', 'click', () => dialog.close()],
+        [dialog, 'close', close]
     ]);
 
     dialog.showModal();

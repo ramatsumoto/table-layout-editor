@@ -1,87 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 0 10px;
-            font-family: Calibri, Helvetica, sans-serif;
+    <link rel="stylesheet" href="./style.css">
 
-        }
-        table {
-            border-collapse: collapse;
-        }
-        table tr > * {
-            border: 1px solid black;
-        }
-        td > input {
-            border: 0;
-        }
-        input[type="number"].short {
-            width: 3em;
-        }
-        input:not([type]).short, input[type="text"].short, input[type="number"].long {
-            width: 5em;
-        }
-        dialog > input[type="number"] {
-            width: 5em;
-        }
-        .hidden {
-            display: none;
-        }
-        .grid {
-            display: flex;
-            flex-direction: column;
-            max-width: fit-content;
-            align-items: end;
-        }
-        #dSeatPreview td {
-            padding: 3px;
-            font-size: 10pt;
-        }
-        .canvasHeader {
-            position: sticky;
-            left: 0;
-            top: 0;
-            display: flex;
-            justify-content: space-between;
-            z-index: 2;
-        }
-        .canvasFooter {
-            position: sticky;
-            left: 0;
-            bottom: 0;
-            display: flex;
-            justify-content: space-between;
-            z-index: 2;
-        }
-        a.unsavedChanges {
-            font-style: oblique;
-        }
-        #loadFileText {
-            position: sticky;
-            top: 45%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            overflow: visible;
-            z-index: 3;
-        }
-        #loadFileText span {
-            transform: translate(-50%, -50%);
-            font-size: 200%;
-            filter: none;
-            pointer-events: none;
-            display: block;
-            width: max-content;
-        }
-        #loadFileText:not([hidden]) ~ canvas {
-            filter: brightness(0.9) blur(2px);
-            z-index: 1;
-        }
-    </style>
     <script src="./template.js"></script>
     <script src="./export.js"></script>
     <script src="./math.js"></script>
@@ -112,186 +33,188 @@
             </div>
         </div>
     </div>
-    <div>
-        <strong title="Emulate the 'table_seating' table in the store database">Fake table_seating</strong>
-        <br>
-        <br>
-        <datalist id="tableSeatingRowPrefixOptions">
-            <option value="T">T</option>
-            <option value="C">C</option>
-            <option value="B">B</option>
-        </datalist>
-        <label>Prefix: <input id="tableSeatingRowPrefix" list="tableSeatingRowPrefixOptions" class="short" value="T"></label>
-        <br>
-        <button id="tableSeatingAdd">Add Row</button>
-        <button id="tableSeatingAdd10">Add 10</button>
-        <br>
-        <button id="tableSeatingAddTogo">Add 20 Togo Rows</button>
-        <hr>
-        <button id="tableSeatingRemove">Remove Last Row</button>
-        <br>
-        <button id="tableSeatingRemove10">Remove Last 10 Rows</button>
-        <hr>
-        <span>Reverse names for rows:</span>
-        <br>
-        <input type="number" id="tableSeatingReverseStart" min="1" max="99"> - <input type="number" id="tableSeatingReverseEnd" min="1" max="99">
-        <br>
-        <button id="tableSeatingReverse">Reverse Rows</button>
-        <hr>
-        <div style="max-height: 640px; overflow-y: scroll;">
-            <table id="tableSeating">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Togo</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+    <div class="sidePanel">
+        <div>
+            <strong title="Emulate the 'table_seating' table in the store database">Fake table_seating</strong>
+            <br>
+            <br>
+            <datalist id="tableSeatingRowPrefixOptions">
+                <option value="T">T</option>
+                <option value="C">C</option>
+                <option value="B">B</option>
+            </datalist>
+            <label>Prefix: <input id="tableSeatingRowPrefix" list="tableSeatingRowPrefixOptions" class="short" value="T"></label>
+            <br>
+            <button id="tableSeatingAdd">Add Row</button>
+            <button id="tableSeatingAdd10">Add 10</button>
+            <br>
+            <button id="tableSeatingAddTogo">Add 20 Togo Rows</button>
+            <hr>
+            <button id="tableSeatingRemove">Remove Last Row</button>
+            <br>
+            <button id="tableSeatingRemove10">Remove Last 10 Rows</button>
+            <hr>
+            <span>Reverse names for rows:</span>
+            <br>
+            <input type="number" id="tableSeatingReverseStart" min="1" max="99"> - <input type="number" id="tableSeatingReverseEnd" min="1" max="99">
+            <br>
+            <button id="tableSeatingReverse">Reverse Rows</button>
+            <hr>
+            <div style="max-height: 640px; overflow-y: scroll;">
+                <table id="tableSeating">
+                    <thead>
+                        <tr>
+                            <th title="table_id">ID</th>
+                            <th title="table_desc">Name</th>
+                            <th title="is_takeout">Togo</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <strong>Set width/height</strong>
+            <dl id="setDimensions">
+                <div data-target="register">
+                    <dt>Tables <input type="color" value="#ffa500" data-type="table" data-dimension="color" data-target="register"></dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="100" data-type="table" data-dimension="width" data-target="register"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="60" data-type="table" data-dimension="height" data-target="register"></label>
+                    </dd>
+                    <dt>Counter <input type="color" value="#ffff00" data-type="counter" data-dimension="color" data-target="register"></dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="90" data-type="counter" data-dimension="width" data-target="register"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="50" data-type="counter" data-dimension="height" data-target="register"></label>
+                    </dd>
+                    <dt>Bar <input type="color" value="#008000" data-type="bar" data-dimension="color" data-target="register"></dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="90" data-type="bar" data-dimension="width" data-target="register"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="53" data-type="bar" data-dimension="height" data-target="register"></label>
+                    </dd>
+                    <dt>To go <input type="color" value="#F5FAF5" data-type="togo" data-dimension="color" data-target="register"></dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="90" data-type="togo" data-dimension="width" data-target="register"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="50" data-type="togo" data-dimension="height" data-target="register"></label>
+                    </dd>
+                    <dt>
+                        <button id="resetRegisterOptions">Reset to default</button>
+                    </dt>
+                </div>
+                <div data-target="handy">
+                    <div data-target="handy">
+                        <label>Use preset: <select id="setSeatPreset" data-type="used" data-dimension="preset" data-target="handy">
+                            <option value="table">Table</option>
+                            <option value="counter">Counter</option>
+                            <option value="togo">Togo</option>
+                        </select><br></label>
+                        <br>
+                        <label>Width: <input type="number" class="long" value="130" id="setSeatWidth" data-type="used" data-dimension="width" data-target="handy"><br></label>
+                        <label>Height: <input type="number" class="long" value="100" id="setSeatHeight" data-type="used" data-dimension="height" data-target="handy"><br></label>
+                        <label>Shape: <select id="setSeatShape" data-type="used" data-dimension="shape" data-target="handy">
+                            <option value="0">Rectangular</option>
+                            <option value="1">Circular</option>
+                        </select></label>
+                    </div>
+                    <br>
+                    <dt><b>Presets</b></dt>
+                    <dt>Table &#x25ad;</dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="130" data-type="table" data-dimension="width" data-target="handy"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="100" data-type="table" data-dimension="height" data-target="handy"></label>
+                    </dd>
+                    <dt>Counter &#x25ef;</dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="80" data-type="counter" data-dimension="width" data-target="handy"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="70" data-type="counter" data-dimension="height" data-target="handy"></label>
+                    </dd>
+                    <dt>Togo &#x25ad;</dt>
+                    <dd>
+                        <label>Width: <input type="number" class="long" value="100" data-type="togo" data-dimension="width" data-target="handy"></label>
+                    </dd>
+                    <dd>
+                        <label>Height: <input type="number" class="long" value="100" data-type="togo" data-dimension="height" data-target="handy"></label>
+                    </dd>
+                    <dt>
+                        <button id="resetHandyOptions">Reset to default</button>
+                    </dt>
+                </div>
+            </dl>
+            <hr>
+            <p><strong>Download/Export</strong></p>
+            <label>Store Code: <input id="storeCode" value="test" class="short"></label>
+            <br>
+            <button id="readyDownloads" onclick="readyDownloads()">Generate Files</button>
+            <br>
+            <button id="previewLayout" onclick="createPreview(State.drawn)">Preview Layout</button>
+            <br>
+            <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
+            <p><a id="downloadXML">tables_test.xml</a></p>
+            <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
+            <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a></p>
+        </div>
+        <div>
+            <strong>Usage</strong>
+            <dl>
+                <dt>While clicking on an element, press <kbd>↑←↓→</kbd> or <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
+                <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
+
+                <dt>Click and drag on an element to move it around.</dt>
+                <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
+                <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
+
+                <dt>Click on an empty space and drag to select multiple elements at once.</dt>
+                <dd>All elements highlighted <span style="color: green">green</span> will move together.<br><br></dd>
+
+                <div data-target="register">
+                    <dt>Double click on an empty area of the grid to create a new element.</dt>
+                    <dd>A Panel is a line of tables.</dd>
+                    <dd>A Lane is a rectangle with text.</dd>
+                    <dd>A Group is a set of Panels put together with a title.</dd>
+                    <dd>Togo creates a grid of exclusively to-go tables.<br><br></dd>
+                </div>
+
+                <div data-target="handy">
+                    <dt>Double click on an empty area of the grid to create a set of new seats.</dt>
+                    <dd>Their shape will be dictated by <b>Set width/height</b>.</dd>
+                    <dd>The <b>Presets</b> do not affect the shape/size of placed seats, and are just used to differentiate the different kind of seats.</dd>
+                    <dd>Press <kbd>Shift</kbd> and click on an empty area to create a single new seat.<br><br></dd>
+                </div>
+
+                <dt>Double click on an element to edit parts of it.</dt>
+                <dd data-target="register">Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
+                <dd data-target="handy"><br></dd>
+
+                <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
+                <dd data-target="register">Change which names/IDs are used in a Panel or Group by double-clicking on them.<br><br></dd>
+                <dd data-target="handy">Change which name/ID is used in a Seat by double-clicking on it.<br><br></dd>
+
+                <dt>For <b>table_seating</b> names, the prefixes of the name should match the seat type.</dt>
+                <dd>Names for tables should be in the format "T#" (e.g. T1, T10, etc.).</dd>
+                <dd>Names for counter seats should be "C#".</dd>
+                <dd>Names for bar seats should be "B#".</dd>
+                <dd>Names for togo tables should be "TOGO#".<br><br></dd>
+
+                <dt>Use the <button>Add 20 Togo Rows</button> button last.</dt>
+                <dd>The Togo element will automatically fill itself with whatever rows/names were not used for other seats.</dd>
+                <dd>Therefore, add the togo rows after you've created all the rows needed for the other elements.</dd>
+            </dl>
         </div>
     </div>
-    <div>
-        <strong>Set width/height</strong>
-        <dl id="setDimensions">
-            <div data-target="register">
-                <dt>Tables <input type="color" value="#ffa500" data-type="table" data-dimension="color" data-target="register"></dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="100" data-type="table" data-dimension="width" data-target="register"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="60" data-type="table" data-dimension="height" data-target="register"></label>
-                </dd>
-                <dt>Counter <input type="color" value="#ffff00" data-type="counter" data-dimension="color" data-target="register"></dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="90" data-type="counter" data-dimension="width" data-target="register"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="50" data-type="counter" data-dimension="height" data-target="register"></label>
-                </dd>
-                <dt>Bar <input type="color" value="#008000" data-type="bar" data-dimension="color" data-target="register"></dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="90" data-type="bar" data-dimension="width" data-target="register"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="53" data-type="bar" data-dimension="height" data-target="register"></label>
-                </dd>
-                <dt>To go <input type="color" value="#F5FAF5" data-type="togo" data-dimension="color" data-target="register"></dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="90" data-type="togo" data-dimension="width" data-target="register"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="50" data-type="togo" data-dimension="height" data-target="register"></label>
-                </dd>
-                <dt>
-                    <button id="resetRegisterOptions">Reset to default</button>
-                </dt>
-            </div>
-            <div data-target="handy">
-                <div data-target="handy">
-                    <label>Use preset: <select id="setSeatPreset" data-type="used" data-dimension="preset" data-target="handy">
-                        <option value="table">Table</option>
-                        <option value="counter">Counter</option>
-                        <option value="togo">Togo</option>
-                    </select><br></label>
-                    <br>
-                    <label>Width: <input type="number" class="long" value="130" id="setSeatWidth" data-type="used" data-dimension="width" data-target="handy"><br></label>
-                    <label>Height: <input type="number" class="long" value="100" id="setSeatHeight" data-type="used" data-dimension="height" data-target="handy"><br></label>
-                    <label>Shape: <select id="setSeatShape" data-type="used" data-dimension="shape" data-target="handy">
-                        <option value="0">Rectangular</option>
-                        <option value="1">Circular</option>
-                    </select></label>
-                </div>
-                <br>
-                <dt><b>Presets</b></dt>
-                <dt>Table &#x25ad;</dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="130" data-type="table" data-dimension="width" data-target="handy"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="100" data-type="table" data-dimension="height" data-target="handy"></label>
-                </dd>
-                <dt>Counter &#x25ef;</dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="80" data-type="counter" data-dimension="width" data-target="handy"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="70" data-type="counter" data-dimension="height" data-target="handy"></label>
-                </dd>
-                <dt>Togo &#x25ad;</dt>
-                <dd>
-                    <label>Width: <input type="number" class="long" value="100" data-type="togo" data-dimension="width" data-target="handy"></label>
-                </dd>
-                <dd>
-                    <label>Height: <input type="number" class="long" value="100" data-type="togo" data-dimension="height" data-target="handy"></label>
-                </dd>
-                <dt>
-                    <button id="resetHandyOptions">Reset to default</button>
-                </dt>
-            </div>
-        </dl>
-        <hr>
-        <p><strong>Download/Export</strong></p>
-        <label>Store Code: <input id="storeCode" value="test" class="short"></label>
-        <br>
-        <button id="readyDownloads" onclick="readyDownloads()">Generate Files</button>
-        <br>
-        <button id="previewLayout" onclick="createPreview(State.drawn)">Preview Layout</button>
-        <br>
-        <p><a id="downloadJava">TablePanelImplKulaTEST.java</a></p>
-        <p><a id="downloadXML">tables_test.xml</a></p>
-        <p><a id="downloadSQL">table_seating_TEST.sql</a></p>
-        <p><a id="downloadConflictSQL" title="This one updates rows instead of deleting them, making it easier to test with.">table_seating_conflict.sql</a></p>
-    </div>
-    <div style="width: 20%;">
-        <strong>Usage</strong>
-        <dl>
-            <dt>While clicking on an element, press <kbd>wasd</kbd> to move one pixel in the given direction.</dt>
-            <dd>Press <kbd>Shift+WASD</kbd> to move to the nearest gridline in the given direction.<br><br></dd>
 
-            <dt>Click and drag on an element, to move it around.</dt>
-            <dd>If the element is highlighted <span style="color: red">red</span>, it is out of bounds, or overlapping another element.</dd>
-            <dd>In this case, hold <kbd>Shift</kbd> to disable collision.<br><br></dd>
-
-            <dt>Click on an empty space and drag to select multiple elements at once.</dt>
-            <dd>All elements highlighted <span style="color: green">green</span> will move together.<br><br></dd>
-
-            <div data-target="register">
-                <dt>Double click on an empty area of the grid to create a new element.</dt>
-                <dd>A Panel is a line of tables.</dd>
-                <dd>A Lane is a rectangle with text.</dd>
-                <dd>A Group is a set of Panels put together with a title.</dd>
-                <dd>Togo creates a grid of exclusively to-go tables.<br><br></dd>
-            </div>
-
-            <div data-target="handy">
-                <dt>Double click on an empty area of the grid to create a set of new seats.</dt>
-                <dd>Their shape will be dictated by <b>Set width/height</b>.</dd>
-                <dd>The <b>Presets</b> do not affect the shape/size of placed seats, and are just used to differentiate the different kind of seats.</dd>
-                <dd>Press <kbd>Shift</kbd> and click on an empty area to create a single new seat.<br><br></dd>
-            </div>
-
-            <dt>Double click on an element to edit parts of it.</dt>
-            <dd data-target="register">Seat count and seat type cannot be edited so you will need to delete and recreate the element.<br><br></dd>
-            <dd data-target="handy"><br></dd>
-
-            <dt>Use the table to the left to emulate <b>table_seating</b>.</dt>
-            <dd data-target="register">Change which names/IDs are used in a Panel or Group by double-clicking on them.<br><br></dd>
-            <dd data-target="handy">Change which name/ID is used in a Seat by double-clicking on it.<br><br></dd>
-
-            <dt>On <b>table_seating</b> names, the prefixes of the name should match the seat type.</dt>
-            <dd>Names for tables should be in the format "T_" (e.g. T1, T10, etc.).</dd>
-            <dd>Names for counter seats should be "C_".</dd>
-            <dd>Names for bar seats should be "B_".</dd>
-            <dd>Names for togo tables should be "TOGO_".<br><br></dd>
-
-            <dt>Use the <button>Add 20 Togo Rows</button> button last.</dt>
-            <dd>The Togo element will automatically fill itself with whatever rows/names were not used for other seats.</dd>
-            <dd>Therefore, add the togo rows after you've created all the rows needed for the other elements.</dd>
-        </dl>
-    </div>
-
-    <dialog id="dialog" data-id="-1" data-x="0" data-y="0">
+    <dialog id="dialog" data-id="-1" data-x="0" data-y="0" closedby="any">
         <label>Select what to add: <select id="dCreateType">
             <option value="panel">Panel</option>
             <option value="lane">Lane</option>
@@ -390,10 +313,12 @@
             <br>
         </div>
 
-        <button id="dialogConfirm">OK</button>
-        <button id="dialogCancel">Cancel</button>
-        <div id="dialogDelete">
-            <button style="float: right;"><strong>Delete</strong></button>
+        <div id="dButtonRow" style="display: flex; justify-content: space-between;">
+            <div>
+                <button id="dialogConfirm">OK</button>
+                <button id="dialogCancel">Cancel</button>
+            </div>
+            <button id="dialogDelete"><strong>Delete</strong></button>
         </div>
     </dialog>
 
