@@ -356,6 +356,9 @@ class Rectangle {
             this.y -= dy;
         }
 
+        this.x = Math.trunc(this.x);
+        this.y = Math.trunc(this.y);
+
         if(!ignoreOOB) this.preventOOB();
     }
 
