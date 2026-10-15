@@ -253,10 +253,12 @@ function prepareTogoDialog() {
 
     const confirm = () => {
         togo.name = document.getElementById('dName').value;
+        togo.calculateSize();
     }
 
     const cancel = () => {
         togo.perRow = initalNum;
+        togo.calculateSize();
     }
 
     return { confirm, cancel };
