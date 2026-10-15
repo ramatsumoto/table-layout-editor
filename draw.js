@@ -113,8 +113,10 @@ const Options = {
  */
 function deleteFromDrawn(id) {
     const index = State.drawn.findIndex(r => r.id == id);
+    const rect = State.drawn.find(r => r.id == id);
     if(index >= 0) {
         State.drawn.splice(index, 1);
+        reduceTableCounts(rect);
     }
 }
 

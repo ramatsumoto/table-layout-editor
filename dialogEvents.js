@@ -276,17 +276,18 @@ document.getElementById('dSeatIDChange').addEventListener('input', e => {
 /**
  * Updates the table counts (see {@link Options}) when a {@linkcode Panel} or {@linkcode Group} is deleted.
  */
-function reduceTableCounts() {
-    const rect = getCurrentRectangle();
+function reduceTableCounts(rect) {
     if (rect instanceof Panel) {
         Options.register[rect.tableType].count -= rect.numTables;
     } else if (rect instanceof Group) {
         Options.register[rect.tableType].count -= Math2.sum(rect.panelCounts);
     }
+}
+document.getElementById('dialogDelete').addEventListener('click', () => {
+    const rect = getCurrentRectangle();
     deleteFromDrawn(rect.id);
     dialog.close();
-}
-document.getElementById('dialogDelete').addEventListener('click', reduceTableCounts);
+});
 
 /**
  * Takes a list of elements, event names, and event handlers add the associated event listener.
