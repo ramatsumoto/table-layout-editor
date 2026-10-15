@@ -129,8 +129,10 @@ document.getElementById('tableSeatingRemove').addEventListener('click', Table.re
 document.getElementById('tableSeatingRemove10').addEventListener('click', () => Array(10).fill().forEach(Table.removeLastRow));
 
 document.getElementById('tableSeatingReverse').addEventListener('click', () => {
-    let start = document.getElementById('tableSeatingReverseStart').valueAsNumber;
-    let end = document.getElementById('tableSeatingReverseEnd').valueAsNumber;
+    const startInput = document.getElementById('tableSeatingReverseStart');
+    const endInput = document.getElementById('tableSeatingReverseEnd');
+    let start = startInput.valueAsNumber;
+    let end = endInput.valueAsNumber;
 
     // Utilize highlighted range in fake table_seating, if possible
     const selection = getSelection();
@@ -153,6 +155,8 @@ document.getElementById('tableSeatingReverse').addEventListener('click', () => {
         return;
     }
 
+    startInput.value = start;
+    endInput.value = end;
     Table.reverseRange(start, end);
     tableSeatingHasChanged();
 });
