@@ -65,6 +65,10 @@ const Serialize = {
 
         const instance = Object.create(Target?.prototype || null);
 
+        if (Target) { // If obj is Rectangle
+            Rectangle.counter++;
+        }
+
         for (const [k, v] of Object.entries(data)) {
             instance[k] = Serialize.deserializeHelper(v);
         }
@@ -155,7 +159,7 @@ function resetEditor() {
     }
     drawnRegister.length = 0;
 
-    Rectangle.counter = 0;
+    Rectangle.counter = 1; // Rectangle 0 is always Border.MAX
     for (const input of document.querySelectorAll('input')) {
         input.value = input.getAttribute('value');
     }
