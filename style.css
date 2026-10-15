@@ -174,22 +174,19 @@ button:disabled {
     opacity: 0.5;
 }
 
-#clearState,
-#dialogDelete {
+button.danger {
     border-color: #f0a5a5;
     color: var(--danger);
     background: #fff5f5;
 }
 
-#dialogConfirm,
-#readyDownloads {
+button.important {
     border-color: var(--accent-dark);
     background: linear-gradient(#3b82f6, var(--accent-dark));
     color: #ffffff;
 }
 
-#dialogConfirm:hover:not(:disabled),
-#readyDownloads:hover:not(:disabled) {
+button.important:hover:not(:disabled) {
     background: linear-gradient(var(--accent), #1e40af);
 }
 
@@ -197,6 +194,14 @@ a {
     color: var(--accent-dark);
     text-decoration-color: rgb(29 78 216 / 35%);
     text-underline-offset: 2px;
+}
+
+a[id^="download"]:not([href]) {
+    color: var(--muted);
+    text-decoration: none;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.67;
 }
 
 a:hover {
@@ -460,7 +465,7 @@ a.unsavedChanges {
 
 .sidePanel {
     display: grid;
-    grid-template-columns: min-content min-content max-content;
+    grid-template-columns: max-content max-content max-content;
     gap: 12px;
     column-rule: 1px solid var(--border);
     align-items: stretch;

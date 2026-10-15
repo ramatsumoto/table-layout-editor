@@ -86,7 +86,7 @@ const Serialize = {
         const blob = new Blob([text], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.getElementById('saveDownloadLink');
-        link.setAttribute('download', `table-layout_${Options.storeCode.toUpperCase()}_${date}.json`);
+        link.setAttribute('download', `table-layout-save_${Options.storeCode.toUpperCase()}_${date}.json`);
         link.setAttribute('href', url);
         document.getElementById('saveDownload').removeAttribute('disabled');
         document.getElementById('saveDownload').innerText = 'Download save file';

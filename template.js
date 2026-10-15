@@ -99,7 +99,7 @@ public class TablePanelImplKula[NAME] extends TableButtonLayout
 }`;
 
 const XMLTemplate = `<tableLayoutGUIType xmlns="http://www.acropoint.com/rest/domains/session_data">
-  <!-- Generated [DATE] -->
+  <!-- Generated [DATE] for store [NAME] -->
    <table class="java.util.ArrayList">
 
 {}

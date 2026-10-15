@@ -311,18 +311,18 @@ function setScale(k) {
     State.scale[State.mode] = k;
 }
 
-const zoomInput = document.getElementById('canvasZoom');
-document.getElementById('canvasZoomOut').addEventListener('click', e => {
-    zoomInput.value -= 10;
-    Elements.fireInputEvent(zoomInput.id);
-});
-document.getElementById('canvasZoomIn').addEventListener('click', e => {
-    zoomInput.value = +zoomInput.value + 10;
-    Elements.fireInputEvent(zoomInput.id);
-});
-zoomInput.addEventListener('input', e => {
-    setScale(+e.target.value / 100);
-});
+// const zoomInput = document.getElementById('canvasZoom');
+// document.getElementById('canvasZoomOut').addEventListener('click', e => {
+//     zoomInput.value -= 10;
+//     Elements.fireInputEvent(zoomInput.id);
+// });
+// document.getElementById('canvasZoomIn').addEventListener('click', e => {
+//     zoomInput.value = +zoomInput.value + 10;
+//     Elements.fireInputEvent(zoomInput.id);
+// });
+// zoomInput.addEventListener('input', e => {
+//     setScale(+e.target.value / 100);
+// });
 
 /** Switches the program mode between `register` and `handy`. */
 function switchCanvas() {
@@ -331,19 +331,19 @@ function switchCanvas() {
         State.drawn = drawnHandy;
         document.querySelectorAll('[data-target="register"]').forEach(Elements.hide);
         document.querySelectorAll('[data-target="handy"]').forEach(Elements.unhide);
-        Elements.hide('previewLayout');
+        // Elements.hide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Register layout';
         setScale(State.scale.handy);
-        zoomInput.value = State.scale.handy * 100;
+        // zoomInput.value = State.scale.handy * 100;
     } else {
         State.mode = 'register'
         State.drawn = drawnRegister;
         document.querySelectorAll('[data-target="register"]').forEach(Elements.unhide);
         document.querySelectorAll('[data-target="handy"]').forEach(Elements.hide);
-        Elements.unhide('previewLayout');
+        // Elements.unhide('previewLayout');
         document.getElementById('canvasToggle').innerText = 'Switch to Handy layout';
         setScale(State.scale.register);
-        zoomInput.value = State.scale.register * 100;
+        // zoomInput.value = State.scale.register * 100;
     }
 }
 

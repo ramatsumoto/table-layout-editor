@@ -116,7 +116,7 @@ function readyXMLFile(name, drawn) {
     origin[0] = Math.min(...drawn.map(s => s.left));
 
     const seats = drawn.map(s => exportSeat(s, origin));
-    const text = XMLTemplate.replace('{}', seats.join('\n')).replace('[DATE]', new Date().toISOString());
+    const text = XMLTemplate.replace('{}', seats.join('\n')).replace('[DATE]', new Date().toISOString()).replace('[NAME]', name.trim().toUpperCase());
     const xml = new Blob([text], { type: 'text/xml' });
     const url = URL.createObjectURL(xml);
 
@@ -125,6 +125,8 @@ function readyXMLFile(name, drawn) {
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
     link.innerText = filename;
+
+    return text;
 }
 
 function readyJavaFile(name, drawn) {
@@ -139,11 +141,13 @@ function readyJavaFile(name, drawn) {
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
     link.innerText = filename;
+
+    return text;
 }
 
 function readySQLFile(name, tableRows) {
     name = name.trim().toUpperCase();
-    let res = `DELETE FROM table_seating;\n`;
+    let res = `-- Generated ${new Date().toISOString()} for ${name}\nDELETE FROM table_seating;\n`;
     for(const row of tableRows) {
         res += `INSERT INTO table_seating VALUES (${row.id}, NULL, '${row.name}', 0, ${row.isTogo});\n`;
     }
@@ -156,11 +160,13 @@ function readySQLFile(name, tableRows) {
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
     link.innerText = filename;
+
+    return res;
 }
 
 function readyConflictSQLFile(name, tableRows) {
     name = name.trim().toUpperCase();
-    let res = ''
+    let res = `-- Generated ' + new Date().toISOString() for ${name}\n`;
     for(const row of tableRows) {
         res += `INSERT INTO table_seating VALUES (${row.id}, NULL, '${row.name}', 0, ${row.isTogo}) ON CONFLICT (table_id) DO UPDATE SET table_desc='${row.name}', is_takeout=${row.isTogo};\n`;
     }
@@ -173,6 +179,8 @@ function readyConflictSQLFile(name, tableRows) {
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
     link.innerText = filename;
+
+    return res;
 }
 
 function readyDownloads() {
@@ -181,6 +189,48 @@ function readyDownloads() {
     readySQLFile(name, Table.getData());
     readyConflictSQLFile(name, Table.getData());
     readyXMLFile(name, State.drawn);
+}
+
+async function downloadAll() {
+    const ids = ['downloadJava', 'downloadXML', 'downloadSQL', 'downloadConflictSQL', 'saveDownloadLink'];
+    const links = ids.map(id => document.getElementById(id));
+
+    if (links.slice(0, -1).some(link => !link.hasAttribute('href'))) {
+        readyDownloads();
+    }
+
+    if (!links.at(-1).hasAttribute('href')) {
+        Serialize.saveProgress();
+    }
+
+    const files = {};
+    for (const link of links) {
+        const name = link.getAttribute('download') ?? 'unknown.txt';
+        const url = link.getAttribute('href');
+
+        const res = await fetch(url);
+        const content = await res.text();
+
+        files[name] = content;
+    }
+
+    try {
+        const zip = new JSZip();
+        for (const [name, text] of Object.entries(files)) {
+            zip.file(name, text);
+        }
+
+        const file = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(file);
+        const link = document.getElementById('zipFileDownload');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `table-layout-${Options.storeCode.toUpperCase()}.zip`);
+        link.click();
+    } catch(e) {
+        console.error("Cannot zip file", e);
+        alert("Cannot zip files, download each file individually instead.");
+        return;
+    }
 }
 
 function canvasHasChanged() {
