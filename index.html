@@ -48,12 +48,11 @@
             <strong title="Emulate the 'table_seating' table in the store database">Fake table_seating</strong>
             <br>
             <br>
-            <datalist id="tableSeatingRowPrefixOptions">
-                <option value="T">T</option>
+            <label>Prefix: <select id="tableSeatingRowPrefix">
+                <option value="T" selected>T</option>
                 <option value="C">C</option>
                 <option value="B">B</option>
-            </datalist>
-            <label>Prefix: <input id="tableSeatingRowPrefix" list="tableSeatingRowPrefixOptions" class="short" value="T"></label>
+            </select></label>
             <br>
             <button id="tableSeatingAdd">+1 Row</button>
             <button id="tableSeatingAdd10">+10 Rows</button>
