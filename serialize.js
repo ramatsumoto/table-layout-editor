@@ -253,6 +253,9 @@ document.body.addEventListener('keydown', e => {
         } else if (e.key == 'o') {
             e.preventDefault();
             Elements.get('loadFileSelector').click();
+        } else if (e.shiftKey && (e.key == 'r' || e.key == 'R')) {
+            // Don't interrupt hard reload, just clear localStorage
+            Serialize.clearProgress();
         }
     }
 });
