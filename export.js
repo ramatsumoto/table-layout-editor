@@ -240,20 +240,14 @@ function canvasHasChanged() {
         document.getElementById('downloadXML').removeAttribute('href');
     }
 
-    unsavedChanges();
-    try {
-        triggerSave();
-    } catch (ignored) { };
+    autoSave();
 }
 
 function tableSeatingHasChanged() {
     document.getElementById('downloadSQL').removeAttribute('href');
     document.getElementById('downloadConflictSQL').removeAttribute('href');
 
-    unsavedChanges();
-    try {
-        triggerSave();
-    } catch (ignored) { };
+    autoSave();
 }
 
 

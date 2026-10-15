@@ -185,10 +185,7 @@ document.getElementById('setDimensions').addEventListener('input', updateOptions
 document.getElementById('storeCode').addEventListener('input', e => {
     Options.storeCode = e.target.value;
 
-    unsavedChanges();
-    try {
-        triggerSave();
-    } catch (ignored) { };
+    autoSave();
 });
 document.getElementById('resetRegisterOptions').addEventListener('click', () => {
     for (const input of document.querySelectorAll('#setDimensions input')) {

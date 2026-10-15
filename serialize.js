@@ -122,12 +122,20 @@ const Serialize = {
     },
     initAutoSaver: (waitMs) => {
         let timeoutId = null;
+        const handler = e => e.preventDefault();
         return () => {
+            const controller = new AbortController();
             console.log(`Saving in ${waitMs} ms`);
             window.clearTimeout(timeoutId);
+            window.addEventListener('beforeunload',
+                handler,
+                { signal: controller.signal });
+
             timeoutId = window.setTimeout(() => {
                 console.log('Saved');
                 Serialize.saveProgress();
+                window.removeEventListener('beforeunload', handler);
+                controller.abort();
             }, waitMs);
         }
     },
@@ -148,6 +156,12 @@ const Serialize = {
 
 Serialize.loadProgress();
 const triggerSave = Serialize.initAutoSaver(1200);
+function autoSave() {
+    unsavedChanges();
+    try {
+        triggerSave();
+    } catch(ignore) {}
+}
 
 function resetEditor() {
     Serialize.clearProgress();
