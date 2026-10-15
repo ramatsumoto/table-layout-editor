@@ -208,7 +208,7 @@ document.body.addEventListener('keydown', e => {
 
     if(clicked.size > 0) {
         const targets = [...clicked].map(id => State.drawn.find(r => r.id == id));
-        if ('wasdWASD'.concat('ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight').includes(e.key)) {
+        if ('wasdWASD'.split('').concat('ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight').includes(e.key)) {
             e.preventDefault();
             canvasHasChanged();
         }
